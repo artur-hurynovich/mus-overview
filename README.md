@@ -1,5 +1,4 @@
 # mus-overview
-Study project for GP Solutions 
 Musical instruments overviews:
 1) displays all overviews, displays overviews according to musical instruments types (subgroups);
 2) searching musical instruments by tags;
