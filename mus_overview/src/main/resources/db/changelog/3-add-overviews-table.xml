@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet author="artur_hurynovich" id="3.1">
+        <createTable tableName="OVERVIEWS">
+            <column name="ID" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TITLE" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TEXT" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="O_DATE" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SUBGROUP_ID" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="artur_hurynovich" id="3.2">
+        <addPrimaryKey columnNames="ID" constraintName="OVERVIEWS_ID_PK" tableName="OVERVIEWS"/>
+    </changeSet>
+    <changeSet author="artur_hurynovich" id="3.3">
+        <addAutoIncrement columnDataType="INT"
+                          columnName="ID"
+                          incrementBy="1"
+                          startWith="1"
+                          tableName="OVERVIEWS"/>
+    </changeSet>
+    <changeSet author="artur_hurynovich" id="3.4">
+        <addForeignKeyConstraint baseTableName="OVERVIEWS" baseColumnNames="SUBGROUP_ID"
+                                 constraintName="OVERVIEWS_SUBGROUPS_FK" referencedTableName="SUBGROUPS"
+                                 referencedColumnNames="ID" onDelete="CASCADE" />
+    </changeSet>
+
+</databaseChangeLog>
