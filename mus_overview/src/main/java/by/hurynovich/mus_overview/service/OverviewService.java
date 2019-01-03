@@ -99,4 +99,19 @@ public class OverviewService {
                 overviewDtos.add(overviewConverter.convertToDTO(uniqueOverviewEntity)));
         return overviewDtos;
     }
+
+    public ResponseEntity<String> changeOverview(final long id, final String new_title, final String new_text){
+        if(overviewRepository.existsById(id)){
+            OverviewEntity overviewEntity = overviewRepository.findById(id);
+            if(new_title != null) {
+                overviewEntity.setTitle(new_title);
+                overviewRepository.save(overviewEntity);
+            } else if(new_text != null) {
+                overviewEntity.setText(new_text);
+                overviewRepository.save(overviewEntity);
+            }
+            return ResponseEntity.status(200).body("Overview was changed");
+        }
+        return ResponseEntity.status(400).body("Overview doesn't exist");
+    }
 }

@@ -63,4 +63,40 @@ public class GroupService {
         return subgroupRepository.findAllByGroupId(groupId).stream().map(subgroupConverter::convertToDTO).
                 collect(Collectors.toList());
     }
+
+    public ResponseEntity<String> deleteGroup(long id){
+        if(groupRepository.findById(id) != null){
+            groupRepository.deleteById(id);
+            return ResponseEntity.status(200).body("Group was deleted");
+        }
+        return ResponseEntity.status(400).body("Group doesn't exist");
+    }
+
+    public ResponseEntity<String> deleteSubgroup(long id){
+        if(subgroupRepository.findById(id) != null){
+            subgroupRepository.deleteById(id);
+            return ResponseEntity.status(200).body("Subgroup was deleted");
+        }
+        return ResponseEntity.status(400).body("Subgroup doesn't exist");
+    }
+
+    public ResponseEntity<String> changeGroup(final long id, final String new_name){
+        if(groupRepository.existsById(id)){
+            GroupEntity groupEntity = groupRepository.findById(id);
+            groupEntity.setName(new_name);
+            groupRepository.save(groupEntity);
+            return ResponseEntity.status(200).body("Group was changed");
+        }
+        return ResponseEntity.status(400).body("Group doesn't exist");
+    }
+
+    public ResponseEntity<String> changeSubgroup(final long id, final String new_name){
+        if(subgroupRepository.existsById(id)){
+            SubgroupEntity subgroupEntity = subgroupRepository.findById(id);
+            subgroupEntity.setName(new_name);
+            subgroupRepository.save(subgroupEntity);
+            return ResponseEntity.status(200).body("Subgroup was changed");
+        }
+        return ResponseEntity.status(400).body("Subgroup doesn't exist");
+    }
 }

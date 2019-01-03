@@ -52,4 +52,9 @@ public class OverviewController {
         final String[] tagNames = request.getParameterValues("tag");
         return overviewService.getAllOverviewsByTags(tagNames);
     }
+
+    @PostMapping("/changeOverview/{id}")
+    public ResponseEntity<String> changeOverview(@PathVariable("id") final long id, @RequestParam("new_title", required = false) final String new_title, @RequestParam("new_text", required = false) final String new_text){
+        return overviewService.changeOverview(id, new_title, new_text);
+    }
 }

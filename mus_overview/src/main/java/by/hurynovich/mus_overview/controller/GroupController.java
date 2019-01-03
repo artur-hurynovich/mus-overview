@@ -46,4 +46,24 @@ public class GroupController {
         final long groupId = Long.valueOf(groupIdParam);
         return groupService.getAllSubgroupsByGroupId(groupId);
     }
+
+    @DeleteMapping("/deleteGroup/{id}")
+    public ResponseEntity<String> deleteGroup(@PathVariable("id") final long id){
+        return groupService.deleteGroup(id);
+    }
+
+    @DeleteMapping("/deleteSubgroup/{id}")
+    public ResponseEntity<String> deleteSubgroup(@PathVariable("id") final long id){
+        return groupService.deleteSubgroup(id);
+    }
+
+    @PostMapping("/changeGroup/{id}/{new_name}")
+    public ResponseEntity<String> changeGroup(@PathVariable("id") final long id, @PathVariable("new_name") final String new_name){
+        return groupService.changeGroup(id, new_name);
+    }
+
+    @PostMapping("/changeSubgroup/{id}/{new_name}")
+    public ResponseEntity<String> changeSubgroup(@PathVariable("id") final long id, @PathVariable("new_name") final String new_name){
+        return subgroupService.changeSubgroup(id, new_name);
+    }
 }
