@@ -1,7 +1,11 @@
 package by.hurynovich.mus_overview.service;
 
 import by.hurynovich.mus_overview.converter.impl.TagConverter;
+import by.hurynovich.mus_overview.dto.TagDTO;
+import by.hurynovich.mus_overview.entity.TagEntity;
+import by.hurynovich.mus_overview.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,6 +15,12 @@ import java.util.stream.Collectors;
 public class TagService {
     private final TagRepository tagRepository;
     private final TagConverter tagConverter;
+
+    @Autowired
+    public TagService(final TagRepository tagRepository, final TagConverter tagConverter) {
+        this.tagRepository = tagRepository;
+        this.tagConverter = tagConverter;
+    }
 
     public ResponseEntity<String> createTag(final TagDTO tagDto){
         tagRepository.save(tagConverter.convertToEntity(tagDto));

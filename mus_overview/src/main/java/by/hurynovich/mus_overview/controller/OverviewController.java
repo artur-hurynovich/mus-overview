@@ -4,11 +4,8 @@ import by.hurynovich.mus_overview.dto.OverviewDTO;
 import by.hurynovich.mus_overview.exception.OverviewCreationException;
 import by.hurynovich.mus_overview.service.OverviewService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -54,7 +51,7 @@ public class OverviewController {
     }
 
     @PostMapping("/changeOverview/{id}")
-    public ResponseEntity<String> changeOverview(@PathVariable("id") final long id, @RequestParam("new_title", required = false) final String new_title, @RequestParam("new_text", required = false) final String new_text){
+    public ResponseEntity<String> changeOverview(@PathVariable("id") final long id, @RequestParam(name = "new_title", required = false) final String new_title, @RequestParam(name = "new_text", required = false) final String new_text){
         return overviewService.changeOverview(id, new_title, new_text);
     }
 }

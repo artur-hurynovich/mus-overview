@@ -6,11 +6,8 @@ import by.hurynovich.mus_overview.exception.GroupCreationException;
 import by.hurynovich.mus_overview.exception.SubgroupCreationException;
 import by.hurynovich.mus_overview.service.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -64,6 +61,6 @@ public class GroupController {
 
     @PostMapping("/changeSubgroup/{id}/{new_name}")
     public ResponseEntity<String> changeSubgroup(@PathVariable("id") final long id, @PathVariable("new_name") final String new_name){
-        return subgroupService.changeSubgroup(id, new_name);
+        return groupService.changeSubgroup(id, new_name);
     }
 }
