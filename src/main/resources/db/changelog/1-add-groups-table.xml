@@ -7,24 +7,24 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
     <changeSet author="artur_hurynovich" id="1.1">
-        <createTable tableName="GROUPS">
-            <column name="ID" type="INT">
+        <createTable tableName="groups">
+            <column name="id" type="INT">
                 <constraints nullable="false"/>
             </column>
-            <column name="NAME" type="VARCHAR(50)">
+            <column name="name" type="VARCHAR(50)">
                 <constraints nullable="false" unique="true"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="artur_hurynovich" id="1.2">
-        <addPrimaryKey columnNames="ID" constraintName="GROUPS_ID_PK" tableName="GROUPS"/>
+        <addPrimaryKey columnNames="id" constraintName="GROUPS_ID_PK" tableName="groups"/>
     </changeSet>
     <changeSet author="artur_hurynovich" id="1.3">
         <addAutoIncrement columnDataType="INT"
-                          columnName="ID"
+                          columnName="id"
                           incrementBy="1"
                           startWith="1"
-                          tableName="GROUPS"/>
+                          tableName="groups"/>
     </changeSet>
 
 </databaseChangeLog>

@@ -7,32 +7,32 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
     <changeSet author="artur_hurynovich" id="2.1">
-        <createTable tableName="SUBGROUPS">
-            <column name="ID" type="INT">
+        <createTable tableName="subgroups">
+            <column name="id" type="INT">
                 <constraints nullable="false"/>
             </column>
-            <column name="NAME" type="VARCHAR(50)">
+            <column name="name" type="VARCHAR(50)">
                 <constraints nullable="false" unique="true"/>
             </column>
-            <column name="GROUP_ID" type="INT">
+            <column name="group_id" type="INT">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="artur_hurynovich" id="2.2">
-        <addPrimaryKey columnNames="ID" constraintName="SUBGROUPS_ID_PK" tableName="SUBGROUPS"/>
+        <addPrimaryKey columnNames="ID" constraintName="SUBGROUPS_ID_PK" tableName="subgroups"/>
     </changeSet>
     <changeSet author="artur_hurynovich" id="2.3">
         <addAutoIncrement columnDataType="INT"
-                          columnName="ID"
+                          columnName="id"
                           incrementBy="1"
                           startWith="1"
-                          tableName="SUBGROUPS"/>
+                          tableName="subgroups"/>
     </changeSet>
     <changeSet author="artur_hurynovich" id="2.4">
-        <addForeignKeyConstraint baseTableName="SUBGROUPS" baseColumnNames="GROUP_ID"
-                                 constraintName="SUBGROUPS_GROUPS_FK" referencedTableName="GROUPS"
-                                 referencedColumnNames="ID" onDelete="CASCADE" />
+        <addForeignKeyConstraint baseTableName="subgroups" baseColumnNames="group_id"
+                                 constraintName="SUBGROUPS_GROUPS_FK" referencedTableName="groups"
+                                 referencedColumnNames="id" onDelete="CASCADE" />
     </changeSet>
 
 </databaseChangeLog>

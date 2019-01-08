@@ -7,38 +7,38 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
     <changeSet author="artur_hurynovich" id="3.1">
-        <createTable tableName="OVERVIEWS">
-            <column name="ID" type="INT">
+        <createTable tableName="overviews">
+            <column name="id" type="INT">
                 <constraints nullable="false"/>
             </column>
-            <column name="TITLE" type="VARCHAR(100)">
+            <column name="title" type="VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
-            <column name="TEXT" type="TEXT">
+            <column name="text" type="TEXT">
                 <constraints nullable="false"/>
             </column>
-            <column name="O_DATE" type="DATE">
+            <column name="o_date" type="DATE">
                 <constraints nullable="false"/>
             </column>
-            <column name="SUBGROUP_ID" type="INT">
+            <column name="subgroup_id" type="INT">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="artur_hurynovich" id="3.2">
-        <addPrimaryKey columnNames="ID" constraintName="OVERVIEWS_ID_PK" tableName="OVERVIEWS"/>
+        <addPrimaryKey columnNames="ID" constraintName="OVERVIEWS_ID_PK" tableName="overviews"/>
     </changeSet>
     <changeSet author="artur_hurynovich" id="3.3">
         <addAutoIncrement columnDataType="INT"
-                          columnName="ID"
+                          columnName="id"
                           incrementBy="1"
                           startWith="1"
-                          tableName="OVERVIEWS"/>
+                          tableName="overviews"/>
     </changeSet>
     <changeSet author="artur_hurynovich" id="3.4">
-        <addForeignKeyConstraint baseTableName="OVERVIEWS" baseColumnNames="SUBGROUP_ID"
-                                 constraintName="OVERVIEWS_SUBGROUPS_FK" referencedTableName="SUBGROUPS"
-                                 referencedColumnNames="ID" onDelete="CASCADE" />
+        <addForeignKeyConstraint baseTableName="overviews" baseColumnNames="subgroup_id"
+                                 constraintName="OVERVIEWS_SUBGROUPS_FK" referencedTableName="subgroups"
+                                 referencedColumnNames="id" onDelete="CASCADE" />
     </changeSet>
 
 </databaseChangeLog>

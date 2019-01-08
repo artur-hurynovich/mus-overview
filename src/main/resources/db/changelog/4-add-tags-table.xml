@@ -7,24 +7,24 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
     <changeSet author="artur_hurynovich" id="4.1">
-        <createTable tableName="TAGS">
-            <column name="ID" type="INT">
+        <createTable tableName="tags">
+            <column name="id" type="INT">
                 <constraints nullable="false"/>
             </column>
-            <column name="NAME" type="VARCHAR(30)">
+            <column name="name" type="VARCHAR(30)">
                 <constraints nullable="false" unique="true"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="artur_hurynovich" id="4.2">
-        <addPrimaryKey columnNames="ID" constraintName="TAGS_ID_PK" tableName="TAGS"/>
+        <addPrimaryKey columnNames="id" constraintName="TAGS_ID_PK" tableName="tags"/>
     </changeSet>
     <changeSet author="artur_hurynovich" id="4.3">
         <addAutoIncrement columnDataType="INT"
-                          columnName="ID"
+                          columnName="id"
                           incrementBy="1"
                           startWith="1"
-                          tableName="TAGS"/>
+                          tableName="tags"/>
     </changeSet>
 
 </databaseChangeLog>

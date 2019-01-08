@@ -7,26 +7,26 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
     <changeSet author="artur_hurynovich" id="5.1">
-        <createTable tableName="OVERVIEWS_TAGS">
-            <column name="OVERVIEW_ID" type="INT">
+        <createTable tableName="overviews_tags">
+            <column name="overview_id" type="INT">
                 <constraints nullable="false"/>
             </column>
-            <column name="TAG_ID" type="INT">
+            <column name="tag_id" type="INT">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
     <changeSet author="artur_hurynovich" id="5.2">
-        <addPrimaryKey columnNames="OVERVIEW_ID, TAG_ID" constraintName="OVERVIEWS_TAGS_ID_PK"
-                       tableName="OVERVIEWS_TAGS"/>
+        <addPrimaryKey columnNames="overview_id, TAG_ID" constraintName="OVERVIEWS_TAGS_ID_PK"
+                       tableName="overviews_tags"/>
     </changeSet>
     <changeSet author="artur_hurynovich" id="5.3">
-        <addForeignKeyConstraint baseTableName="OVERVIEWS_TAGS" baseColumnNames="OVERVIEW_ID"
-                                 constraintName="TAGS_OVERVIEWS_FK" referencedTableName="OVERVIEWS"
-                                 referencedColumnNames="ID" onDelete="CASCADE" />
-        <addForeignKeyConstraint baseTableName="OVERVIEWS_TAGS" baseColumnNames="TAG_ID"
-                                 constraintName="OVERVIEWS_TAGS_FK" referencedTableName="TAGS"
-                                 referencedColumnNames="ID" />
+        <addForeignKeyConstraint baseTableName="overviews_tags" baseColumnNames="overview_id"
+                                 constraintName="TAGS_OVERVIEWS_FK" referencedTableName="overviews"
+                                 referencedColumnNames="id" onDelete="CASCADE" />
+        <addForeignKeyConstraint baseTableName="overviews_tags" baseColumnNames="tag_id"
+                                 constraintName="OVERVIEWS_TAGS_FK" referencedTableName="tags"
+                                 referencedColumnNames="id" />
     </changeSet>
 
 </databaseChangeLog>
