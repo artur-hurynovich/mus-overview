@@ -7,11 +7,7 @@ import by.hurynovich.mus_overview.entity.SubgroupEntity;
 import by.hurynovich.mus_overview.dto.GroupDTO;
 import by.hurynovich.mus_overview.dto.SubgroupDTO;
 import by.hurynovich.mus_overview.exception.GroupCreationException;
-import by.hurynovich.mus_overview.exception.GroupDeletingException;
-import by.hurynovich.mus_overview.exception.GroupUpdatingException;
 import by.hurynovich.mus_overview.exception.SubgroupCreationException;
-import by.hurynovich.mus_overview.exception.SubgroupDeletingException;
-import by.hurynovich.mus_overview.exception.SubgroupUpdatingException;
 import by.hurynovich.mus_overview.repository.GroupRepository;
 import by.hurynovich.mus_overview.repository.SubgroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,52 +65,4 @@ public class GroupService {
                 collect(Collectors.toList());
     }
 
-    @Transactional
-    public GroupDTO updateGroup(final GroupDTO groupDTO) throws GroupUpdatingException {
-        final GroupEntity groupEntity = groupRepository.getOne(groupDTO.getId());
-        groupEntity.setName(groupDTO.getName());
-        try {
-            return groupConverter.convertToDTO(groupRepository.save(groupEntity));
-        } catch (final Exception e) {
-            final String exceptionMessage = "Group updating failed: " + e.getMessage();
-            throw new GroupUpdatingException(exceptionMessage);
-        }
-    }
-
-    @Transactional
-    public SubgroupDTO updateSubgroup(final SubgroupDTO subgroupDTO) throws SubgroupUpdatingException {
-        final SubgroupEntity subgroupEntity = subgroupRepository.getOne(subgroupDTO.getId());
-        final String subgroupName = subgroupDTO.getName();
-        if (subgroupName != null) {
-            subgroupEntity.setName(subgroupName);
-        }
-        final long groupId = subgroupDTO.getGroupId();
-        if (groupId != 0) {
-            subgroupEntity.setGroupId(groupId);
-        }
-        try {
-            return subgroupConverter.convertToDTO(subgroupRepository.save(subgroupEntity));
-        } catch (final Exception e) {
-            final String exceptionMessage = "Subgroup updating failed: " + e.getMessage();
-            throw new SubgroupUpdatingException(exceptionMessage);
-        }
-    }
-
-    public void deleteGroup(final long id) throws GroupDeletingException {
-        try {
-            groupRepository.deleteById(id);
-        } catch (final Exception e) {
-            final String exceptionMessage = "Group deleting failed: " + e.getMessage();
-            throw new GroupDeletingException(exceptionMessage);
-        }
-    }
-
-    public void deleteSubgroup(final long id) throws SubgroupDeletingException {
-        try {
-            subgroupRepository.deleteById(id);
-        } catch (final Exception e) {
-            final String exceptionMessage = "Subgroup deleting failed: " + e.getMessage();
-            throw new SubgroupDeletingException(exceptionMessage);
-        }
-    }
 }
