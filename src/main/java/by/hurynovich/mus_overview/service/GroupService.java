@@ -65,4 +65,22 @@ public class GroupService {
                 collect(Collectors.toList());
     }
 
+    public GroupDTO getGroupById(final long id) {
+        final GroupEntity groupEntity = groupRepository.findById(id);
+        if (groupEntity == null) {
+            return null;
+        } else {
+            return groupConverter.convertToDTO(groupEntity);
+        }
+    }
+
+    public SubgroupDTO getSubgroupById(final long id) {
+        final SubgroupEntity subgroupEntity = subgroupRepository.findById(id);
+        if (subgroupEntity == null) {
+            return null;
+        } else {
+            return subgroupConverter.convertToDTO(subgroupEntity);
+        }
+    }
+
 }

@@ -36,12 +36,23 @@ public class OverviewSubgroupField extends CustomField<Long> {
 
     @Override
     protected void doSetValue(final Long aLong) {
-
+        value = aLong;
+        final SubgroupDTO subgroupDTO = groupService.getSubgroupById(aLong);
+        final long groupId = subgroupDTO.getGroupId();
+        final GroupDTO groupDTO = groupService.getGroupById(groupId);
+        groupField.setSelectedItem(groupDTO);
+        subgroupField.setSelectedItem(subgroupDTO);
+        subgroupField.setEnabled(true);
     }
 
     @Override
     public Long getValue() {
-        return null;
+        final SubgroupDTO subgroupDTO = subgroupField.getSelectedItem().orElse(null);
+        if (subgroupDTO == null) {
+            return null;
+        } else {
+            return subgroupDTO.getId();
+        }
     }
 
     private HorizontalLayout getParentLayout() {

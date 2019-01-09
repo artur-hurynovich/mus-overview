@@ -66,7 +66,7 @@ public class OverviewService {
 
     public OverviewDTO getOverviewById(final long overviewId) {
         final OverviewEntity overviewEntity = overviewRepository.findById(overviewId);
-        if (overviewEntity.getId() == 0) {
+        if (overviewEntity == null) {
             return null;
         } else {
             return overviewConverter.convertToDTO(overviewEntity);
