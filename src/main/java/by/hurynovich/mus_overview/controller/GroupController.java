@@ -3,18 +3,13 @@ package by.hurynovich.mus_overview.controller;
 import by.hurynovich.mus_overview.dto.GroupDTO;
 import by.hurynovich.mus_overview.dto.SubgroupDTO;
 import by.hurynovich.mus_overview.exception.GroupCreationException;
-import by.hurynovich.mus_overview.exception.GroupDeletingException;
-import by.hurynovich.mus_overview.exception.GroupUpdatingException;
 import by.hurynovich.mus_overview.exception.SubgroupCreationException;
-import by.hurynovich.mus_overview.exception.SubgroupDeletingException;
-import by.hurynovich.mus_overview.exception.SubgroupUpdatingException;
 import by.hurynovich.mus_overview.service.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -50,25 +45,5 @@ public class GroupController {
         final String groupIdParam = request.getParameter("groupId");
         final long groupId = Long.valueOf(groupIdParam);
         return groupService.getAllSubgroupsByGroupId(groupId);
-    }
-
-    @PostMapping("/updateGroup")
-    public GroupDTO updateGroup(final @RequestBody GroupDTO groupDTO) throws GroupUpdatingException {
-        return groupService.updateGroup(groupDTO);
-    }
-
-    @PostMapping("/updateSubgroup")
-    public SubgroupDTO updateSubgroup(final @RequestBody SubgroupDTO subgroupDTO) throws SubgroupUpdatingException {
-        return groupService.updateSubgroup(subgroupDTO);
-    }
-
-    @PostMapping("/deleteGroup")
-    public void deleteGroup(final @RequestParam long id) throws GroupDeletingException {
-        groupService.deleteGroup(id);
-    }
-
-    @PostMapping("/deleteSubgroup")
-    public void deleteSubgroup(final @RequestParam long id) throws SubgroupDeletingException {
-        groupService.deleteSubgroup(id);
     }
 }
