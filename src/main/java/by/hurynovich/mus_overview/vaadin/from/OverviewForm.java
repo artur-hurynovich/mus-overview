@@ -1,6 +1,7 @@
 package by.hurynovich.mus_overview.vaadin.from;
 
 import by.hurynovich.mus_overview.dto.OverviewDTO;
+import by.hurynovich.mus_overview.service.GroupService;
 import by.hurynovich.mus_overview.service.OverviewService;
 import by.hurynovich.mus_overview.vaadin.custom_field.OverviewDateField;
 import by.hurynovich.mus_overview.vaadin.custom_field.OverviewSubgroupField;
@@ -23,13 +24,16 @@ public class OverviewForm extends Panel {
 
     private final OverviewService overviewService;
 
-    public OverviewForm(final OverviewService overviewService, final OverviewDTO overviewDTO,
-                        final Runnable onSave, final Runnable onDiscard) {
+    private final GroupService groupService;
+
+    public OverviewForm(final OverviewService overviewService, final GroupService groupService,
+                        final OverviewDTO overviewDTO, final Runnable onSave, final Runnable onDiscard) {
         this.overviewService = overviewService;
+        this.groupService = groupService;
         titleField = new TextField("Title:");
         textField = new TextArea("Text");
         dateField = new OverviewDateField("Date:");
-        subgroupField = new OverviewSubgroupField("Subgroup:");
+        subgroupField = new OverviewSubgroupField(groupService);
         tagField = new OverviewTagField("Tags:");
     }
 

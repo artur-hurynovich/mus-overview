@@ -2,6 +2,7 @@ package by.hurynovich.mus_overview.vaadin.ui;
 
 import by.hurynovich.mus_overview.dto.OverviewDTO;
 import by.hurynovich.mus_overview.dto.TagDTO;
+import by.hurynovich.mus_overview.service.GroupService;
 import by.hurynovich.mus_overview.service.OverviewService;
 import by.hurynovich.mus_overview.vaadin.from.OverviewForm;
 import com.vaadin.annotations.Theme;
@@ -26,6 +27,8 @@ public class OverviewUI extends UI {
 
     private final OverviewService overviewService;
 
+    private final GroupService groupService;
+
     private final VerticalLayout parentLayout;
 
     private ListDataProvider<OverviewDTO> dataProvider;
@@ -45,8 +48,9 @@ public class OverviewUI extends UI {
     private List<TagDTO> emptyTags;
 
     @Autowired
-    public OverviewUI(final OverviewService overviewService) {
+    public OverviewUI(final OverviewService overviewService, final GroupService groupService) {
         this.overviewService = overviewService;
+        this.groupService = groupService;
         parentLayout = new VerticalLayout();
         overviewGrid = new Grid<>(OverviewDTO.class);
         buttonsLayout = new HorizontalLayout();
@@ -107,7 +111,8 @@ public class OverviewUI extends UI {
     private Window getOverviewWindow(final OverviewDTO overviewDTO) {
         final Window overviewWindow = new Window();
         overviewWindow.setCaption("New Overview");
-        final OverviewForm overviewForm = new OverviewForm(overviewService, overviewDTO, () -> {}, () -> {});
+        final OverviewForm overviewForm = new OverviewForm(overviewService, groupService, overviewDTO
+                , () -> {}, () -> {});
         overviewWindow.addCloseListener(closeEvent -> overviewGrid.getDataProvider().refreshAll());
         overviewWindow.setContent(overviewForm);
         return overviewWindow;
