@@ -111,8 +111,7 @@ public class OverviewView extends CustomComponent implements View {
     }
 
     private Window getOverviewWindow(final OverviewDTO overviewDTO) {
-        final Window overviewWindow = new Window();
-        overviewWindow.setCaption("New Overview");
+        final Window overviewWindow = new Window("New Overview");
         final OverviewForm overviewForm = new OverviewForm(overviewService, groupService, overviewDTO
                 , () -> {}, () -> {});
         overviewWindow.addCloseListener(closeEvent -> overviewGrid.getDataProvider().refreshAll());

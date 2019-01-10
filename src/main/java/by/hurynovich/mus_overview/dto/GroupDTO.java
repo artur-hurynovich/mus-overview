@@ -1,9 +1,11 @@
 package by.hurynovich.mus_overview.dto;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class GroupDTO {
     private long id;

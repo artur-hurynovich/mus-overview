@@ -10,9 +10,13 @@ import org.springframework.stereotype.Service;
 public class SubgroupConverter implements DTOEntityConverter<SubgroupDTO, SubgroupEntity> {
     @Override
     public SubgroupDTO convertToDTO(final SubgroupEntity subgroupEntity) {
-        final SubgroupDTO subgroupDto = new SubgroupDTO();
-        BeanUtils.copyProperties(subgroupEntity, subgroupDto);
-        return subgroupDto;
+        if (subgroupEntity == null) {
+            return null;
+        } else {
+            final SubgroupDTO subgroupDto = new SubgroupDTO();
+            BeanUtils.copyProperties(subgroupEntity, subgroupDto);
+            return subgroupDto;
+        }
     }
 
     @Override

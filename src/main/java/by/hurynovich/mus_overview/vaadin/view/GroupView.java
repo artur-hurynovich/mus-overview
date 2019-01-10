@@ -3,6 +3,8 @@ package by.hurynovich.mus_overview.vaadin.view;
 import by.hurynovich.mus_overview.dto.GroupDTO;
 import by.hurynovich.mus_overview.dto.SubgroupDTO;
 import by.hurynovich.mus_overview.service.GroupService;
+import by.hurynovich.mus_overview.vaadin.from.GroupForm;
+import by.hurynovich.mus_overview.vaadin.from.SubgroupForm;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -11,8 +13,12 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 @SpringView(name = GroupView.NAME)
 public class GroupView extends CustomComponent implements View {
@@ -71,19 +77,126 @@ public class GroupView extends CustomComponent implements View {
     }
 
     private Grid<GroupDTO> getGroupGrid() {
+        final List<GroupDTO> allGroups = groupService.getAllGroups();
+        groupDataProvider = new ListDataProvider<>(allGroups);
+        groupGrid.removeColumn("id");
+        groupGrid.setCaption("Groups:");
+        groupGrid.setDataProvider(groupDataProvider);
+        groupGrid.setSelectionMode(Grid.SelectionMode.MULTI);
+        groupGrid.addSelectionListener(selectionEvent -> {
+            final int selectedItemsCount = groupGrid.getSelectedItems().size();
+            if (selectedItemsCount == 0) {
+                editGroupButton.setEnabled(false);
+                removeGroupButton.setEnabled(false);
+                subgroupGrid.setEnabled(false);
+            } else if (selectedItemsCount == 1){
+                editGroupButton.setEnabled(true);
+                subgroupGrid.setEnabled(true);
+                final GroupDTO selectedGroup = selectionEvent.getFirstSelectedItem().orElse(null);
+                if (selectedGroup != null) {
+                    final long selectedGroupId = selectedGroup.getId();
+                    final List<SubgroupDTO> subgroupsByGroupId =
+                            groupService.getAllSubgroupsByGroupId(selectedGroupId);
+                    subgroupDataProvider = new ListDataProvider<>(subgroupsByGroupId);
+                    subgroupGrid.setDataProvider(subgroupDataProvider);
+                }
+                subgroupGrid.setEnabled(true);
+            } else {
+                editGroupButton.setEnabled(false);
+                subgroupGrid.setEnabled(true);
+                subgroupGrid.setEnabled(false);
+            }
+        });
         return groupGrid;
     }
 
     private HorizontalLayout getGroupButtonsLayout() {
+        groupButtonsLayout.addComponents(getAddGroupButton(), getEditGroupButton(), getRemoveGroupButton());
         return groupButtonsLayout;
     }
 
+    private Button getAddGroupButton() {
+        addGroupButton.addClickListener(clickEvent -> {
+            final GroupDTO newGroup = new GroupDTO();
+            final Window groupWindow = getGroupWindow(newGroup);
+            UI.getCurrent().addWindow(groupWindow);
+        });
+        return addGroupButton;
+    }
+
+    private Button getEditGroupButton() {
+        editGroupButton.setEnabled(false);
+        return editGroupButton;
+    }
+
+    private Button getRemoveGroupButton() {
+        removeGroupButton.setEnabled(false);
+        return removeGroupButton;
+    }
+
     private Grid<SubgroupDTO> getSubgroupGrid() {
+        subgroupGrid.setEnabled(false);
+        subgroupGrid.removeColumn("id");
+        subgroupGrid.removeColumn("groupId");
+        subgroupGrid.setCaption("Subgroups:");
+        subgroupGrid.setSelectionMode(Grid.SelectionMode.MULTI);
+        subgroupGrid.addSelectionListener(selectionEvent -> {
+            final int selectedItemsCount = subgroupGrid.getSelectedItems().size();
+            if (selectedItemsCount == 0) {
+                editSubgroupButton.setEnabled(false);
+                removeSubgroupButton.setEnabled(false);
+            } else if (selectedItemsCount == 1){
+                editSubgroupButton.setEnabled(true);
+                removeSubgroupButton.setEnabled(true);
+            } else {
+                editSubgroupButton.setEnabled(false);
+                removeSubgroupButton.setEnabled(true);
+            }
+        });
         return subgroupGrid;
     }
 
     private HorizontalLayout getSubgroupButtonsLayout() {
+        subgroupButtonsLayout.addComponents(getAddSubgroupButton(), getEditSubgroupButton(),
+                getRemoveSubgroupButton());
         return subgroupButtonsLayout;
+    }
+
+    private Button getAddSubgroupButton() {
+        addSubgroupButton.addClickListener(clickEvent -> {
+            final SubgroupDTO subgroupDTO = new SubgroupDTO();
+            final Window subgroupWindow = getSubgroupWindow(subgroupDTO);
+            UI.getCurrent().addWindow(subgroupWindow);
+        });
+        return addSubgroupButton;
+    }
+
+    private Button getEditSubgroupButton() {
+        editSubgroupButton.setEnabled(false);
+        return editSubgroupButton;
+    }
+
+    private Button getRemoveSubgroupButton() {
+        removeSubgroupButton.setEnabled(false);
+        return removeSubgroupButton;
+    }
+
+    private Window getGroupWindow(final GroupDTO groupDTO) {
+        final Window groupWindow = new Window("New Group");
+        final GroupForm groupForm = new GroupForm(groupService, groupDTO, groupWindow::close,
+                groupWindow::close);
+        groupWindow.setContent(groupForm);
+        groupWindow.addCloseListener(closeEvent -> groupGrid.getDataProvider().refreshAll());
+        return groupWindow;
+    }
+
+    private Window getSubgroupWindow(final SubgroupDTO subgroupDTO) {
+        final Window subgroupWindow = new Window("New Subgroup");
+        final SubgroupForm subgroupForm = new SubgroupForm(groupService, subgroupDTO, subgroupWindow::close,
+                subgroupWindow::close);
+        subgroupWindow.setContent(subgroupForm);
+        subgroupWindow.addCloseListener(closeEvent -> subgroupGrid.getDataProvider().refreshAll());
+        return subgroupWindow;
     }
 
 }

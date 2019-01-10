@@ -23,21 +23,17 @@ public class OverviewForm extends Panel {
 
     private final VerticalLayout parentLayout;
 
-    @PropertyId("title")
     private final TextField titleField;
 
-    @PropertyId("text")
     private final TextArea textField;
 
-    @PropertyId("date")
     private final OverviewDateField dateField;
 
-    @PropertyId("tags")
     private final OverviewSubgroupField subgroupField;
 
-    private final Binder<OverviewDTO> binder;
-
     private final OverviewTagField tagField;
+
+    private final Binder<OverviewDTO> binder;
 
     private final HorizontalLayout buttonsLayout;
 
@@ -54,8 +50,6 @@ public class OverviewForm extends Panel {
         this.overviewService = overviewService;
         this.groupService = groupService;
         binder = new Binder<>(OverviewDTO.class);
-        binder.setBean(overviewDTO);
-        binder.bindInstanceFields(this);
         parentLayout = new VerticalLayout();
         titleField = new TextField("Title:");
         textField = new TextArea("Text");
@@ -65,6 +59,12 @@ public class OverviewForm extends Panel {
         buttonsLayout = new HorizontalLayout();
         saveButton = new Button("Save");
         cancelButton = new Button("Cancel");
+        binder.bind(titleField, OverviewDTO::getTitle, OverviewDTO::setTitle);
+        binder.bind(textField, OverviewDTO::getText, OverviewDTO::setText);
+        binder.bind(dateField, OverviewDTO::getDate, OverviewDTO::setDate);
+        binder.bind(subgroupField, OverviewDTO::getSubgroupId, OverviewDTO::setSubgroupId);
+        binder.bind(tagField, OverviewDTO::getTags, OverviewDTO::setTags);
+        binder.readBean(overviewDTO);
         setContent(getParentLayout(overviewDTO, onSave, onDiscard));
     }
 

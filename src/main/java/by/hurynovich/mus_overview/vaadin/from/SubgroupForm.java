@@ -2,12 +2,18 @@ package by.hurynovich.mus_overview.vaadin.from;
 
 import by.hurynovich.mus_overview.dto.GroupDTO;
 import by.hurynovich.mus_overview.dto.SubgroupDTO;
+import by.hurynovich.mus_overview.exception.GroupCreationException;
+import by.hurynovich.mus_overview.exception.GroupUpdatingException;
+import by.hurynovich.mus_overview.exception.SubgroupCreationException;
+import by.hurynovich.mus_overview.exception.SubgroupUpdatingException;
 import by.hurynovich.mus_overview.service.GroupService;
 import com.vaadin.annotations.PropertyId;
 import com.vaadin.data.Binder;
+import com.vaadin.data.ValidationException;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -37,20 +43,21 @@ public class SubgroupForm extends Panel {
                      final Runnable onSave, final Runnable onDiscard) {
         this.groupService = groupService;
         binder = new Binder<>(SubgroupDTO.class);
-        binder.setBean(subgroupDTO);
-        binder.bindInstanceFields(this);
         parentLayout = new VerticalLayout();
         groupField = new ComboBox<>("Group:");
         nameField = new TextField("Name");
+        nameField.focus();
         buttonsLayout = new HorizontalLayout();
         saveButton = new Button("Save");
         cancelButton = new Button("Cancel");
+        binder.bind(nameField, SubgroupDTO::getName, SubgroupDTO::setName);
+        binder.readBean(subgroupDTO);
         setContent(getParentLayout(subgroupDTO, onSave, onDiscard));
     }
 
     private VerticalLayout getParentLayout(final SubgroupDTO subgroupDTO,
                                            final Runnable onSave, final Runnable onDiscard) {
-        parentLayout.addComponents(getGroupField() , getNameField(),
+        parentLayout.addComponents(getNameField(), getGroupField(),
                 getButtonsLayout(subgroupDTO, onSave, onDiscard));
         return parentLayout;
     }
@@ -58,6 +65,7 @@ public class SubgroupForm extends Panel {
     private ComboBox getGroupField() {
         final List<GroupDTO> groups = groupService.getAllGroups();
         groupField.setItems(groups);
+        groupField.setItemCaptionGenerator(GroupDTO::getName);
         return groupField;
     }
 
@@ -72,6 +80,32 @@ public class SubgroupForm extends Panel {
     }
 
     private Button getSaveButton(final SubgroupDTO subgroupDTO, final Runnable onSave) {
+        saveButton.addClickListener(clickEvent -> {
+            try {
+                final GroupDTO selectedGroup = groupField.getValue();
+                if (selectedGroup != null) {
+                    final long groupId = selectedGroup.getId();
+                    subgroupDTO.setGroupId(groupId);
+                } else {
+                    throw new SubgroupCreationException("Property 'groupId' is a foreign key constraint " +
+                            "and, therefore, should be valid!", new IllegalArgumentException());
+                }
+                if (subgroupDTO.getId() == 0) {
+                    binder.writeBean(subgroupDTO);
+                    groupService.createSubgroup(subgroupDTO);
+                } else {
+                    binder.writeBean(subgroupDTO);
+                    groupService.updateSubgroup(subgroupDTO);
+                }
+                onSave.run();
+            } catch (ValidationException e) {
+                Notification.show("Warning!", "Form is not valid!",
+                        Notification.Type.WARNING_MESSAGE);
+            } catch (SubgroupCreationException | SubgroupUpdatingException e) {
+                Notification.show("Error!", "Subgroup saving failed!",
+                        Notification.Type.ERROR_MESSAGE);
+            }
+        });
         return saveButton;
     }
 

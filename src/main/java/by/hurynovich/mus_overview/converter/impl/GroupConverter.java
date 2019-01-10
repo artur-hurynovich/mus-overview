@@ -17,8 +17,12 @@ public class GroupConverter implements DTOEntityConverter<GroupDTO, GroupEntity>
 
     @Override
     public GroupEntity convertToEntity(final GroupDTO groupDto) {
-        final GroupEntity groupEntity = new GroupEntity();
-        BeanUtils.copyProperties(groupDto, groupEntity);
-        return groupEntity;
+        if (groupDto == null) {
+            return null;
+        } else {
+            final GroupEntity groupEntity = new GroupEntity();
+            BeanUtils.copyProperties(groupDto, groupEntity);
+            return groupEntity;
+        }
     }
 }

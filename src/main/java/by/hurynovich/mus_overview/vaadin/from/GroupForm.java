@@ -1,11 +1,15 @@
 package by.hurynovich.mus_overview.vaadin.from;
 
 import by.hurynovich.mus_overview.dto.GroupDTO;
+import by.hurynovich.mus_overview.exception.GroupCreationException;
+import by.hurynovich.mus_overview.exception.GroupUpdatingException;
 import by.hurynovich.mus_overview.service.GroupService;
 import com.vaadin.annotations.PropertyId;
 import com.vaadin.data.Binder;
+import com.vaadin.data.ValidationException;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -31,13 +35,14 @@ public class GroupForm extends Panel {
                      final Runnable onSave, final Runnable onDiscard) {
         this.groupService = groupService;
         binder = new Binder<>(GroupDTO.class);
-        binder.setBean(groupDTO);
-        binder.bindInstanceFields(this);
         parentLayout = new VerticalLayout();
         nameField = new TextField("Name:");
+        nameField.focus();
         buttonsLayout = new HorizontalLayout();
         saveButton = new Button("Save");
         cancelButton = new Button("Cancel");
+        binder.bind(nameField, GroupDTO::getName, GroupDTO::setName);
+        binder.readBean(groupDTO);
         setContent(getParentLayout(groupDTO, onSave, onDiscard));
     }
 
@@ -58,6 +63,24 @@ public class GroupForm extends Panel {
     }
 
     private Button getSaveButton(final GroupDTO groupDTO, final Runnable onSave) {
+        saveButton.addClickListener(clickEvent -> {
+            try {
+                if (groupDTO.getId() == 0) {
+                    binder.writeBean(groupDTO);
+                    groupService.createGroup(groupDTO);
+                } else {
+                    binder.writeBean(groupDTO);
+                    groupService.updateGroup(groupDTO);
+                }
+                onSave.run();
+            } catch (ValidationException e) {
+                Notification.show("Warning!", "Form is not valid!",
+                        Notification.Type.WARNING_MESSAGE);
+            } catch (GroupCreationException | GroupUpdatingException e) {
+                Notification.show("Error!", "Group saving failed!",
+                        Notification.Type.ERROR_MESSAGE);
+            }
+        });
         return saveButton;
     }
 

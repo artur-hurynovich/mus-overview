@@ -39,11 +39,13 @@ public class OverviewSubgroupField extends CustomField<Long> {
         value = aLong;
         if (aLong != null) {
             final SubgroupDTO subgroupDTO = groupService.getSubgroupById(aLong);
-            final long groupId = subgroupDTO.getGroupId();
-            final GroupDTO groupDTO = groupService.getGroupById(groupId);
-            groupField.setSelectedItem(groupDTO);
-            subgroupField.setSelectedItem(subgroupDTO);
-            subgroupField.setEnabled(true);
+            if (subgroupDTO != null) {
+                final long groupId = subgroupDTO.getGroupId();
+                final GroupDTO groupDTO = groupService.getGroupById(groupId);
+                groupField.setSelectedItem(groupDTO);
+                subgroupField.setSelectedItem(subgroupDTO);
+                subgroupField.setEnabled(true);
+            }
         }
     }
 
