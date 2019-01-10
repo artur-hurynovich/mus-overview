@@ -125,6 +125,11 @@ public class GroupView extends CustomComponent implements View {
     }
 
     private Button getEditGroupButton() {
+        editGroupButton.addClickListener(clickEvent -> {
+            final GroupDTO groupToUpdate = groupGrid.getSelectedItems().iterator().next();
+            final Window groupWindow = getGroupWindow(groupToUpdate);
+            UI.getCurrent().addWindow(groupWindow);
+        });
         editGroupButton.setEnabled(false);
         return editGroupButton;
     }
@@ -172,6 +177,11 @@ public class GroupView extends CustomComponent implements View {
     }
 
     private Button getEditSubgroupButton() {
+        editSubgroupButton.addClickListener(clickEvent -> {
+            final SubgroupDTO subgroupToUpdate = subgroupGrid.getSelectedItems().iterator().next();
+            final Window subgroupWindow = getSubgroupWindow(subgroupToUpdate);
+            UI.getCurrent().addWindow(subgroupWindow);
+        });
         editSubgroupButton.setEnabled(false);
         return editSubgroupButton;
     }

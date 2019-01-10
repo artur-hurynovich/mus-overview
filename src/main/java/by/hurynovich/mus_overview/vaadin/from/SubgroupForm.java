@@ -57,14 +57,18 @@ public class SubgroupForm extends Panel {
 
     private VerticalLayout getParentLayout(final SubgroupDTO subgroupDTO,
                                            final Runnable onSave, final Runnable onDiscard) {
-        parentLayout.addComponents(getNameField(), getGroupField(),
+        parentLayout.addComponents(getNameField(), getGroupField(subgroupDTO),
                 getButtonsLayout(subgroupDTO, onSave, onDiscard));
         return parentLayout;
     }
 
-    private ComboBox getGroupField() {
+    private ComboBox getGroupField(final SubgroupDTO subgroupDTO) {
         final List<GroupDTO> groups = groupService.getAllGroups();
         groupField.setItems(groups);
+        final long groupId = subgroupDTO.getGroupId();
+        if (groupId != 0) {
+            final GroupDTO selectedGroup;
+        }
         groupField.setItemCaptionGenerator(GroupDTO::getName);
         return groupField;
     }
