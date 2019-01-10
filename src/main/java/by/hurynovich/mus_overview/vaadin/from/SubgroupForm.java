@@ -26,7 +26,6 @@ public class SubgroupForm extends Panel {
 
     private final ComboBox<GroupDTO> groupField;
 
-    @PropertyId("name")
     private final TextField nameField;
 
     private final Binder<SubgroupDTO> binder;
@@ -67,7 +66,9 @@ public class SubgroupForm extends Panel {
         groupField.setItems(groups);
         final long groupId = subgroupDTO.getGroupId();
         if (groupId != 0) {
-            final GroupDTO selectedGroup;
+            final GroupDTO selectedGroup = groups.stream().
+                    filter(groupDTO -> groupDTO.getId() == groupId).iterator().next();
+            groupField.setSelectedItem(selectedGroup);
         }
         groupField.setItemCaptionGenerator(GroupDTO::getName);
         return groupField;
@@ -114,6 +115,7 @@ public class SubgroupForm extends Panel {
     }
 
     private Button getCancelButton(final Runnable onDiscard) {
+        cancelButton.addClickListener(clickEvent -> onDiscard.run());
         return cancelButton;
     }
 

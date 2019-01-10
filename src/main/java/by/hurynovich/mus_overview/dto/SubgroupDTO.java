@@ -1,11 +1,9 @@
 package by.hurynovich.mus_overview.dto;
 
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 public class SubgroupDTO {
     private long id;

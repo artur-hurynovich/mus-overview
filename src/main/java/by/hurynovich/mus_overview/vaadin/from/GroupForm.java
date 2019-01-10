@@ -85,6 +85,7 @@ public class GroupForm extends Panel {
     }
 
     private Button getCancelButton(final Runnable onDiscard) {
+        cancelButton.addClickListener(clickEvent -> onDiscard.run());
         return cancelButton;
     }
 

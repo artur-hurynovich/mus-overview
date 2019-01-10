@@ -126,4 +126,12 @@ public class GroupService {
         }
     }
 
+    public long getGroupsCount() {
+        return groupRepository.count();
+    }
+
+    public long getSubgroupsCount() {
+        return subgroupRepository.count();
+    }
+
 }
