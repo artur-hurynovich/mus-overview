@@ -50,22 +50,24 @@ public class OverviewTagField extends CustomField<List<TagDTO>> {
     }
 
     private List<HorizontalLayout> getChildLayouts() {
-        getValue().forEach(tagDTO -> {
-            final HorizontalLayout childLayout = new HorizontalLayout();
-            final TextField textField = new TextField();
-            textField.setValue(tagDTO.getName());
-            textField.addValueChangeListener(valueChangeEvent -> {
-                final String newTextFieldValue = textField.getValue();
-                final int index = getChildLayouts().indexOf(childLayout);
-                final List<TagDTO> tagsToUpdate = getValue();
-                tagsToUpdate.get(index).setName(newTextFieldValue);
-                setValue(tagsToUpdate);
+        if (value != null) {
+            getValue().forEach(tagDTO -> {
+                final HorizontalLayout childLayout = new HorizontalLayout();
+                final TextField textField = new TextField();
+                textField.setValue(tagDTO.getName());
+                textField.addValueChangeListener(valueChangeEvent -> {
+                    final String newTextFieldValue = textField.getValue();
+                    final int index = getChildLayouts().indexOf(childLayout);
+                    final List<TagDTO> tagsToUpdate = getValue();
+                    tagsToUpdate.get(index).setName(newTextFieldValue);
+                    setValue(tagsToUpdate);
+                });
+                final Button removeButton = new Button("Remove");
+                removeButton.addClickListener(getRemoveButtonClickListener(textField, childLayout));
+                childLayout.addComponents(textField, removeButton);
+                childLayouts.add(childLayout);
             });
-            final Button removeButton = new Button("Remove");
-            removeButton.addClickListener(getRemoveButtonClickListener(textField, childLayout));
-            childLayout.addComponents(textField, removeButton);
-            childLayouts.add(childLayout);
-        });
+        }
         return childLayouts;
     }
 

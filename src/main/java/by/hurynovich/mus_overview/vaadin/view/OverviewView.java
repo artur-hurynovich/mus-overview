@@ -1,16 +1,17 @@
-package by.hurynovich.mus_overview.vaadin.ui;
+package by.hurynovich.mus_overview.vaadin.view;
 
 import by.hurynovich.mus_overview.dto.OverviewDTO;
 import by.hurynovich.mus_overview.dto.TagDTO;
 import by.hurynovich.mus_overview.service.GroupService;
 import by.hurynovich.mus_overview.service.OverviewService;
 import by.hurynovich.mus_overview.vaadin.from.OverviewForm;
-import com.vaadin.annotations.Theme;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.UI;
@@ -21,9 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.ArrayList;
 import java.util.List;
 
-@SpringUI
-@Theme("valo")
-public class OverviewUI extends UI {
+@SpringView(name = OverviewView.NAME)
+public class OverviewView extends CustomComponent implements View {
+
+    public final static String NAME = "overview";
 
     private final OverviewService overviewService;
 
@@ -48,7 +50,7 @@ public class OverviewUI extends UI {
     private List<TagDTO> emptyTags;
 
     @Autowired
-    public OverviewUI(final OverviewService overviewService, final GroupService groupService) {
+    public OverviewView(final OverviewService overviewService, final GroupService groupService) {
         this.overviewService = overviewService;
         this.groupService = groupService;
         parentLayout = new VerticalLayout();
@@ -60,9 +62,9 @@ public class OverviewUI extends UI {
     }
 
     @Override
-    protected void init(final VaadinRequest vaadinRequest) {
+    public void enter(final ViewChangeListener.ViewChangeEvent event) {
         parentLayout.addComponents(getOverviewGrid(), getButtonsLayout());
-        setContent(parentLayout);
+        setCompositionRoot(parentLayout);
     }
 
     private Grid<OverviewDTO> getOverviewGrid() {
@@ -84,7 +86,7 @@ public class OverviewUI extends UI {
         addButton.addClickListener(clickEvent -> {
             final OverviewDTO newOverview = getEmptyOverview();
             final Window overviewWindow = getOverviewWindow(newOverview);
-            addWindow(overviewWindow);
+            UI.getCurrent().addWindow(overviewWindow);
         });
         return addButton;
     }
