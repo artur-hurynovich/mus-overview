@@ -1,6 +1,6 @@
 package by.hurynovich.mus_overview.entity;
 
-import by.hurynovich.mus_overview.role.UserRole;
+import by.hurynovich.mus_overview.enumeration.UserRole;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

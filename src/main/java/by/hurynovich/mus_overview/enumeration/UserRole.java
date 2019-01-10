@@ -1,4 +1,4 @@
-package by.hurynovich.mus_overview.role;
+package by.hurynovich.mus_overview.enumeration;
 
 public enum UserRole {
     ANONYMOUS,

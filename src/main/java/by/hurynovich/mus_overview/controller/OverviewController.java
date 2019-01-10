@@ -2,6 +2,8 @@ package by.hurynovich.mus_overview.controller;
 
 import by.hurynovich.mus_overview.dto.OverviewDTO;
 import by.hurynovich.mus_overview.exception.OverviewCreationException;
+import by.hurynovich.mus_overview.exception.OverviewDeletingException;
+import by.hurynovich.mus_overview.exception.OverviewUpdatingException;
 import by.hurynovich.mus_overview.service.OverviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,5 +48,15 @@ public class OverviewController {
     @GetMapping("/allByTags")
     public List<OverviewDTO> getAllOverviewsByTags(final @RequestParam String[] tag) {
         return overviewService.getAllOverviewsByTags(tag);
+    }
+
+    @PostMapping("/update")
+    public OverviewDTO updateOverview(final @RequestBody OverviewDTO overviewDTO) throws OverviewUpdatingException {
+        return overviewService.updateOverview(overviewDTO);
+    }
+
+    @PostMapping("/delete")
+    public void deleteOverview(final @RequestParam long id) throws OverviewDeletingException {
+        overviewService.deleteOverview(id);
     }
 }
