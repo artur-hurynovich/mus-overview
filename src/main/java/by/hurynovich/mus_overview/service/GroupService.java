@@ -130,8 +130,8 @@ public class GroupService {
         return groupRepository.count();
     }
 
-    public long getSubgroupsCount() {
-        return subgroupRepository.count();
+    public long getSubgroupsByGroupIdCount(final long groupId) {
+        return subgroupRepository.countByGroupId(groupId);
     }
 
 }

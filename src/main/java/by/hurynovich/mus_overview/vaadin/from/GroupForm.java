@@ -7,6 +7,7 @@ import by.hurynovich.mus_overview.service.GroupService;
 import com.vaadin.annotations.PropertyId;
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
@@ -81,11 +82,13 @@ public class GroupForm extends Panel {
                         Notification.Type.ERROR_MESSAGE);
             }
         });
+        saveButton.setClickShortcut(ShortcutAction.KeyCode.ENTER);
         return saveButton;
     }
 
     private Button getCancelButton(final Runnable onDiscard) {
         cancelButton.addClickListener(clickEvent -> onDiscard.run());
+        cancelButton.setClickShortcut(ShortcutAction.KeyCode.ESCAPE);
         return cancelButton;
     }
 

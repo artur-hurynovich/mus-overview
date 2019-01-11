@@ -21,7 +21,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
 import java.util.Set;
 
 @SpringView(name = GroupView.NAME)
@@ -103,7 +102,7 @@ public class GroupView extends CustomComponent implements View {
         groupGrid.getDataProvider().refreshAll();
         groupGrid.setSelectionMode(Grid.SelectionMode.MULTI);
         groupGrid.addSelectionListener(selectionEvent -> {
-            final int selectedItemsCount = groupGrid.getSelectedItems().size();
+            final int selectedItemsCount = groupGrid.getSelectionModel().getSelectedItems().size();
             if (selectedItemsCount == 0) {
                 editGroupButton.setEnabled(false);
                 removeGroupButton.setEnabled(false);
@@ -154,7 +153,7 @@ public class GroupView extends CustomComponent implements View {
 
     private Button getEditGroupButton() {
         editGroupButton.addClickListener(clickEvent -> {
-            final GroupDTO groupToUpdate = groupGrid.getSelectedItems().iterator().next();
+            final GroupDTO groupToUpdate = groupGrid.getSelectionModel().getSelectedItems().iterator().next();
             final Window groupWindow = getGroupWindow(groupToUpdate);
             UI.getCurrent().addWindow(groupWindow);
         });
@@ -165,7 +164,7 @@ public class GroupView extends CustomComponent implements View {
     private Button getRemoveGroupButton() {
         removeGroupButton.setEnabled(false);
         removeGroupButton.addClickListener(clickEvent -> {
-            final Set<GroupDTO> selectedGroups = groupGrid.getSelectedItems();
+            final Set<GroupDTO> selectedGroups = groupGrid.getSelectionModel().getSelectedItems();
             selectedGroups.forEach(groupDTO -> {
                 try {
                     groupService.deleteGroup(groupDTO.getId());
@@ -174,8 +173,9 @@ public class GroupView extends CustomComponent implements View {
                             Notification.Type.ERROR_MESSAGE);
                 }
             });
+            groupGrid.deselectAll();
             groupDataProvider.refreshAll();
-            subgroupDataProvider.refreshAll();
+            /*subgroupDataProvider.refreshAll();*/
         });
         return removeGroupButton;
     }
@@ -187,7 +187,7 @@ public class GroupView extends CustomComponent implements View {
         subgroupGrid.setCaption("Subgroups:");
         subgroupGrid.setSelectionMode(Grid.SelectionMode.MULTI);
         subgroupGrid.addSelectionListener(selectionEvent -> {
-            final int selectedItemsCount = subgroupGrid.getSelectedItems().size();
+            final int selectedItemsCount = subgroupGrid.getSelectionModel().getSelectedItems().size();
             if (selectedItemsCount == 0) {
                 editSubgroupButton.setEnabled(false);
                 removeSubgroupButton.setEnabled(false);
@@ -205,7 +205,7 @@ public class GroupView extends CustomComponent implements View {
     private CallbackDataProvider<SubgroupDTO, String> getSubgroupDataProvider(final long groupId) {
         subgroupDataProvider = new CallbackDataProvider<>(
                 query -> groupService.getAllSubgroupsByGroupId(groupId).stream(),
-                query -> (int) groupService.getSubgroupsCount()
+                query -> (int) groupService.getSubgroupsByGroupIdCount(groupId)
         );
         return subgroupDataProvider;
     }
@@ -227,7 +227,8 @@ public class GroupView extends CustomComponent implements View {
 
     private Button getEditSubgroupButton() {
         editSubgroupButton.addClickListener(clickEvent -> {
-            final SubgroupDTO subgroupToUpdate = subgroupGrid.getSelectedItems().iterator().next();
+            final SubgroupDTO subgroupToUpdate = subgroupGrid.getSelectionModel().getSelectedItems().
+                    iterator().next();
             final Window subgroupWindow = getSubgroupWindow(subgroupToUpdate);
             UI.getCurrent().addWindow(subgroupWindow);
         });
@@ -238,7 +239,7 @@ public class GroupView extends CustomComponent implements View {
     private Button getRemoveSubgroupButton() {
         removeSubgroupButton.setEnabled(false);
         removeSubgroupButton.addClickListener(clickEvent -> {
-            final Set<SubgroupDTO> selectedSubgroups = subgroupGrid.getSelectedItems();
+            final Set<SubgroupDTO> selectedSubgroups = subgroupGrid.getSelectionModel().getSelectedItems();
             selectedSubgroups.forEach(subgroupDTO -> {
                 try {
                     groupService.deleteSubgroup(subgroupDTO.getId());
@@ -247,6 +248,7 @@ public class GroupView extends CustomComponent implements View {
                             Notification.Type.ERROR_MESSAGE);
                 }
             });
+            subgroupGrid.deselectAll();
             subgroupDataProvider.refreshAll();
         });
         return removeSubgroupButton;
@@ -257,7 +259,10 @@ public class GroupView extends CustomComponent implements View {
         final GroupForm groupForm = new GroupForm(groupService, groupDTO, groupWindow::close,
                 groupWindow::close);
         groupWindow.setContent(groupForm);
-        groupWindow.addCloseListener(closeEvent -> groupDataProvider.refreshAll());
+        groupWindow.addCloseListener(closeEvent -> {
+            groupGrid.deselectAll();
+            groupDataProvider.refreshAll();
+        });
         return groupWindow;
     }
 
@@ -266,7 +271,13 @@ public class GroupView extends CustomComponent implements View {
         final SubgroupForm subgroupForm = new SubgroupForm(groupService, subgroupDTO,
                 subgroupWindow::close, subgroupWindow::close);
         subgroupWindow.setContent(subgroupForm);
-        subgroupWindow.addCloseListener(closeEvent -> subgroupDataProvider.refreshAll());
+        subgroupWindow.addCloseListener(closeEvent -> {
+            final GroupDTO selectedGroup = groupGrid.getSelectionModel().getSelectedItems().iterator().next();
+            groupGrid.deselectAll();
+            subgroupGrid.deselectAll();
+            subgroupDataProvider.refreshAll();
+            groupGrid.select(selectedGroup);
+        });
         return subgroupWindow;
     }
 
