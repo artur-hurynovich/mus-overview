@@ -2,6 +2,7 @@ package by.hurynovich.mus_overview.vaadin.view;
 
 import by.hurynovich.mus_overview.dto.OverviewDTO;
 import by.hurynovich.mus_overview.dto.TagDTO;
+import by.hurynovich.mus_overview.exception.OverviewDeletingException;
 import by.hurynovich.mus_overview.service.GroupService;
 import by.hurynovich.mus_overview.service.OverviewService;
 import by.hurynovich.mus_overview.service.TagService;
@@ -15,6 +16,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -22,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @SpringView(name = OverviewView.NAME)
 public class OverviewView extends CustomComponent implements View {
@@ -34,13 +37,7 @@ public class OverviewView extends CustomComponent implements View {
 
     private final TagService tagService;
 
-    private VerticalLayout parentLayout;
-
-    private CallbackDataProvider<OverviewDTO, String> dataProvider;
-
     private Grid<OverviewDTO> overviewGrid;
-
-    private HorizontalLayout buttonsLayout;
 
     private Button addButton;
 
@@ -64,52 +61,99 @@ public class OverviewView extends CustomComponent implements View {
         this.overviewService = overviewService;
         this.groupService = groupService;
         this.tagService = tagService;
-        parentLayout = new VerticalLayout();
-        overviewGrid = new Grid<>(OverviewDTO.class);
-        buttonsLayout = new HorizontalLayout();
-        addButton = new Button("Add");
-        editButton = new Button("Edit");
-        removeButton = new Button("Remove");
     }
 
     @Override
     public void enter(final ViewChangeListener.ViewChangeEvent event) {
+        setCompositionRoot(getParentLayout());
+    }
+
+    private VerticalLayout getParentLayout() {
+        final VerticalLayout parentLayout = new VerticalLayout();
         parentLayout.addComponents(getOverviewGrid(), getButtonsLayout());
-        setCompositionRoot(parentLayout);
+        return parentLayout;
     }
 
     private Grid<OverviewDTO> getOverviewGrid() {
-        dataProvider = new CallbackDataProvider<>(
-                query -> overviewService.getAllOverviews().stream(),
-                query -> (int) overviewService.overviewCount()
-        );
-        overviewGrid.setDataProvider(dataProvider);
-        overviewGrid.setColumnOrder("title", "text", "date", "tags");
-        overviewGrid.getColumn("tags").setRenderer(new TagRenderer());
-        overviewGrid.removeColumn("id");
-        overviewGrid.removeColumn("subgroupId");
-        overviewGrid.setSizeFull();
+        if (overviewGrid == null) {
+            overviewGrid = new Grid<>(OverviewDTO.class);
+            overviewGrid.setDataProvider(getDataProvider());
+            overviewGrid.setSelectionMode(Grid.SelectionMode.MULTI);
+            overviewGrid.addSelectionListener(selectionEvent -> {
+                final Set<OverviewDTO> selectedOverviewDTOSet = overviewGrid.getSelectionModel().getSelectedItems();
+                if (selectedOverviewDTOSet.size() == 0) {
+                    getEditButton().setEnabled(false);
+                    getRemoveButton().setEnabled(false);
+                } else if (selectedOverviewDTOSet.size() == 1) {
+                    getEditButton().setEnabled(true);
+                    getRemoveButton().setEnabled(true);
+                } else {
+                    getEditButton().setEnabled(false);
+                    getRemoveButton().setEnabled(true);
+                }
+            });
+            overviewGrid.setColumnOrder("title", "text", "date", "tags");
+            overviewGrid.getColumn("tags").setRenderer(new TagRenderer());
+            overviewGrid.removeColumn("id");
+            overviewGrid.removeColumn("subgroupId");
+            overviewGrid.setSizeFull();
+        }
         return overviewGrid;
     }
 
+    private CallbackDataProvider<OverviewDTO, String> getDataProvider() {
+        return new CallbackDataProvider<>(
+                query -> overviewService.getAllOverviews().stream(),
+                query -> (int) overviewService.overviewCount()
+        );
+    }
+
     private HorizontalLayout getButtonsLayout() {
+        final HorizontalLayout buttonsLayout = new HorizontalLayout();
         buttonsLayout.addComponents(getAddButton(), getEditButton(), getRemoveButton());
         return buttonsLayout;
     }
 
     private Button getAddButton() {
-        addButton.addClickListener(clickEvent -> {
-            final Window overviewWindow = getOverviewWindow(EMPTY_OVERVIEW);
-            UI.getCurrent().addWindow(overviewWindow);
-        });
+        if (addButton == null) {
+            addButton = new Button("Add");
+            addButton.addClickListener(clickEvent ->
+                    UI.getCurrent().addWindow(getOverviewWindow(EMPTY_OVERVIEW)));
+        }
         return addButton;
     }
 
     private Button getEditButton() {
+        if (editButton == null) {
+            editButton = new Button("Edit");
+            editButton.addClickListener(clickEvent -> {
+                final OverviewDTO selectedOverviewDTO =
+                        overviewGrid.getSelectionModel().getSelectedItems().iterator().next();
+                UI.getCurrent().addWindow(getOverviewWindow(selectedOverviewDTO));
+            });
+            editButton.setEnabled(false);
+        }
         return editButton;
     }
 
     private Button getRemoveButton() {
+        if (removeButton == null) {
+            removeButton = new Button("Remove");
+            removeButton.addClickListener(clickEvent -> {
+                final Set<OverviewDTO> selectedOverviewDTOSet =
+                        overviewGrid.getSelectionModel().getSelectedItems();
+                selectedOverviewDTOSet.forEach(overviewDTO -> {
+                    try {
+                        overviewService.deleteOverview(overviewDTO.getId());
+                    } catch (OverviewDeletingException e) {
+                        Notification.show("Error!", "Overview(s) deleting failed!",
+                                Notification.Type.ERROR_MESSAGE);
+                    }
+                });
+                overviewGrid.getDataProvider().refreshAll();
+            });
+            removeButton.setEnabled(false);
+        }
         return removeButton;
     }
 
