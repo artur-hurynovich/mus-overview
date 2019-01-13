@@ -6,6 +6,7 @@ import by.hurynovich.mus_overview.service.GroupService;
 import by.hurynovich.mus_overview.service.OverviewService;
 import by.hurynovich.mus_overview.service.TagService;
 import by.hurynovich.mus_overview.vaadin.form.OverviewForm;
+import by.hurynovich.mus_overview.vaadin.renderer.TagRenderer;
 import com.vaadin.data.provider.CallbackDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -84,6 +85,7 @@ public class OverviewView extends CustomComponent implements View {
         );
         overviewGrid.setDataProvider(dataProvider);
         overviewGrid.setColumnOrder("title", "text", "date", "tags");
+        overviewGrid.getColumn("tags").setRenderer(new TagRenderer());
         overviewGrid.removeColumn("id");
         overviewGrid.removeColumn("subgroupId");
         overviewGrid.setSizeFull();
