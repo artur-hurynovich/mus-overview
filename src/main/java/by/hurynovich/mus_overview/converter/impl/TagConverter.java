@@ -12,12 +12,16 @@ import java.util.List;
 public class TagConverter implements DTOEntityConverter<TagDTO, TagEntity> {
     @Override
     public TagDTO convertToDTO(final TagEntity tagEntity) {
-        final TagDTO tagDto = new TagDTO();
-        final long id = tagEntity.getId();
-        final String name = tagEntity.getName();
-        tagDto.setId(id);
-        tagDto.setName(name);
-        return tagDto;
+        if (tagEntity != null) {
+            final TagDTO tagDto = new TagDTO();
+            final long id = tagEntity.getId();
+            final String name = tagEntity.getName();
+            tagDto.setId(id);
+            tagDto.setName(name);
+            return tagDto;
+        } else {
+            return null;
+        }
     }
 
     @Override

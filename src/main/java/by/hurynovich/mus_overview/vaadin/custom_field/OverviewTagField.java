@@ -2,11 +2,15 @@ package by.hurynovich.mus_overview.vaadin.custom_field;
 
 import by.hurynovich.mus_overview.dto.TagDTO;
 import by.hurynovich.mus_overview.service.TagService;
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.RadioButtonGroup;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +26,24 @@ public class OverviewTagField extends CustomField<List<TagDTO>> {
 
     private List<HorizontalLayout> childLayouts;
 
-    private Button addTagButton;
+    private VerticalLayout addTagLayout;
+
+    private ComboBox<TagDTO> existingTagsComboBox;
+
+    private ListDataProvider<TagDTO> existingTagsDataProvider;
+
+    private List<TagDTO> tagDTOList;
+
+    private HorizontalLayout newTagLayout;
+
+    private final static String RADIO_EXISTING;
+
+    private final static String RADIO_NEW;
+
+    static {
+        RADIO_EXISTING = "Add an existing tag";
+        RADIO_NEW = "Add a new tag";
+    }
 
     private List<TagDTO> value;
 
@@ -50,7 +71,7 @@ public class OverviewTagField extends CustomField<List<TagDTO>> {
         if (parentLayout == null) {
             parentLayout = new VerticalLayout();
             getChildLayouts().forEach(parentLayout::addComponent);
-            parentLayout.addComponent(getAddTagButton());
+            parentLayout.addComponent(getAddTagLayout());
         }
         return parentLayout;
     }
@@ -59,33 +80,88 @@ public class OverviewTagField extends CustomField<List<TagDTO>> {
         if (childLayouts == null) {
             childLayouts = new ArrayList<>();
             if (value != null) {
-                getValue().forEach(tagDTO -> {
-                    final HorizontalLayout childLayout = new HorizontalLayout();
-                    final Label tagName = new Label();
-                    tagName.setValue(tagDTO.getName());
-                    /*textField.addValueChangeListener(valueChangeEvent -> {
-                        final String newTextFieldValue = textField.getValue();
-                        final int index = getChildLayouts().indexOf(childLayout);
-                        final List<TagDTO> tagsToUpdate = getValue();
-                        tagsToUpdate.get(index).setName(newTextFieldValue);
-                        setValue(tagsToUpdate);
-                    });*/
-                    final Button removeButton = new Button("Remove");
-                    removeButton.addClickListener(getRemoveButtonClickListener(tagName, childLayout));
-                    childLayout.addComponents(tagName, removeButton);
-                    childLayouts.add(childLayout);
-                });
+                getValue().forEach(tagDTO -> childLayouts.add(getChildLayout(tagDTO)));
             }
         }
         return childLayouts;
     }
 
-    private Button getAddTagButton() {
-        if (addTagButton == null) {
-            addTagButton = new Button("Add Tag");
-            addTagButton.addClickListener(getAddTagButtonClickListener());
+    private HorizontalLayout getChildLayout(final TagDTO tagDTO) {
+        final HorizontalLayout childLayout = new HorizontalLayout();
+        final Label tagName = new Label();
+        tagName.setValue(tagDTO.getName());
+        final Button removeButton = new Button("Remove");
+        removeButton.addClickListener(getRemoveButtonClickListener(tagName, childLayout));
+        childLayout.addComponents(tagName, removeButton);
+        return childLayout;
+    }
+
+    private VerticalLayout getAddTagLayout() {
+        if (addTagLayout == null) {
+            addTagLayout = new VerticalLayout();
+            final RadioButtonGroup<String> radioButtonGroup = new RadioButtonGroup<>("Add a Tag:");
+            radioButtonGroup.setItems(RADIO_EXISTING, RADIO_NEW);
+            radioButtonGroup.setSelectedItem(RADIO_EXISTING);
+            radioButtonGroup.addSelectionListener(singleSelectionEvent -> {
+                if (singleSelectionEvent.getValue().equals(RADIO_EXISTING)) {
+                    getExistingTagsComboBox().setVisible(true);
+                    getNewTagLayout().setVisible(false);
+                } else {
+                    getExistingTagsComboBox().setVisible(false);
+                    getNewTagLayout().setVisible(true);
+                }
+            });
+            addTagLayout.addComponents(radioButtonGroup, getExistingTagsComboBox(), getNewTagLayout());
         }
-        return addTagButton;
+        return addTagLayout;
+    }
+
+    private ComboBox<TagDTO> getExistingTagsComboBox() {
+        if (existingTagsComboBox == null) {
+            existingTagsComboBox = new ComboBox<>();
+            existingTagsComboBox.setDataProvider(getExistingTagsDataProvider());
+            existingTagsComboBox.getDataProvider().refreshAll();
+            existingTagsComboBox.setItemCaptionGenerator(TagDTO::getName);
+            existingTagsComboBox.addValueChangeListener(valueChangeEvent -> {
+                final TagDTO selectedTag = valueChangeEvent.getValue();
+                if (selectedTag != null) {
+                    getChildLayouts().add(getChildLayout(selectedTag));
+                    tagDTOList.remove(selectedTag);
+                    addTag(selectedTag);
+                    existingTagsDataProvider = DataProvider.ofCollection(tagDTOList);
+                    existingTagsComboBox.setDataProvider(existingTagsDataProvider);
+                    existingTagsComboBox.getDataProvider().refreshAll();
+                }
+                existingTagsComboBox.setSelectedItem(null);
+            });
+        }
+        return existingTagsComboBox;
+    }
+
+    private ListDataProvider<TagDTO> getExistingTagsDataProvider() {
+        if (existingTagsDataProvider == null) {
+            tagDTOList = tagService.getAllTags();
+            tagDTOList.removeAll(getValue());
+            existingTagsDataProvider = DataProvider.ofCollection(tagDTOList);
+        }
+        return existingTagsDataProvider;
+    }
+
+    private HorizontalLayout getNewTagLayout() {
+        if (newTagLayout == null) {
+            newTagLayout = new HorizontalLayout();
+            final TextField textField = new TextField();
+            final Button addTagButton = new Button("Add Tag");
+            addTagButton.addClickListener(clickEvent -> {
+                final TagDTO newTag = new TagDTO();
+                newTag.setName(textField.getValue());
+                addTag(newTag);
+                textField.clear();
+            });
+            newTagLayout.addComponents(textField, addTagButton);
+            newTagLayout.setVisible(false);
+        }
+        return newTagLayout;
     }
 
     private Button.ClickListener getRemoveButtonClickListener(final Label tagName,
@@ -97,36 +173,23 @@ public class OverviewTagField extends CustomField<List<TagDTO>> {
             setValue(tags);
             getChildLayouts().remove(childLayout);
             parentLayout.removeComponent(childLayout);
+            TagDTO tagDTO = tagService.getTagByName(tagToDeleteName);
+            if (tagDTO != null) {
+                tagDTOList.add(tagDTO);
+                existingTagsDataProvider = DataProvider.ofCollection(tagDTOList);
+                getExistingTagsComboBox().getDataProvider().refreshAll();
+            }
         };
     }
 
-    private Button.ClickListener getAddTagButtonClickListener() {
-        return clickEvent -> {
-            final List<TagDTO> tags = getValue();
-            final HorizontalLayout childLayout = new HorizontalLayout();
-            final Label tagName = new Label();
-            /*textField.addValueChangeListener(getTextFieldValueChangeListener(textField, childLayout));*/
-            final Button removeButton = new Button("Remove");
-            removeButton.addClickListener(getRemoveButtonClickListener(tagName, childLayout));
-            childLayout.addComponents(tagName, removeButton);
-            childLayouts.add(childLayout);
-            tags.add(new TagDTO());
-            setValue(tags);
-            parentLayout.removeComponent(addTagButton);
-            parentLayout.addComponent(childLayout);
-            parentLayout.addComponent(addTagButton);
-        };
+    private void addTag(final TagDTO tagDTO) {
+        final List<TagDTO> tags = getValue();
+        final HorizontalLayout childLayout = getChildLayout(tagDTO);
+        tags.add(tagDTO);
+        doSetValue(tags);
+        parentLayout.removeComponent(getAddTagLayout());
+        parentLayout.addComponent(childLayout);
+        parentLayout.addComponent(getAddTagLayout());
     }
-
-    /*private ValueChangeListener<String> getTextFieldValueChangeListener(final TextField textField,
-                                                                final HorizontalLayout childLayout) {
-        return valueChangeEvent -> {
-            final String newTagName = textField.getValue();
-            final int index = getChildLayouts().indexOf(childLayout);
-            final List<TagDTO> tagsToUpdate = getValue();
-            tagsToUpdate.get(index).setName(newTagName);
-            setValue(tagsToUpdate);
-        };
-    }*/
 
 }

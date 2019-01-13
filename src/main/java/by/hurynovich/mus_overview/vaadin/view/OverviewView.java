@@ -5,7 +5,7 @@ import by.hurynovich.mus_overview.dto.TagDTO;
 import by.hurynovich.mus_overview.service.GroupService;
 import by.hurynovich.mus_overview.service.OverviewService;
 import by.hurynovich.mus_overview.service.TagService;
-import by.hurynovich.mus_overview.vaadin.from.OverviewForm;
+import by.hurynovich.mus_overview.vaadin.form.OverviewForm;
 import com.vaadin.data.provider.CallbackDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -114,7 +114,7 @@ public class OverviewView extends CustomComponent implements View {
     private Window getOverviewWindow(final OverviewDTO overviewDTO) {
         final Window overviewWindow = new Window("New Overview");
         final OverviewForm overviewForm = new OverviewForm(overviewService, groupService, tagService,
-                overviewDTO, () -> {}, () -> {});
+                overviewDTO, overviewWindow::close, overviewWindow::close);
         overviewWindow.addCloseListener(closeEvent -> overviewGrid.getDataProvider().refreshAll());
         overviewWindow.setContent(overviewForm);
         return overviewWindow;

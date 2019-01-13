@@ -1,13 +1,10 @@
-package by.hurynovich.mus_overview.vaadin.from;
+package by.hurynovich.mus_overview.vaadin.form;
 
 import by.hurynovich.mus_overview.dto.GroupDTO;
 import by.hurynovich.mus_overview.dto.SubgroupDTO;
-import by.hurynovich.mus_overview.exception.GroupCreationException;
-import by.hurynovich.mus_overview.exception.GroupUpdatingException;
 import by.hurynovich.mus_overview.exception.SubgroupCreationException;
 import by.hurynovich.mus_overview.exception.SubgroupUpdatingException;
 import by.hurynovich.mus_overview.service.GroupService;
-import com.vaadin.annotations.PropertyId;
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
 import com.vaadin.event.ShortcutAction;

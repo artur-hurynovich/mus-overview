@@ -25,4 +25,8 @@ public class TagService {
         return tagConverter.convertToDTO(tagRepository.findAll());
     }
 
+    public TagDTO getTagByName(final String tagName) {
+        return tagConverter.convertToDTO(tagRepository.findByName(tagName));
+    }
+
 }

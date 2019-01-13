@@ -1,4 +1,4 @@
-package by.hurynovich.mus_overview.vaadin.from;
+package by.hurynovich.mus_overview.vaadin.form;
 
 import by.hurynovich.mus_overview.dto.GroupDTO;
 import by.hurynovich.mus_overview.exception.GroupCreationException;
@@ -88,7 +88,7 @@ public class GroupForm extends Panel {
 
     private Button getCancelButton(final Runnable onDiscard) {
         cancelButton.addClickListener(clickEvent -> onDiscard.run());
-        cancelButton.setClickShortcut(ShortcutAction.KeyCode.ESCAPE);
+
         return cancelButton;
     }
 

@@ -78,11 +78,13 @@ public class OverviewSubgroupField extends CustomField<Long> {
                 subgroupField.setEnabled(false);
             }
         });
+        groupField.setItemCaptionGenerator(GroupDTO::getName);
         return groupField;
     }
 
     private ComboBox<SubgroupDTO> getSubgroupField() {
         subgroupField.setEnabled(false);
+        subgroupField.setItemCaptionGenerator(SubgroupDTO::getName);
         return subgroupField;
     }
 }

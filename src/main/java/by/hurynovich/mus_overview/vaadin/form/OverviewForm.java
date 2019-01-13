@@ -1,4 +1,4 @@
-package by.hurynovich.mus_overview.vaadin.from;
+package by.hurynovich.mus_overview.vaadin.form;
 
 import by.hurynovich.mus_overview.dto.OverviewDTO;
 import by.hurynovich.mus_overview.exception.OverviewCreationException;
@@ -9,9 +9,9 @@ import by.hurynovich.mus_overview.service.TagService;
 import by.hurynovich.mus_overview.vaadin.custom_field.OverviewDateField;
 import by.hurynovich.mus_overview.vaadin.custom_field.OverviewSubgroupField;
 import by.hurynovich.mus_overview.vaadin.custom_field.OverviewTagField;
-import com.vaadin.annotations.PropertyId;
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
@@ -109,12 +109,10 @@ public class OverviewForm extends Panel {
             try {
                 if (overviewDTO.getId() == 0) {
                     binder.writeBean(overviewDTO);
-                    final OverviewDTO overviewToSave = binder.getBean();
-                    overviewService.createOverview(overviewToSave);
+                    overviewService.createOverview(overviewDTO);
                 } else {
                     binder.writeBean(overviewDTO);
-                    final OverviewDTO overviewToSave = binder.getBean();
-                    overviewService.updateOverview(overviewToSave);
+                    overviewService.updateOverview(overviewDTO);
                 }
                 onSave.run();
             } catch (ValidationException e) {
@@ -125,10 +123,13 @@ public class OverviewForm extends Panel {
                         Notification.Type.ERROR_MESSAGE);
             }
         });
+        saveButton.setClickShortcut(ShortcutAction.KeyCode.ENTER);
         return saveButton;
     }
 
     private Button getCancelButton(final Runnable onDiscard) {
+        cancelButton.addClickListener(clickEvent -> onDiscard.run());
+        cancelButton.setClickShortcut(ShortcutAction.KeyCode.ESCAPE);
         return cancelButton;
     }
 
