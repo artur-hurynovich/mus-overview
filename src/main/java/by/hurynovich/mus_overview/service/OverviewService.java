@@ -148,4 +148,9 @@ public class OverviewService {
             throw new OverviewDeletingException(exceptionMessage);
         }
     }
+
+    public long overviewCount() {
+        return overviewRepository.count();
+    }
+
 }

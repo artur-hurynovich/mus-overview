@@ -4,9 +4,9 @@ import by.hurynovich.mus_overview.dto.OverviewDTO;
 import by.hurynovich.mus_overview.dto.TagDTO;
 import by.hurynovich.mus_overview.service.GroupService;
 import by.hurynovich.mus_overview.service.OverviewService;
+import by.hurynovich.mus_overview.service.TagService;
 import by.hurynovich.mus_overview.vaadin.from.OverviewForm;
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.data.provider.CallbackDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
@@ -31,28 +31,38 @@ public class OverviewView extends CustomComponent implements View {
 
     private final GroupService groupService;
 
-    private final VerticalLayout parentLayout;
+    private final TagService tagService;
 
-    private ListDataProvider<OverviewDTO> dataProvider;
+    private VerticalLayout parentLayout;
 
-    private final Grid<OverviewDTO> overviewGrid;
+    private CallbackDataProvider<OverviewDTO, String> dataProvider;
 
-    private final HorizontalLayout buttonsLayout;
+    private Grid<OverviewDTO> overviewGrid;
 
-    private final Button addButton;
+    private HorizontalLayout buttonsLayout;
 
-    private final Button editButton;
+    private Button addButton;
 
-    private final Button removeButton;
+    private Button editButton;
 
-    private OverviewDTO emptyOverview;
+    private Button removeButton;
 
-    private List<TagDTO> emptyTags;
+    private final static OverviewDTO EMPTY_OVERVIEW;
+
+    private final static List<TagDTO> EMPTY_TAGS;
+
+    static {
+        EMPTY_OVERVIEW = new OverviewDTO();
+        EMPTY_TAGS = new ArrayList<>();
+        EMPTY_OVERVIEW.setTags(EMPTY_TAGS);
+    }
 
     @Autowired
-    public OverviewView(final OverviewService overviewService, final GroupService groupService) {
+    public OverviewView(final OverviewService overviewService, final GroupService groupService,
+                        final TagService tagService) {
         this.overviewService = overviewService;
         this.groupService = groupService;
+        this.tagService = tagService;
         parentLayout = new VerticalLayout();
         overviewGrid = new Grid<>(OverviewDTO.class);
         buttonsLayout = new HorizontalLayout();
@@ -68,12 +78,15 @@ public class OverviewView extends CustomComponent implements View {
     }
 
     private Grid<OverviewDTO> getOverviewGrid() {
-        final List<OverviewDTO> allOverviews = overviewService.getAllOverviews();
-        dataProvider = DataProvider.ofCollection(allOverviews);
+        dataProvider = new CallbackDataProvider<>(
+                query -> overviewService.getAllOverviews().stream(),
+                query -> (int) overviewService.overviewCount()
+        );
         overviewGrid.setDataProvider(dataProvider);
         overviewGrid.setColumnOrder("title", "text", "date", "tags");
         overviewGrid.removeColumn("id");
         overviewGrid.removeColumn("subgroupId");
+        overviewGrid.setSizeFull();
         return overviewGrid;
     }
 
@@ -84,8 +97,7 @@ public class OverviewView extends CustomComponent implements View {
 
     private Button getAddButton() {
         addButton.addClickListener(clickEvent -> {
-            final OverviewDTO newOverview = getEmptyOverview();
-            final Window overviewWindow = getOverviewWindow(newOverview);
+            final Window overviewWindow = getOverviewWindow(EMPTY_OVERVIEW);
             UI.getCurrent().addWindow(overviewWindow);
         });
         return addButton;
@@ -99,21 +111,10 @@ public class OverviewView extends CustomComponent implements View {
         return removeButton;
     }
 
-    private OverviewDTO getEmptyOverview() {
-        if (emptyOverview == null) {
-            emptyOverview = new OverviewDTO();
-        }
-        if (emptyTags == null) {
-            emptyTags = new ArrayList<>();
-        }
-        emptyOverview.setTags(emptyTags);
-        return emptyOverview;
-    }
-
     private Window getOverviewWindow(final OverviewDTO overviewDTO) {
         final Window overviewWindow = new Window("New Overview");
-        final OverviewForm overviewForm = new OverviewForm(overviewService, groupService, overviewDTO
-                , () -> {}, () -> {});
+        final OverviewForm overviewForm = new OverviewForm(overviewService, groupService, tagService,
+                overviewDTO, () -> {}, () -> {});
         overviewWindow.addCloseListener(closeEvent -> overviewGrid.getDataProvider().refreshAll());
         overviewWindow.setContent(overviewForm);
         return overviewWindow;

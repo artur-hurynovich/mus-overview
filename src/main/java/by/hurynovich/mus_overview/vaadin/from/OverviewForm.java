@@ -5,6 +5,7 @@ import by.hurynovich.mus_overview.exception.OverviewCreationException;
 import by.hurynovich.mus_overview.exception.OverviewUpdatingException;
 import by.hurynovich.mus_overview.service.GroupService;
 import by.hurynovich.mus_overview.service.OverviewService;
+import by.hurynovich.mus_overview.service.TagService;
 import by.hurynovich.mus_overview.vaadin.custom_field.OverviewDateField;
 import by.hurynovich.mus_overview.vaadin.custom_field.OverviewSubgroupField;
 import by.hurynovich.mus_overview.vaadin.custom_field.OverviewTagField;
@@ -18,6 +19,7 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class OverviewForm extends Panel {
 
@@ -43,19 +45,19 @@ public class OverviewForm extends Panel {
 
     private final OverviewService overviewService;
 
-    private final GroupService groupService;
-
+    @Autowired
     public OverviewForm(final OverviewService overviewService, final GroupService groupService,
-                        final OverviewDTO overviewDTO, final Runnable onSave, final Runnable onDiscard) {
+                        final TagService tagService, final OverviewDTO overviewDTO,
+                        final Runnable onSave, final Runnable onDiscard) {
         this.overviewService = overviewService;
-        this.groupService = groupService;
         binder = new Binder<>(OverviewDTO.class);
         parentLayout = new VerticalLayout();
         titleField = new TextField("Title:");
         textField = new TextArea("Text");
         dateField = new OverviewDateField("Date:");
         subgroupField = new OverviewSubgroupField(groupService);
-        tagField = new OverviewTagField("Tags:");
+        tagField = new OverviewTagField(tagService);
+        tagField.setCaption("Tags:");
         buttonsLayout = new HorizontalLayout();
         saveButton = new Button("Save");
         cancelButton = new Button("Cancel");
