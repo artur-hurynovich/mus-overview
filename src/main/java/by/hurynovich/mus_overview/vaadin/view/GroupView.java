@@ -168,6 +168,8 @@ public class GroupView extends CustomComponent implements View {
             selectedGroups.forEach(groupDTO -> {
                 try {
                     groupService.deleteGroup(groupDTO.getId());
+                    Notification.show("Group \'" + groupDTO.getName() + "\' deleted!",
+                            Notification.Type.ASSISTIVE_NOTIFICATION);
                 } catch (GroupDeletingException e) {
                     Notification.show("Error!", "Group deleting failed!",
                             Notification.Type.ERROR_MESSAGE);
@@ -241,6 +243,8 @@ public class GroupView extends CustomComponent implements View {
             selectedSubgroups.forEach(subgroupDTO -> {
                 try {
                     groupService.deleteSubgroup(subgroupDTO.getId());
+                    Notification.show("Subgroup \'" + subgroupDTO.getName() + "\' deleted!",
+                            Notification.Type.ASSISTIVE_NOTIFICATION);
                 } catch (SubgroupDeletingException e) {
                     Notification.show("Error!", "Subgroup deleting failed!",
                             Notification.Type.ERROR_MESSAGE);
@@ -253,25 +257,25 @@ public class GroupView extends CustomComponent implements View {
 
     private Window getGroupWindow(final GroupDTO groupDTO) {
         final Window groupWindow = new Window("New Group");
-        final GroupForm groupForm = new GroupForm(groupService, groupDTO, () -> {
+        final GroupForm groupForm = new GroupForm(groupService, groupDTO, groupWindow::close,
+                groupWindow::close);
+        groupWindow.addCloseListener(closeEvent -> {
             groupGrid.deselectAll();
             groupDataProvider.refreshAll();
-            groupWindow.close();
-        },
-                groupWindow::close);
+        });
         groupWindow.setContent(groupForm);
         return groupWindow;
     }
 
     private Window getSubgroupWindow(final SubgroupDTO subgroupDTO) {
         final Window subgroupWindow = new Window("New Subgroup");
-        final SubgroupForm subgroupForm = new SubgroupForm(groupService, subgroupDTO, () -> {
+        final SubgroupForm subgroupForm = new SubgroupForm(groupService, subgroupDTO, subgroupWindow::close,
+                subgroupWindow::close);
+        subgroupWindow.addCloseListener(closeEvent -> {
             subgroupGrid.deselectAll();
             groupGrid.deselectAll();
             subgroupDataProvider.refreshAll();
-            subgroupWindow.close();
-        },
-                subgroupWindow::close);
+        });
         subgroupWindow.setContent(subgroupForm);
         return subgroupWindow;
     }

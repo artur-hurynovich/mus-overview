@@ -74,8 +74,12 @@ public class GroupForm extends Panel {
                 if (binder.writeBeanIfValid(groupDTO)) {
                     if (groupDTO.getId() == 0) {
                         groupService.createGroup(groupDTO);
+                        Notification.show("Group \'" + groupDTO.getName() + "\' created!",
+                                Notification.Type.ASSISTIVE_NOTIFICATION);
                     } else {
                         groupService.updateGroup(groupDTO);
+                        Notification.show("Group updated!",
+                                Notification.Type.ASSISTIVE_NOTIFICATION);
                     }
                     onSave.run();
                 } else {

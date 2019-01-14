@@ -255,6 +255,8 @@ public class OverviewView extends CustomComponent implements View {
                 selectedOverviewDTOSet.forEach(overviewDTO -> {
                     try {
                         overviewService.deleteOverview(overviewDTO.getId());
+                        Notification.show("Overview \'" + overviewDTO.getTitle() + "\' deleted!",
+                                Notification.Type.ASSISTIVE_NOTIFICATION);
                     } catch (OverviewDeletingException e) {
                         Notification.show("Error!", "Overview(s) deleting failed!",
                                 Notification.Type.ERROR_MESSAGE);
@@ -270,12 +272,11 @@ public class OverviewView extends CustomComponent implements View {
     private Window getOverviewWindow(final OverviewDTO overviewDTO) {
         final Window overviewWindow = new Window("New Overview");
         final OverviewForm overviewForm = new OverviewForm(overviewService, groupService, tagService,
-                overviewDTO, () -> {
+                overviewDTO, overviewWindow::close, overviewWindow::close);
+        overviewWindow.addCloseListener(closeEvent -> {
             overviewGrid.deselectAll();
             overviewGrid.getDataProvider().refreshAll();
-            overviewWindow.close();
-        },
-                overviewWindow::close);
+        });
         overviewWindow.setContent(overviewForm);
         return overviewWindow;
     }

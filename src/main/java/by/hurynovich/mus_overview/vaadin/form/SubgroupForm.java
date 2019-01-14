@@ -85,8 +85,12 @@ public class SubgroupForm extends Panel {
                 if (binder.writeBeanIfValid(subgroupDTO)) {
                     if (subgroupDTO.getId() == 0) {
                         groupService.createSubgroup(subgroupDTO);
+                        Notification.show("Subgroup \'" + subgroupDTO.getName() + "\' created!",
+                                Notification.Type.ASSISTIVE_NOTIFICATION);
                     } else {
                         groupService.updateSubgroup(subgroupDTO);
+                        Notification.show("Subgroup updated!",
+                                Notification.Type.ASSISTIVE_NOTIFICATION);
                     }
                     onSave.run();
                 } else {

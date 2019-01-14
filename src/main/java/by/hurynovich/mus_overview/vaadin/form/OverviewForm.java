@@ -125,8 +125,12 @@ public class OverviewForm extends Panel {
                 if (binder.writeBeanIfValid(overviewDTO)) {
                     if (overviewDTO.getId() == 0) {
                         overviewService.createOverview(overviewDTO);
+                        Notification.show("Overview \'" + overviewDTO.getTitle() + "\' created!",
+                                Notification.Type.ASSISTIVE_NOTIFICATION);
                     } else {
                         overviewService.updateOverview(overviewDTO);
+                        Notification.show("Overview updated!",
+                                Notification.Type.ASSISTIVE_NOTIFICATION);
                     }
                     onSave.run();
                 } else {
