@@ -55,7 +55,9 @@ public class OverviewView extends CustomComponent implements View {
 
     private Grid<OverviewDTO> overviewGrid;
 
-    private ConfigurableFilterDataProvider<OverviewDTO, Void, String> allOverviewDataProvider;
+    private ConfigurableFilterDataProvider<OverviewDTO, Void, String> allOverviewsDataProvider;
+
+    private ConfigurableFilterDataProvider<OverviewDTO, Void, String> allOverviewsBySubgroupIdDataProvider;
 
     private Button addButton;
 
@@ -138,12 +140,7 @@ public class OverviewView extends CustomComponent implements View {
             subgroupDTOComboBox.addValueChangeListener(valueChangeEvent -> {
                 final SubgroupDTO selectedSubgroupDTO = valueChangeEvent.getValue();
                 if (selectedSubgroupDTO != null) {
-                    getOverviewGrid().setDataProvider(new CallbackDataProvider<OverviewDTO, String>(
-                            query -> overviewService.getAllOverviewsBySubgroupIdAndTag(
-                                    selectedSubgroupDTO.getId(), query.getFilter().orElse(null)).stream(),
-                            query -> (int) overviewService.overviewsBySubgroupIdAndTagCount(
-                                    selectedSubgroupDTO.getId(), query.getFilter().orElse(null))
-                    ).withConfigurableFilter());
+                    getOverviewGrid().setDataProvider(getAllOverviewsBySubgroupIdDataProvider(subgroupDTOComboBox));
                     getOverviewGrid().getDataProvider().refreshAll();
                 }
             });
@@ -189,13 +186,26 @@ public class OverviewView extends CustomComponent implements View {
     }
 
     private ConfigurableFilterDataProvider<OverviewDTO, Void, String> getAllOverviewsDataProvider() {
-        if (allOverviewDataProvider == null) {
-            allOverviewDataProvider = new CallbackDataProvider<OverviewDTO, String>(
+        if (allOverviewsDataProvider == null) {
+            allOverviewsDataProvider = new CallbackDataProvider<OverviewDTO, String>(
                     query -> overviewService.getAllOverviewsByTag(query.getFilter().orElse(null)).stream(),
                     query -> (int) overviewService.overviewsByTagCount(query.getFilter().orElse(null))
             ).withConfigurableFilter();
         }
-        return allOverviewDataProvider;
+        return allOverviewsDataProvider;
+    }
+
+    private ConfigurableFilterDataProvider<OverviewDTO, Void, String>
+    getAllOverviewsBySubgroupIdDataProvider(final ComboBox<SubgroupDTO> subgroupDTOComboBox) {
+        if (allOverviewsBySubgroupIdDataProvider == null) {
+            allOverviewsBySubgroupIdDataProvider = new CallbackDataProvider<OverviewDTO, String>(
+                    query -> overviewService.getAllOverviewsBySubgroupIdAndTag(
+                            subgroupDTOComboBox.getValue().getId(), query.getFilter().orElse(null)).stream(),
+                    query -> (int) overviewService.overviewsBySubgroupIdAndTagCount(
+                            subgroupDTOComboBox.getValue().getId(), query.getFilter().orElse(null))
+            ).withConfigurableFilter();
+        }
+        return allOverviewsBySubgroupIdDataProvider;
     }
 
     @SuppressWarnings("unchecked")
