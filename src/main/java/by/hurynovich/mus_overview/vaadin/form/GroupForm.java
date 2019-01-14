@@ -7,6 +7,8 @@ import by.hurynovich.mus_overview.service.GroupService;
 import com.vaadin.annotations.PropertyId;
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
+import com.vaadin.data.ValidationResult;
+import com.vaadin.data.Validator;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -14,6 +16,8 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+
+import java.util.stream.Collectors;
 
 public class GroupForm extends Panel {
 
@@ -42,7 +46,8 @@ public class GroupForm extends Panel {
         buttonsLayout = new HorizontalLayout();
         saveButton = new Button("Save");
         cancelButton = new Button("Cancel");
-        binder.bind(nameField, GroupDTO::getName, GroupDTO::setName);
+        binder.forField(nameField).withValidator(groupName -> groupName != null && !groupName.isEmpty(),
+                "Please enter the group name!").bind(GroupDTO::getName, GroupDTO::setName);
         binder.readBean(groupDTO);
         setContent(getParentLayout(groupDTO, onSave, onDiscard));
     }
@@ -66,17 +71,19 @@ public class GroupForm extends Panel {
     private Button getSaveButton(final GroupDTO groupDTO, final Runnable onSave) {
         saveButton.addClickListener(clickEvent -> {
             try {
-                if (groupDTO.getId() == 0) {
-                    binder.writeBean(groupDTO);
-                    groupService.createGroup(groupDTO);
+                if (binder.writeBeanIfValid(groupDTO)) {
+                    if (groupDTO.getId() == 0) {
+                        groupService.createGroup(groupDTO);
+                    } else {
+                        groupService.updateGroup(groupDTO);
+                    }
+                    onSave.run();
                 } else {
-                    binder.writeBean(groupDTO);
-                    groupService.updateGroup(groupDTO);
+                    String validationError = binder.validate().getValidationErrors().stream().
+                            map(ValidationResult::getErrorMessage).collect(Collectors.joining("; "));
+                    Notification.show("Warning! " + validationError,
+                            Notification.Type.WARNING_MESSAGE);
                 }
-                onSave.run();
-            } catch (ValidationException e) {
-                Notification.show("Warning!", "Form is not valid!",
-                        Notification.Type.WARNING_MESSAGE);
             } catch (GroupCreationException | GroupUpdatingException e) {
                 Notification.show("Error!", "Group saving failed!",
                         Notification.Type.ERROR_MESSAGE);
@@ -88,7 +95,6 @@ public class GroupForm extends Panel {
 
     private Button getCancelButton(final Runnable onDiscard) {
         cancelButton.addClickListener(clickEvent -> onDiscard.run());
-
         return cancelButton;
     }
 

@@ -2,11 +2,14 @@ package by.hurynovich.mus_overview.vaadin.form;
 
 import by.hurynovich.mus_overview.dto.GroupDTO;
 import by.hurynovich.mus_overview.dto.SubgroupDTO;
+import by.hurynovich.mus_overview.exception.GroupCreationException;
+import by.hurynovich.mus_overview.exception.GroupUpdatingException;
 import by.hurynovich.mus_overview.exception.SubgroupCreationException;
 import by.hurynovich.mus_overview.exception.SubgroupUpdatingException;
 import by.hurynovich.mus_overview.service.GroupService;
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
+import com.vaadin.data.ValidationResult;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -17,6 +20,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SubgroupForm extends Panel {
 
@@ -47,7 +51,8 @@ public class SubgroupForm extends Panel {
         buttonsLayout = new HorizontalLayout();
         saveButton = new Button("Save");
         cancelButton = new Button("Cancel");
-        binder.bind(nameField, SubgroupDTO::getName, SubgroupDTO::setName);
+        binder.forField(nameField).withValidator(subgroupName -> subgroupName != null && !subgroupName.isEmpty(),
+                "Subgroup name can't be empty!").bind(SubgroupDTO::getName, SubgroupDTO::setName);
         binder.readBean(subgroupDTO);
         setContent(getParentLayout(subgroupDTO, onSave, onDiscard));
     }
@@ -85,25 +90,19 @@ public class SubgroupForm extends Panel {
     private Button getSaveButton(final SubgroupDTO subgroupDTO, final Runnable onSave) {
         saveButton.addClickListener(clickEvent -> {
             try {
-                final GroupDTO selectedGroup = groupField.getValue();
-                if (selectedGroup != null) {
-                    final long groupId = selectedGroup.getId();
-                    subgroupDTO.setGroupId(groupId);
+                if (binder.writeBeanIfValid(subgroupDTO)) {
+                    if (subgroupDTO.getId() == 0) {
+                        groupService.createSubgroup(subgroupDTO);
+                    } else {
+                        groupService.updateSubgroup(subgroupDTO);
+                    }
+                    onSave.run();
                 } else {
-                    throw new SubgroupCreationException("Property 'groupId' is a foreign key constraint " +
-                            "and, therefore, should be valid!", new IllegalArgumentException());
+                    String validationError = binder.validate().getValidationErrors().stream().
+                            map(ValidationResult::getErrorMessage).collect(Collectors.joining("; "));
+                    Notification.show("Warning! " + validationError,
+                            Notification.Type.WARNING_MESSAGE);
                 }
-                if (subgroupDTO.getId() == 0) {
-                    binder.writeBean(subgroupDTO);
-                    groupService.createSubgroup(subgroupDTO);
-                } else {
-                    binder.writeBean(subgroupDTO);
-                    groupService.updateSubgroup(subgroupDTO);
-                }
-                onSave.run();
-            } catch (ValidationException e) {
-                Notification.show("Warning!", "Form is not valid!",
-                        Notification.Type.WARNING_MESSAGE);
             } catch (SubgroupCreationException | SubgroupUpdatingException e) {
                 Notification.show("Error!", "Subgroup saving failed!",
                         Notification.Type.ERROR_MESSAGE);

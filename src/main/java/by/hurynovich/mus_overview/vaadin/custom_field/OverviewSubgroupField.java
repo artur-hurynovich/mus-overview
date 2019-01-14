@@ -20,8 +20,6 @@ public class OverviewSubgroupField extends CustomField<Long> {
 
     private final ComboBox<SubgroupDTO> subgroupField;
 
-    private Long value;
-
     public OverviewSubgroupField(final GroupService groupService) {
         this.groupService = groupService;
         parentLayout = new HorizontalLayout();
@@ -36,7 +34,6 @@ public class OverviewSubgroupField extends CustomField<Long> {
 
     @Override
     protected void doSetValue(final Long aLong) {
-        value = aLong;
         if (aLong != null) {
             final SubgroupDTO subgroupDTO = groupService.getSubgroupById(aLong);
             if (subgroupDTO != null) {

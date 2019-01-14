@@ -21,6 +21,10 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Objects;
+
 public class OverviewForm extends Panel {
 
     private final VerticalLayout parentLayout;
@@ -61,11 +65,18 @@ public class OverviewForm extends Panel {
         buttonsLayout = new HorizontalLayout();
         saveButton = new Button("Save");
         cancelButton = new Button("Cancel");
-        binder.bind(titleField, OverviewDTO::getTitle, OverviewDTO::setTitle);
-        binder.bind(textField, OverviewDTO::getText, OverviewDTO::setText);
-        binder.bind(dateField, OverviewDTO::getDate, OverviewDTO::setDate);
-        binder.bind(subgroupField, OverviewDTO::getSubgroupId, OverviewDTO::setSubgroupId);
-        binder.bind(tagField, OverviewDTO::getTags, OverviewDTO::setTags);
+        binder.forField(titleField).withValidator(title -> title != null && !title.isEmpty(),
+                "Please enter the title!").bind(OverviewDTO::getTitle, OverviewDTO::setTitle);
+        binder.forField(textField).withValidator(text -> text != null && !text.isEmpty(),
+                "Please enter the text!").bind(OverviewDTO::getText, OverviewDTO::setText);
+        binder.forField(dateField).withValidator(Objects::nonNull, "Please enter the date!").
+                withValidator(localDate -> localDate.isAfter(LocalDate.now(ZoneId.systemDefault()).minusDays(1)),
+                        "Please choose the date not earlier than today!").
+                bind(OverviewDTO::getDate, OverviewDTO::setDate);
+        binder.forField(subgroupField).withValidator(subgroupId -> subgroupId != null && subgroupId != 0,
+                "Please choose the corresponding subgroup!").bind(OverviewDTO::getSubgroupId, OverviewDTO::setSubgroupId);
+        binder.forField(tagField).withValidator(tagDTOList -> tagDTOList != null && tagDTOList.size() > 0,
+                "Please enter at least one tag!").bind(OverviewDTO::getTags, OverviewDTO::setTags);
         binder.readBean(overviewDTO);
         setContent(getParentLayout(overviewDTO, onSave, onDiscard));
     }
