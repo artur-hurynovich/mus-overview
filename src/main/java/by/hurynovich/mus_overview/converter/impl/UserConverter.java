@@ -10,9 +10,13 @@ import org.springframework.stereotype.Service;
 public class UserConverter implements DTOEntityConverter<UserDTO, UserEntity> {
     @Override
     public UserDTO convertToDTO(UserEntity entity) {
-        final UserDTO userDTO = new UserDTO();
-        BeanUtils.copyProperties(entity, userDTO);
-        return userDTO;
+        if (entity == null) {
+            return null;
+        } else {
+            final UserDTO userDTO = new UserDTO();
+            BeanUtils.copyProperties(entity, userDTO, "password");
+            return userDTO;
+        }
     }
 
     @Override

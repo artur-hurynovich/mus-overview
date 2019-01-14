@@ -126,15 +126,15 @@ public class OverviewForm extends Panel {
                     if (overviewDTO.getId() == 0) {
                         overviewService.createOverview(overviewDTO);
                         Notification.show("Overview \'" + overviewDTO.getTitle() + "\' created!",
-                                Notification.Type.ASSISTIVE_NOTIFICATION);
+                                Notification.Type.HUMANIZED_MESSAGE);
                     } else {
                         overviewService.updateOverview(overviewDTO);
                         Notification.show("Overview updated!",
-                                Notification.Type.ASSISTIVE_NOTIFICATION);
+                                Notification.Type.HUMANIZED_MESSAGE);
                     }
                     onSave.run();
                 } else {
-                    String validationError = binder.validate().getValidationErrors().stream().
+                    final String validationError = binder.validate().getValidationErrors().stream().
                             map(ValidationResult::getErrorMessage).collect(Collectors.joining("\n"));
                     Notification.show("Warning!\n" + validationError,
                             Notification.Type.WARNING_MESSAGE);

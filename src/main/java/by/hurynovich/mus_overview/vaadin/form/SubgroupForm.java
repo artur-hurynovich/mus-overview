@@ -1,6 +1,5 @@
 package by.hurynovich.mus_overview.vaadin.form;
 
-import by.hurynovich.mus_overview.dto.GroupDTO;
 import by.hurynovich.mus_overview.dto.SubgroupDTO;
 import by.hurynovich.mus_overview.exception.SubgroupCreationException;
 import by.hurynovich.mus_overview.exception.SubgroupUpdatingException;
@@ -10,14 +9,12 @@ import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class SubgroupForm extends Panel {
@@ -86,15 +83,15 @@ public class SubgroupForm extends Panel {
                     if (subgroupDTO.getId() == 0) {
                         groupService.createSubgroup(subgroupDTO);
                         Notification.show("Subgroup \'" + subgroupDTO.getName() + "\' created!",
-                                Notification.Type.ASSISTIVE_NOTIFICATION);
+                                Notification.Type.HUMANIZED_MESSAGE);
                     } else {
                         groupService.updateSubgroup(subgroupDTO);
                         Notification.show("Subgroup updated!",
-                                Notification.Type.ASSISTIVE_NOTIFICATION);
+                                Notification.Type.HUMANIZED_MESSAGE);
                     }
                     onSave.run();
                 } else {
-                    String validationError = binder.validate().getValidationErrors().stream().
+                    final String validationError = binder.validate().getValidationErrors().stream().
                             map(ValidationResult::getErrorMessage).collect(Collectors.joining("; "));
                     Notification.show("Warning!\n" + validationError,
                             Notification.Type.WARNING_MESSAGE);

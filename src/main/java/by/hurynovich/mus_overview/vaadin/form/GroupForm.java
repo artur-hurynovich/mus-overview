@@ -23,7 +23,6 @@ public class GroupForm extends Panel {
 
     private final VerticalLayout parentLayout;
 
-    @PropertyId("name")
     private final TextField nameField;
 
     private final Binder<GroupDTO> binder;
@@ -75,15 +74,15 @@ public class GroupForm extends Panel {
                     if (groupDTO.getId() == 0) {
                         groupService.createGroup(groupDTO);
                         Notification.show("Group \'" + groupDTO.getName() + "\' created!",
-                                Notification.Type.ASSISTIVE_NOTIFICATION);
+                                Notification.Type.HUMANIZED_MESSAGE);
                     } else {
                         groupService.updateGroup(groupDTO);
                         Notification.show("Group updated!",
-                                Notification.Type.ASSISTIVE_NOTIFICATION);
+                                Notification.Type.HUMANIZED_MESSAGE);
                     }
                     onSave.run();
                 } else {
-                    String validationError = binder.validate().getValidationErrors().stream().
+                    final String validationError = binder.validate().getValidationErrors().stream().
                             map(ValidationResult::getErrorMessage).collect(Collectors.joining("; "));
                     Notification.show("Warning!\n" + validationError,
                             Notification.Type.WARNING_MESSAGE);

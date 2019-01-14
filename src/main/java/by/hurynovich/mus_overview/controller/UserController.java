@@ -24,13 +24,12 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/create")
-    public ResponseEntity createUser (@RequestBody final UserDTO userDTO) {
+    @PostMapping("/signUp")
+    public ResponseEntity signUp (@RequestBody final UserDTO userDTO) {
         if (userService.isUniqueEmail(userDTO.getEmail())) {
-            userService.createUser(userDTO);
+            userService.signUp(userDTO);
             return new ResponseEntity<>("User created", HttpStatus.CREATED);
         }
-
         return new ResponseEntity<>("Email already exist", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

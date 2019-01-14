@@ -21,8 +21,13 @@ public class UserService {
         this.userConverter = userConverter;
     }
 
-    public void createUser(final UserDTO userDTO) {
-        userRepository.save(userConverter.convertToEntity(userDTO));
+    public UserDTO signUp(final UserDTO userDTO) {
+        return userConverter.convertToDTO(userRepository.save(userConverter.convertToEntity(userDTO)));
+    }
+
+    public UserDTO signIn(final UserDTO userDTO) {
+        return userConverter.convertToDTO(userRepository.
+                findByEmailAndPassword(userDTO.getEmail(), userDTO.getPassword()));
     }
 
     public boolean isUniqueEmail (final String email) {
