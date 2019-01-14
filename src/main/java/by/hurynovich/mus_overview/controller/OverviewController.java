@@ -46,8 +46,8 @@ public class OverviewController {
     }
 
     @GetMapping("/allByTags")
-    public List<OverviewDTO> getAllOverviewsByTags(final @RequestParam String[] tag) {
-        return overviewService.getAllOverviewsByTags(tag);
+    public List<OverviewDTO> getAllOverviewsByTag(final @RequestParam String tag) {
+        return overviewService.getAllOverviewsByTag(tag);
     }
 
     @PostMapping("/update")

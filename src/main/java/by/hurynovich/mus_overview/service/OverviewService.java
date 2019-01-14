@@ -85,21 +85,24 @@ public class OverviewService {
                 map(overviewConverter::convertToDTO).collect(Collectors.toList());
     }
 
-    public List<OverviewDTO> getAllOverviewsByTags(final String[] tagNames) {
-        final List<String> tagNamesList =
-                Arrays.stream(tagNames).map(TagNameFormatter::format).collect(Collectors.toList());
-        final Set<OverviewEntity> uniqueOverviewEntities = new HashSet<>();
-        tagNamesList.forEach(tagName -> {
-            final TagEntity tagEntity = tagRepository.findByName(tagName);
-            if (tagEntity != null) {
-                final List<OverviewEntity> overviewEntities = tagEntity.getOverviews();
-                uniqueOverviewEntities.addAll(overviewEntities);
-            }
-        });
-        final List<OverviewDTO> overviewDtos = new ArrayList<>();
-        uniqueOverviewEntities.forEach(uniqueOverviewEntity ->
-                overviewDtos.add(overviewConverter.convertToDTO(uniqueOverviewEntity)));
-        return overviewDtos;
+    public List<OverviewDTO> getAllOverviewsByTag(final String tagName) {
+        if (tagName == null || tagName.isEmpty()) {
+            return getAllOverviews();
+        } else {
+            final List<TagEntity> tagEntities = tagRepository.findByNameContaining(tagName);
+            final Set<OverviewEntity> uniqueOverviewEntities = new HashSet<>();
+            tagEntities.forEach(tagEntity -> uniqueOverviewEntities.addAll(tagEntity.getOverviews()));
+            return uniqueOverviewEntities.stream().map(overviewConverter::convertToDTO).collect(Collectors.toList());
+        }
+    }
+
+    public List<OverviewDTO> getAllOverviewsBySubgroupIdAndTag(final long subgroupId, final String tagName) {
+        if (tagName == null) {
+            return getAllOverviewsBySubgroupId(subgroupId);
+        } else {
+            return getAllOverviewsByTag(tagName).stream().
+                    filter(overviewDTO -> overviewDTO.getSubgroupId() == subgroupId).collect(Collectors.toList());
+        }
     }
 
     @Transactional
@@ -149,12 +152,12 @@ public class OverviewService {
         }
     }
 
-    public long allOverviewsCount() {
-        return overviewRepository.count();
+    public long overviewsByTagCount(final String tagName) {
+        return getAllOverviewsByTag(tagName).size();
     }
 
-    public long overviewsBySubgroupIdCount(final long subgroupId) {
-        return overviewRepository.countBySubgroupId(subgroupId);
+    public long overviewsBySubgroupIdAndTagCount(final long subgroupId, final String tagName) {
+        return getAllOverviewsBySubgroupIdAndTag(subgroupId, tagName).size();
     }
 
 }

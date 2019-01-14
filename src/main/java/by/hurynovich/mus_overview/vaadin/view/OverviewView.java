@@ -11,6 +11,7 @@ import by.hurynovich.mus_overview.service.TagService;
 import by.hurynovich.mus_overview.vaadin.form.OverviewForm;
 import by.hurynovich.mus_overview.vaadin.renderer.TagRenderer;
 import com.vaadin.data.provider.CallbackDataProvider;
+import com.vaadin.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -22,9 +23,11 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.components.grid.HeaderRow;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -52,9 +55,7 @@ public class OverviewView extends CustomComponent implements View {
 
     private Grid<OverviewDTO> overviewGrid;
 
-    private CallbackDataProvider<OverviewDTO, String> allOverviewDataProvider;
-
-    private CallbackDataProvider<OverviewDTO, String> overviewBySubgroupIdDataProvider;
+    private ConfigurableFilterDataProvider<OverviewDTO, Void, String> allOverviewDataProvider;
 
     private Button addButton;
 
@@ -137,10 +138,12 @@ public class OverviewView extends CustomComponent implements View {
             subgroupDTOComboBox.addValueChangeListener(valueChangeEvent -> {
                 final SubgroupDTO selectedSubgroupDTO = valueChangeEvent.getValue();
                 if (selectedSubgroupDTO != null) {
-                    getOverviewGrid().setDataProvider(DataProvider.fromCallbacks(
-                            query -> overviewService.getAllOverviewsBySubgroupId(selectedSubgroupDTO.getId()).stream(),
-                            query -> (int) overviewService.overviewsBySubgroupIdCount(selectedSubgroupDTO.getId())
-                    ));
+                    getOverviewGrid().setDataProvider(new CallbackDataProvider<OverviewDTO, String>(
+                            query -> overviewService.getAllOverviewsBySubgroupIdAndTag(
+                                    selectedSubgroupDTO.getId(), query.getFilter().orElse(null)).stream(),
+                            query -> (int) overviewService.overviewsBySubgroupIdAndTagCount(
+                                    selectedSubgroupDTO.getId(), query.getFilter().orElse(null))
+                    ).withConfigurableFilter());
                     getOverviewGrid().getDataProvider().refreshAll();
                 }
             });
@@ -174,6 +177,8 @@ public class OverviewView extends CustomComponent implements View {
                     getRemoveButton().setEnabled(true);
                 }
             });
+            final HeaderRow filterRow = overviewGrid.appendHeaderRow();
+            filterRow.getCell("tags").setComponent(getTagFilterField());
             overviewGrid.setColumnOrder("title", "text", "date", "tags");
             overviewGrid.getColumn("tags").setRenderer(new TagRenderer());
             overviewGrid.removeColumn("id");
@@ -183,14 +188,24 @@ public class OverviewView extends CustomComponent implements View {
         return overviewGrid;
     }
 
-    private CallbackDataProvider<OverviewDTO, String> getAllOverviewsDataProvider() {
+    private ConfigurableFilterDataProvider<OverviewDTO, Void, String> getAllOverviewsDataProvider() {
         if (allOverviewDataProvider == null) {
-            allOverviewDataProvider = new CallbackDataProvider<>(
-                    query -> overviewService.getAllOverviews().stream(),
-                    query -> (int) overviewService.allOverviewsCount()
-            );
+            allOverviewDataProvider = new CallbackDataProvider<OverviewDTO, String>(
+                    query -> overviewService.getAllOverviewsByTag(query.getFilter().orElse(null)).stream(),
+                    query -> (int) overviewService.overviewsByTagCount(query.getFilter().orElse(null))
+            ).withConfigurableFilter();
         }
         return allOverviewDataProvider;
+    }
+
+    @SuppressWarnings("unchecked")
+    private TextField getTagFilterField() {
+        final TextField tagFilterField = new TextField();
+        tagFilterField.setPlaceholder("Filter by tag...");
+        tagFilterField.addValueChangeListener(valueChangeEvent ->
+                ((ConfigurableFilterDataProvider<OverviewDTO, Void, String>) getOverviewGrid()
+                    .getDataProvider()).setFilter(valueChangeEvent.getValue()));
+        return tagFilterField;
     }
 
     private HorizontalLayout getButtonsLayout() {
