@@ -1,6 +1,8 @@
 package by.hurynovich.mus_overview.vaadin.view;
 
+import by.hurynovich.mus_overview.dto.GroupDTO;
 import by.hurynovich.mus_overview.dto.OverviewDTO;
+import by.hurynovich.mus_overview.dto.SubgroupDTO;
 import by.hurynovich.mus_overview.dto.TagDTO;
 import by.hurynovich.mus_overview.exception.OverviewDeletingException;
 import by.hurynovich.mus_overview.service.GroupService;
@@ -9,10 +11,13 @@ import by.hurynovich.mus_overview.service.TagService;
 import by.hurynovich.mus_overview.vaadin.form.OverviewForm;
 import by.hurynovich.mus_overview.vaadin.renderer.TagRenderer;
 import com.vaadin.data.provider.CallbackDataProvider;
+import com.vaadin.data.provider.DataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
@@ -37,7 +42,19 @@ public class OverviewView extends CustomComponent implements View {
 
     private final TagService tagService;
 
+    private HorizontalLayout comboBoxesLayout;
+
+    private ComboBox<GroupDTO> groupDTOComboBox;
+
+    private ComboBox<SubgroupDTO> subgroupDTOComboBox;
+
+    private Button showAllButton;
+
     private Grid<OverviewDTO> overviewGrid;
+
+    private CallbackDataProvider<OverviewDTO, String> allOverviewDataProvider;
+
+    private CallbackDataProvider<OverviewDTO, String> overviewBySubgroupIdDataProvider;
 
     private Button addButton;
 
@@ -70,14 +87,79 @@ public class OverviewView extends CustomComponent implements View {
 
     private VerticalLayout getParentLayout() {
         final VerticalLayout parentLayout = new VerticalLayout();
-        parentLayout.addComponents(getOverviewGrid(), getButtonsLayout());
+        parentLayout.addComponents(getComboBoxesLayout(), getOverviewGrid(), getButtonsLayout());
         return parentLayout;
+    }
+
+    private HorizontalLayout getComboBoxesLayout() {
+        if (comboBoxesLayout == null) {
+            comboBoxesLayout = new HorizontalLayout();
+            comboBoxesLayout.addComponents(getGroupDTOComboBox(), getSubgroupDTOComboBox(), getShowAllButton());
+            comboBoxesLayout.setComponentAlignment(getShowAllButton(), Alignment.BOTTOM_CENTER);
+        }
+        return comboBoxesLayout;
+    }
+
+    private ComboBox<GroupDTO> getGroupDTOComboBox() {
+        if (groupDTOComboBox == null) {
+            groupDTOComboBox = new ComboBox<>();
+            groupDTOComboBox.setCaption("Groups:");
+            groupDTOComboBox.setItemCaptionGenerator(GroupDTO::getName);
+            groupDTOComboBox.setEmptySelectionCaption("Chose a Group...");
+            groupDTOComboBox.setDataProvider(DataProvider.ofCollection(groupService.getAllGroups()));
+            groupDTOComboBox.getDataProvider().refreshAll();
+            groupDTOComboBox.addValueChangeListener(valueChangeEvent -> {
+                final GroupDTO selectedGroupDTO = valueChangeEvent.getValue();
+                if (selectedGroupDTO == null) {
+                    getOverviewGrid().setDataProvider(getAllOverviewsDataProvider());
+                    getOverviewGrid().getDataProvider().refreshAll();
+                    getSubgroupDTOComboBox().setSelectedItem(null);
+                    getSubgroupDTOComboBox().setEnabled(false);
+                } else {
+                    getSubgroupDTOComboBox().setDataProvider(
+                            DataProvider.ofCollection(groupService.getAllSubgroupsByGroupId(selectedGroupDTO.getId())));
+                    getSubgroupDTOComboBox().getDataProvider().refreshAll();
+                    getSubgroupDTOComboBox().setSelectedItem(null);
+                    getSubgroupDTOComboBox().setEnabled(true);
+                }
+            });
+        }
+        return groupDTOComboBox;
+    }
+
+    private ComboBox<SubgroupDTO> getSubgroupDTOComboBox() {
+        if (subgroupDTOComboBox == null) {
+            subgroupDTOComboBox = new ComboBox<>();
+            subgroupDTOComboBox.setCaption("Subgroups:");
+            subgroupDTOComboBox.setItemCaptionGenerator(SubgroupDTO::getName);
+            subgroupDTOComboBox.setEmptySelectionCaption("Choose a Subgroup...");
+            subgroupDTOComboBox.setEnabled(false);
+            subgroupDTOComboBox.addValueChangeListener(valueChangeEvent -> {
+                final SubgroupDTO selectedSubgroupDTO = valueChangeEvent.getValue();
+                if (selectedSubgroupDTO != null) {
+                    getOverviewGrid().setDataProvider(DataProvider.fromCallbacks(
+                            query -> overviewService.getAllOverviewsBySubgroupId(selectedSubgroupDTO.getId()).stream(),
+                            query -> (int) overviewService.overviewsBySubgroupIdCount(selectedSubgroupDTO.getId())
+                    ));
+                    getOverviewGrid().getDataProvider().refreshAll();
+                }
+            });
+        }
+        return subgroupDTOComboBox;
+    }
+
+    private Button getShowAllButton() {
+        if (showAllButton == null) {
+            showAllButton = new Button("Show All");
+            showAllButton.addClickListener(clickEvent -> getGroupDTOComboBox().setSelectedItem(null));
+        }
+        return showAllButton;
     }
 
     private Grid<OverviewDTO> getOverviewGrid() {
         if (overviewGrid == null) {
             overviewGrid = new Grid<>(OverviewDTO.class);
-            overviewGrid.setDataProvider(getDataProvider());
+            overviewGrid.setDataProvider(getAllOverviewsDataProvider());
             overviewGrid.setSelectionMode(Grid.SelectionMode.MULTI);
             overviewGrid.addSelectionListener(selectionEvent -> {
                 final Set<OverviewDTO> selectedOverviewDTOSet = overviewGrid.getSelectionModel().getSelectedItems();
@@ -101,11 +183,14 @@ public class OverviewView extends CustomComponent implements View {
         return overviewGrid;
     }
 
-    private CallbackDataProvider<OverviewDTO, String> getDataProvider() {
-        return new CallbackDataProvider<>(
-                query -> overviewService.getAllOverviews().stream(),
-                query -> (int) overviewService.overviewCount()
-        );
+    private CallbackDataProvider<OverviewDTO, String> getAllOverviewsDataProvider() {
+        if (allOverviewDataProvider == null) {
+            allOverviewDataProvider = new CallbackDataProvider<>(
+                    query -> overviewService.getAllOverviews().stream(),
+                    query -> (int) overviewService.allOverviewsCount()
+            );
+        }
+        return allOverviewDataProvider;
     }
 
     private HorizontalLayout getButtonsLayout() {

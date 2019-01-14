@@ -10,4 +10,5 @@ import java.util.List;
 public interface OverviewRepository extends JpaRepository<OverviewEntity, Long> {
     List<OverviewEntity> findAllBySubgroupId(long subgroupId);
     OverviewEntity findById(long id);
+    long countBySubgroupId(final long subgroupId);
 }

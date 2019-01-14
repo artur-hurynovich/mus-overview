@@ -149,8 +149,12 @@ public class OverviewService {
         }
     }
 
-    public long overviewCount() {
+    public long allOverviewsCount() {
         return overviewRepository.count();
+    }
+
+    public long overviewsBySubgroupIdCount(final long subgroupId) {
+        return overviewRepository.countBySubgroupId(subgroupId);
     }
 
 }
