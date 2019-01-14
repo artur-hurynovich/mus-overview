@@ -81,7 +81,7 @@ public class GroupForm extends Panel {
                 } else {
                     String validationError = binder.validate().getValidationErrors().stream().
                             map(ValidationResult::getErrorMessage).collect(Collectors.joining("; "));
-                    Notification.show("Warning! " + validationError,
+                    Notification.show("Warning!\n" + validationError,
                             Notification.Type.WARNING_MESSAGE);
                 }
             } catch (GroupCreationException | GroupUpdatingException e) {

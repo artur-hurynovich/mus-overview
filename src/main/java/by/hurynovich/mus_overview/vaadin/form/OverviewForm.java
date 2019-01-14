@@ -3,6 +3,8 @@ package by.hurynovich.mus_overview.vaadin.form;
 import by.hurynovich.mus_overview.dto.OverviewDTO;
 import by.hurynovich.mus_overview.exception.OverviewCreationException;
 import by.hurynovich.mus_overview.exception.OverviewUpdatingException;
+import by.hurynovich.mus_overview.exception.SubgroupCreationException;
+import by.hurynovich.mus_overview.exception.SubgroupUpdatingException;
 import by.hurynovich.mus_overview.service.GroupService;
 import by.hurynovich.mus_overview.service.OverviewService;
 import by.hurynovich.mus_overview.service.TagService;
@@ -11,6 +13,7 @@ import by.hurynovich.mus_overview.vaadin.custom_field.OverviewSubgroupField;
 import by.hurynovich.mus_overview.vaadin.custom_field.OverviewTagField;
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
+import com.vaadin.data.ValidationResult;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -24,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class OverviewForm extends Panel {
 
@@ -101,7 +105,6 @@ public class OverviewForm extends Panel {
     }
 
     private OverviewSubgroupField getSubgroupField() {
-
         return subgroupField;
     }
 
@@ -119,17 +122,19 @@ public class OverviewForm extends Panel {
     private Button getSaveButton(final OverviewDTO overviewDTO, final Runnable onSave) {
         saveButton.addClickListener(clickEvent -> {
             try {
-                if (overviewDTO.getId() == 0) {
-                    binder.writeBean(overviewDTO);
-                    overviewService.createOverview(overviewDTO);
+                if (binder.writeBeanIfValid(overviewDTO)) {
+                    if (overviewDTO.getId() == 0) {
+                        overviewService.createOverview(overviewDTO);
+                    } else {
+                        overviewService.updateOverview(overviewDTO);
+                    }
+                    onSave.run();
                 } else {
-                    binder.writeBean(overviewDTO);
-                    overviewService.updateOverview(overviewDTO);
+                    String validationError = binder.validate().getValidationErrors().stream().
+                            map(ValidationResult::getErrorMessage).collect(Collectors.joining("\n"));
+                    Notification.show("Warning!\n" + validationError,
+                            Notification.Type.WARNING_MESSAGE);
                 }
-                onSave.run();
-            } catch (ValidationException e) {
-                Notification.show("Warning!", "Form is not valid!",
-                        Notification.Type.WARNING_MESSAGE);
             } catch (OverviewCreationException | OverviewUpdatingException e) {
                 Notification.show("Error!", "Overview saving failed!",
                         Notification.Type.ERROR_MESSAGE);
