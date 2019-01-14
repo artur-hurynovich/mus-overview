@@ -16,7 +16,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 @SpringUI(path = "vaadin")
-@Theme("valo")
+@Theme("mytheme")
 @SpringViewDisplay
 public class VaadinUI extends UI implements ViewDisplay {
 
