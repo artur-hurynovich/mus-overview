@@ -90,6 +90,7 @@ public class OverviewForm extends Panel {
     }
 
     private OverviewSubgroupField getSubgroupField() {
+
         return subgroupField;
     }
 

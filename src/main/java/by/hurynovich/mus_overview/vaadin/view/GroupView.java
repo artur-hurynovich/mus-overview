@@ -173,9 +173,7 @@ public class GroupView extends CustomComponent implements View {
                             Notification.Type.ERROR_MESSAGE);
                 }
             });
-            groupGrid.deselectAll();
             groupDataProvider.refreshAll();
-            /*subgroupDataProvider.refreshAll();*/
         });
         return removeGroupButton;
     }
@@ -248,7 +246,6 @@ public class GroupView extends CustomComponent implements View {
                             Notification.Type.ERROR_MESSAGE);
                 }
             });
-            subgroupGrid.deselectAll();
             subgroupDataProvider.refreshAll();
         });
         return removeSubgroupButton;
@@ -256,28 +253,26 @@ public class GroupView extends CustomComponent implements View {
 
     private Window getGroupWindow(final GroupDTO groupDTO) {
         final Window groupWindow = new Window("New Group");
-        final GroupForm groupForm = new GroupForm(groupService, groupDTO, groupWindow::close,
-                groupWindow::close);
-        groupWindow.setContent(groupForm);
-        groupWindow.addCloseListener(closeEvent -> {
+        final GroupForm groupForm = new GroupForm(groupService, groupDTO, () -> {
             groupGrid.deselectAll();
             groupDataProvider.refreshAll();
-        });
+            groupWindow.close();
+        },
+                groupWindow::close);
+        groupWindow.setContent(groupForm);
         return groupWindow;
     }
 
     private Window getSubgroupWindow(final SubgroupDTO subgroupDTO) {
         final Window subgroupWindow = new Window("New Subgroup");
-        final SubgroupForm subgroupForm = new SubgroupForm(groupService, subgroupDTO,
-                subgroupWindow::close, subgroupWindow::close);
-        subgroupWindow.setContent(subgroupForm);
-        subgroupWindow.addCloseListener(closeEvent -> {
-            final GroupDTO selectedGroup = groupGrid.getSelectionModel().getSelectedItems().iterator().next();
-            groupGrid.deselectAll();
+        final SubgroupForm subgroupForm = new SubgroupForm(groupService, subgroupDTO, () -> {
             subgroupGrid.deselectAll();
+            groupGrid.deselectAll();
             subgroupDataProvider.refreshAll();
-            groupGrid.select(selectedGroup);
-        });
+            subgroupWindow.close();
+        },
+                subgroupWindow::close);
+        subgroupWindow.setContent(subgroupForm);
         return subgroupWindow;
     }
 

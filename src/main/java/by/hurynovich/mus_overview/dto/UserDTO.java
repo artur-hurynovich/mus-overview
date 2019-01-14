@@ -1,10 +1,12 @@
 package by.hurynovich.mus_overview.dto;
 
 import by.hurynovich.mus_overview.enumeration.UserRole;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class UserDTO {
     private Long id;
