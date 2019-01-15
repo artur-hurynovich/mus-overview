@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -16,6 +17,6 @@ public class OverviewDTO extends AbstractNamedDTO {
     private String text;
     private LocalDate date;
     private long subgroupId;
-    private List<TagDTO> tags;
+    private List<TagDTO> tags = new ArrayList<>();
 
 }

@@ -1,6 +1,6 @@
 package by.hurynovich.mus_overview.vaadin.form;
 
-import by.hurynovich.mus_overview.dto.SubgroupDTO;
+import by.hurynovich.mus_overview.dto.impl.SubgroupDTO;
 import by.hurynovich.mus_overview.exception.SubgroupCreationException;
 import by.hurynovich.mus_overview.exception.SubgroupUpdatingException;
 import by.hurynovich.mus_overview.service.GroupService;

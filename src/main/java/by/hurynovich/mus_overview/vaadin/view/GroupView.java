@@ -1,7 +1,7 @@
 package by.hurynovich.mus_overview.vaadin.view;
 
-import by.hurynovich.mus_overview.dto.GroupDTO;
-import by.hurynovich.mus_overview.dto.SubgroupDTO;
+import by.hurynovich.mus_overview.dto.impl.GroupDTO;
+import by.hurynovich.mus_overview.dto.impl.SubgroupDTO;
 import by.hurynovich.mus_overview.exception.GroupDeletingException;
 import by.hurynovich.mus_overview.exception.SubgroupDeletingException;
 import by.hurynovich.mus_overview.service.GroupService;
@@ -175,7 +175,8 @@ public class GroupView extends CustomComponent implements View {
                             Notification.Type.ERROR_MESSAGE);
                 }
             });
-            groupDataProvider.refreshAll();
+            groupGrid.deselectAll();
+            groupGrid.getDataProvider().refreshAll();
         });
         return removeGroupButton;
     }
@@ -250,7 +251,8 @@ public class GroupView extends CustomComponent implements View {
                             Notification.Type.ERROR_MESSAGE);
                 }
             });
-            subgroupDataProvider.refreshAll();
+            subgroupGrid.deselectAll();
+            subgroupGrid.getDataProvider().refreshAll();
         });
         return removeSubgroupButton;
     }

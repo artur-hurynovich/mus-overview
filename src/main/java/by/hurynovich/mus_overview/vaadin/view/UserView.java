@@ -1,6 +1,6 @@
 package by.hurynovich.mus_overview.vaadin.view;
 
-import by.hurynovich.mus_overview.dto.UserDTO;
+import by.hurynovich.mus_overview.dto.impl.UserDTO;
 import by.hurynovich.mus_overview.service.UserService;
 import by.hurynovich.mus_overview.vaadin.form.SignInForm;
 import by.hurynovich.mus_overview.vaadin.form.SignUpForm;

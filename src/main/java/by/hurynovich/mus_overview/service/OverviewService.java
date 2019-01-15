@@ -129,12 +129,12 @@ public class OverviewService {
                     toSaveTagsEntities.add(existingTag);
                 }
             }
-
             overviewEntity.setTags(toSaveTagsEntities);
         }
+
         try {
-            final OverviewEntity savedOverviewEntity = overviewRepository.save(overviewEntity);
             tagRepository.saveAll(toSaveTagsEntities);
+            final OverviewEntity savedOverviewEntity = overviewRepository.save(overviewEntity);
             return overviewConverter.convertToDTO(savedOverviewEntity);
         } catch (final Exception e) {
             final String exceptionMessage = "Overview updating failed: " + e.getMessage();

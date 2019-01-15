@@ -1,6 +1,6 @@
 package by.hurynovich.mus_overview.vaadin.renderer;
 
-import by.hurynovich.mus_overview.dto.TagDTO;
+import by.hurynovich.mus_overview.dto.impl.TagDTO;
 import com.vaadin.ui.renderers.TextRenderer;
 import elemental.json.Json;
 import elemental.json.JsonValue;
