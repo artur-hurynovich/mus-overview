@@ -77,10 +77,12 @@ public class OverviewView extends CustomComponent implements View {
 
     @Autowired
     public OverviewView(final OverviewService overviewService, final GroupService groupService,
-                        final TagService tagService) {
+                        final TagService tagService, final Grid<OverviewDTO> overviewGrid) {
         this.overviewService = overviewService;
         this.groupService = groupService;
         this.tagService = tagService;
+        this.overviewGrid = overviewGrid;
+        initOverviewGrid();
     }
 
     @Override
@@ -156,32 +158,27 @@ public class OverviewView extends CustomComponent implements View {
         return showAllButton;
     }
 
+    private void initOverviewGrid() {
+        overviewGrid.setDataProvider(getAllOverviewsDataProvider());
+        overviewGrid.addSelectionListener(selectionEvent -> {
+            final Set<OverviewDTO> selectedOverviewDTOSet = overviewGrid.getSelectionModel().getSelectedItems();
+            if (selectedOverviewDTOSet.size() == 0) {
+                getEditButton().setEnabled(false);
+                getRemoveButton().setEnabled(false);
+            } else if (selectedOverviewDTOSet.size() == 1) {
+                getEditButton().setEnabled(true);
+                getRemoveButton().setEnabled(true);
+            } else {
+                getEditButton().setEnabled(false);
+                getRemoveButton().setEnabled(true);
+            }
+        });
+        final HeaderRow filterRow = overviewGrid.appendHeaderRow();
+        filterRow.getCell("tags").setComponent(getTagFilterField());
+        overviewGrid.getColumn("tags").setRenderer(new TagRenderer());
+    }
+
     private Grid<OverviewDTO> getOverviewGrid() {
-        if (overviewGrid == null) {
-            overviewGrid = new Grid<>(OverviewDTO.class);
-            overviewGrid.setDataProvider(getAllOverviewsDataProvider());
-            overviewGrid.setSelectionMode(Grid.SelectionMode.MULTI);
-            overviewGrid.addSelectionListener(selectionEvent -> {
-                final Set<OverviewDTO> selectedOverviewDTOSet = overviewGrid.getSelectionModel().getSelectedItems();
-                if (selectedOverviewDTOSet.size() == 0) {
-                    getEditButton().setEnabled(false);
-                    getRemoveButton().setEnabled(false);
-                } else if (selectedOverviewDTOSet.size() == 1) {
-                    getEditButton().setEnabled(true);
-                    getRemoveButton().setEnabled(true);
-                } else {
-                    getEditButton().setEnabled(false);
-                    getRemoveButton().setEnabled(true);
-                }
-            });
-            final HeaderRow filterRow = overviewGrid.appendHeaderRow();
-            filterRow.getCell("tags").setComponent(getTagFilterField());
-            overviewGrid.setColumnOrder("name", "text", "date", "tags");
-            overviewGrid.getColumn("tags").setRenderer(new TagRenderer());
-            overviewGrid.removeColumn("id");
-            overviewGrid.removeColumn("subgroupId");
-            overviewGrid.setSizeFull();
-        }
         return overviewGrid;
     }
 

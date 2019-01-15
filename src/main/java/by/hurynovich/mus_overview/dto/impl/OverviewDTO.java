@@ -1,6 +1,7 @@
 package by.hurynovich.mus_overview.dto.impl;
 
 import by.hurynovich.mus_overview.dto.AbstractNamedDTO;
+import by.hurynovich.mus_overview.vaadin.annotation.GridColumn;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -13,9 +14,15 @@ import java.util.List;
 @NoArgsConstructor
 public class OverviewDTO extends AbstractNamedDTO {
 
+    @GridColumn(caption = "Text", position = 20)
     private String text;
+
+    @GridColumn(caption = "Date", position = 30)
     private LocalDate date;
+
     private long subgroupId;
+
+    @GridColumn(caption = "Tags", position = 40)
     private List<TagDTO> tags;
 
 }
