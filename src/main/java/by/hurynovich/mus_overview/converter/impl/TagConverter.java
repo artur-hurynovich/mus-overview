@@ -1,8 +1,8 @@
 package by.hurynovich.mus_overview.converter.impl;
 
 import by.hurynovich.mus_overview.converter.DTOEntityConverter;
-import by.hurynovich.mus_overview.dto.TagDTO;
-import by.hurynovich.mus_overview.entity.TagEntity;
+import by.hurynovich.mus_overview.dto.impl.TagDTO;
+import by.hurynovich.mus_overview.entity.impl.TagEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

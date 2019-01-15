@@ -1,7 +1,7 @@
 package by.hurynovich.mus_overview.service;
 
 import by.hurynovich.mus_overview.converter.impl.UserConverter;
-import by.hurynovich.mus_overview.dto.UserDTO;
+import by.hurynovich.mus_overview.dto.impl.UserDTO;
 import by.hurynovich.mus_overview.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
 package by.hurynovich.mus_overview.controller;
 
-import by.hurynovich.mus_overview.dto.OverviewDTO;
+import by.hurynovich.mus_overview.dto.impl.OverviewDTO;
 import by.hurynovich.mus_overview.exception.OverviewCreationException;
 import by.hurynovich.mus_overview.exception.OverviewDeletingException;
 import by.hurynovich.mus_overview.exception.OverviewUpdatingException;

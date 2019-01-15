@@ -1,7 +1,7 @@
 package by.hurynovich.mus_overview.controller;
 
-import by.hurynovich.mus_overview.dto.GroupDTO;
-import by.hurynovich.mus_overview.dto.SubgroupDTO;
+import by.hurynovich.mus_overview.dto.impl.GroupDTO;
+import by.hurynovich.mus_overview.dto.impl.SubgroupDTO;
 import by.hurynovich.mus_overview.exception.GroupCreationException;
 import by.hurynovich.mus_overview.exception.GroupDeletingException;
 import by.hurynovich.mus_overview.exception.GroupUpdatingException;

@@ -2,10 +2,10 @@ package by.hurynovich.mus_overview.service;
 
 import by.hurynovich.mus_overview.converter.impl.OverviewConverter;
 import by.hurynovich.mus_overview.converter.impl.TagConverter;
-import by.hurynovich.mus_overview.dto.TagDTO;
-import by.hurynovich.mus_overview.entity.OverviewEntity;
-import by.hurynovich.mus_overview.dto.OverviewDTO;
-import by.hurynovich.mus_overview.entity.TagEntity;
+import by.hurynovich.mus_overview.dto.impl.TagDTO;
+import by.hurynovich.mus_overview.entity.impl.OverviewEntity;
+import by.hurynovich.mus_overview.dto.impl.OverviewDTO;
+import by.hurynovich.mus_overview.entity.impl.TagEntity;
 import by.hurynovich.mus_overview.exception.OverviewCreationException;
 import by.hurynovich.mus_overview.exception.OverviewDeletingException;
 import by.hurynovich.mus_overview.exception.OverviewUpdatingException;
@@ -107,9 +107,9 @@ public class OverviewService {
     @Transactional
     public OverviewDTO updateOverview(final OverviewDTO overviewDTO) throws OverviewUpdatingException {
         final OverviewEntity overviewEntity = overviewRepository.findById(overviewDTO.getId());
-        final String title = overviewDTO.getTitle();
-        if (title != null) {
-            overviewEntity.setTitle(title);
+        final String name = overviewDTO.getName();
+        if (name != null) {
+            overviewEntity.setName(name);
         }
         final String text = overviewDTO.getText();
         if (text != null) {

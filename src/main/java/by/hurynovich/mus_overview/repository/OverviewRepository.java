@@ -1,6 +1,6 @@
 package by.hurynovich.mus_overview.repository;
 
-import by.hurynovich.mus_overview.entity.OverviewEntity;
+import by.hurynovich.mus_overview.entity.impl.OverviewEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

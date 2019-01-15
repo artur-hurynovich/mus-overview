@@ -1,7 +1,7 @@
 package by.hurynovich.mus_overview.service;
 
 import by.hurynovich.mus_overview.converter.impl.TagConverter;
-import by.hurynovich.mus_overview.dto.TagDTO;
+import by.hurynovich.mus_overview.dto.impl.TagDTO;
 import by.hurynovich.mus_overview.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

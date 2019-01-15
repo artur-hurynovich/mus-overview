@@ -1,8 +1,8 @@
 package by.hurynovich.mus_overview.converter.impl;
 
 import by.hurynovich.mus_overview.converter.DTOEntityConverter;
-import by.hurynovich.mus_overview.entity.GroupEntity;
-import by.hurynovich.mus_overview.dto.GroupDTO;
+import by.hurynovich.mus_overview.entity.impl.GroupEntity;
+import by.hurynovich.mus_overview.dto.impl.GroupDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
