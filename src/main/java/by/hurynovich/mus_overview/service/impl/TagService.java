@@ -1,4 +1,4 @@
-package by.hurynovich.mus_overview.service;
+package by.hurynovich.mus_overview.service.impl;
 
 import by.hurynovich.mus_overview.converter.impl.TagConverter;
 import by.hurynovich.mus_overview.dto.impl.TagDTO;

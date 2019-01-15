@@ -1,16 +1,14 @@
 package by.hurynovich.mus_overview.vaadin.form;
 
 import by.hurynovich.mus_overview.dto.impl.OverviewDTO;
-import by.hurynovich.mus_overview.exception.OverviewCreationException;
-import by.hurynovich.mus_overview.exception.OverviewUpdatingException;
-import by.hurynovich.mus_overview.service.GroupService;
-import by.hurynovich.mus_overview.service.OverviewService;
-import by.hurynovich.mus_overview.service.TagService;
+import by.hurynovich.mus_overview.service.impl.GroupService;
+import by.hurynovich.mus_overview.service.impl.OverviewService;
+import by.hurynovich.mus_overview.service.impl.SubgroupService;
+import by.hurynovich.mus_overview.service.impl.TagService;
 import by.hurynovich.mus_overview.vaadin.custom_field.OverviewDateField;
 import by.hurynovich.mus_overview.vaadin.custom_field.OverviewSubgroupField;
 import by.hurynovich.mus_overview.vaadin.custom_field.OverviewTagField;
 import com.vaadin.data.Binder;
-import com.vaadin.data.ValidationResult;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -24,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class OverviewForm extends Panel {
 
@@ -50,16 +47,19 @@ public class OverviewForm extends Panel {
 
     private final GroupService groupService;
 
+    private final SubgroupService subgroupService;
+
     private final OverviewService overviewService;
 
     private final TagService tagService;
 
     @Autowired
-    public OverviewForm(final GroupService groupService, final OverviewService overviewService,
-                        final TagService tagService, final OverviewDTO overviewDTO,
-                        final Runnable onSave, final Runnable onDiscard) {
-        this.overviewService = overviewService;
+    public OverviewForm(final GroupService groupService, final SubgroupService subgroupService,
+                        final OverviewService overviewService, final TagService tagService,
+                        final OverviewDTO overviewDTO, final Runnable onSave, final Runnable onDiscard) {
         this.groupService = groupService;
+        this.subgroupService = subgroupService;
+        this.overviewService = overviewService;
         this.tagService = tagService;
         binder = new Binder<>(OverviewDTO.class);
         binder.forField(getNameField()).withValidator(name -> name != null && !name.isEmpty(),
@@ -115,14 +115,14 @@ public class OverviewForm extends Panel {
 
     private OverviewSubgroupField getSubgroupField() {
         if (subgroupField == null) {
-            subgroupField = new OverviewSubgroupField(getGroupService());
+            subgroupField = new OverviewSubgroupField(groupService, subgroupService);
         }
         return subgroupField;
     }
 
     private OverviewTagField getTagField() {
         if (tagField == null) {
-            tagField = new OverviewTagField(getTagService());
+            tagField = new OverviewTagField(tagService);
             tagField.setCaption("Tags:");
         }
         return tagField;
@@ -142,28 +142,16 @@ public class OverviewForm extends Panel {
         if (saveButton == null) {
             saveButton = new Button("Save");
             saveButton.addClickListener(clickEvent -> {
-                try {
-                    if (binder.writeBeanIfValid(overviewDTO)) {
-                        if (overviewDTO.getId() == 0) {
-                            getOverviewService().createOverview(overviewDTO);
-                            Notification.show("Overview \'" + overviewDTO.getName() + "\' created!",
-                                    Notification.Type.HUMANIZED_MESSAGE);
-                        } else {
-                            getOverviewService().updateOverview(overviewDTO);
-                            Notification.show("Overview updated!",
-                                    Notification.Type.HUMANIZED_MESSAGE);
-                        }
-                        onSave.run();
-                    } else {
-                        final String validationError = binder.validate().getValidationErrors().stream().
-                                map(ValidationResult::getErrorMessage).collect(Collectors.joining("\n"));
-                        Notification.show("Warning!\n" + validationError,
-                                Notification.Type.WARNING_MESSAGE);
-                    }
-                } catch (OverviewCreationException | OverviewUpdatingException e) {
-                    Notification.show("Error!", "Overview saving failed!",
-                            Notification.Type.ERROR_MESSAGE);
+                if (overviewDTO.getId() == 0) {
+                    overviewService.save(overviewDTO);
+                    Notification.show("Overview \'" + overviewDTO.getName() + "\' created!",
+                            Notification.Type.HUMANIZED_MESSAGE);
+                } else {
+                    overviewService.update(overviewDTO);
+                    Notification.show("Overview updated!",
+                            Notification.Type.HUMANIZED_MESSAGE);
                 }
+                onSave.run();
             });
             saveButton.setClickShortcut(ShortcutAction.KeyCode.ENTER);
         }
@@ -177,18 +165,6 @@ public class OverviewForm extends Panel {
             cancelButton.setClickShortcut(ShortcutAction.KeyCode.ESCAPE);
         }
         return cancelButton;
-    }
-
-    private GroupService getGroupService() {
-        return groupService;
-    }
-
-    private OverviewService getOverviewService() {
-        return overviewService;
-    }
-
-    private TagService getTagService() {
-        return tagService;
     }
 
 }

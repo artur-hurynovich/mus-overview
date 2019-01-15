@@ -8,6 +8,9 @@ import java.util.List;
 
 @Repository
 public interface OverviewRepository extends JpaRepository<OverviewEntity, Long> {
-    List<OverviewEntity> findAllBySubgroupId(long subgroupId);
-    OverviewEntity findById(long id);
+    List<OverviewEntity> findAllByTags(final String tagName);
+    List<OverviewEntity> findAllBySubgroupIdAndTags(final long subgroupId, final String tagName);
+    OverviewEntity findById(final long id);
+    long countByTags(final String tagName);
+    long countBySubgroupIdAndTags(final long subgroupId, final String tagName);
 }

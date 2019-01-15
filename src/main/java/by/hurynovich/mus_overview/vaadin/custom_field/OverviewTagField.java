@@ -1,7 +1,7 @@
 package by.hurynovich.mus_overview.vaadin.custom_field;
 
 import by.hurynovich.mus_overview.dto.impl.TagDTO;
-import by.hurynovich.mus_overview.service.TagService;
+import by.hurynovich.mus_overview.service.impl.TagService;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.Button;

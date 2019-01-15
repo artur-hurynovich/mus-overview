@@ -10,5 +10,4 @@ import java.util.List;
 public interface SubgroupRepository extends JpaRepository<SubgroupEntity, Long> {
     List<SubgroupEntity> findAllByGroupId(long groupId);
     long countByGroupId(long groupId);
-    SubgroupEntity findById(long id);
 }

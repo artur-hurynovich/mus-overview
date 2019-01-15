@@ -4,10 +4,10 @@ import by.hurynovich.mus_overview.dto.impl.GroupDTO;
 import by.hurynovich.mus_overview.dto.impl.OverviewDTO;
 import by.hurynovich.mus_overview.dto.impl.SubgroupDTO;
 import by.hurynovich.mus_overview.dto.impl.TagDTO;
-import by.hurynovich.mus_overview.exception.OverviewDeletingException;
-import by.hurynovich.mus_overview.service.GroupService;
-import by.hurynovich.mus_overview.service.OverviewService;
-import by.hurynovich.mus_overview.service.TagService;
+import by.hurynovich.mus_overview.service.impl.GroupService;
+import by.hurynovich.mus_overview.service.impl.OverviewService;
+import by.hurynovich.mus_overview.service.impl.SubgroupService;
+import by.hurynovich.mus_overview.service.impl.TagService;
 import by.hurynovich.mus_overview.vaadin.form.OverviewForm;
 import by.hurynovich.mus_overview.vaadin.renderer.TagRenderer;
 import com.vaadin.data.provider.CallbackDataProvider;
@@ -43,6 +43,8 @@ public class OverviewView extends CustomComponent implements View {
 
     private final GroupService groupService;
 
+    private final SubgroupService subgroupService;
+
     private final TagService tagService;
 
     private HorizontalLayout comboBoxesLayout;
@@ -76,10 +78,12 @@ public class OverviewView extends CustomComponent implements View {
     }
 
     @Autowired
-    public OverviewView(final OverviewService overviewService, final GroupService groupService,
-                        final TagService tagService, final Grid<OverviewDTO> overviewGrid) {
-        this.overviewService = overviewService;
+    public OverviewView(final GroupService groupService, final SubgroupService subgroupService,
+                        final OverviewService overviewService, final TagService tagService,
+                        final Grid<OverviewDTO> overviewGrid) {
         this.groupService = groupService;
+        this.subgroupService = subgroupService;
+        this.overviewService = overviewService;
         this.tagService = tagService;
         this.overviewGrid = overviewGrid;
         initOverviewGrid();
@@ -111,7 +115,7 @@ public class OverviewView extends CustomComponent implements View {
             groupDTOComboBox.setCaption("Groups:");
             groupDTOComboBox.setItemCaptionGenerator(GroupDTO::getName);
             groupDTOComboBox.setEmptySelectionCaption("Chose a Group...");
-            groupDTOComboBox.setDataProvider(DataProvider.ofCollection(groupService.getAllGroups()));
+            groupDTOComboBox.setDataProvider(DataProvider.ofCollection(groupService.findAll()));
             groupDTOComboBox.getDataProvider().refreshAll();
             groupDTOComboBox.addValueChangeListener(valueChangeEvent -> {
                 final GroupDTO selectedGroupDTO = valueChangeEvent.getValue();
@@ -122,7 +126,7 @@ public class OverviewView extends CustomComponent implements View {
                     getSubgroupDTOComboBox().setEnabled(false);
                 } else {
                     getSubgroupDTOComboBox().setDataProvider(
-                            DataProvider.ofCollection(groupService.getAllSubgroupsByGroupId(selectedGroupDTO.getId())));
+                            DataProvider.ofCollection(subgroupService.findAllByGroupId(selectedGroupDTO.getId())));
                     getSubgroupDTOComboBox().getDataProvider().refreshAll();
                     getSubgroupDTOComboBox().setSelectedItem(null);
                     getSubgroupDTOComboBox().setEnabled(true);
@@ -185,8 +189,8 @@ public class OverviewView extends CustomComponent implements View {
     private ConfigurableFilterDataProvider<OverviewDTO, Void, String> getAllOverviewsDataProvider() {
         if (allOverviewsDataProvider == null) {
             allOverviewsDataProvider = new CallbackDataProvider<OverviewDTO, String>(
-                    query -> overviewService.getAllOverviewsByTag(query.getFilter().orElse(null)).stream(),
-                    query -> (int) overviewService.overviewsByTagCount(query.getFilter().orElse(null))
+                    query -> overviewService.findAllByTag(query.getFilter().orElse(null)).stream(),
+                    query -> (int) overviewService.countByTag(query.getFilter().orElse(null))
             ).withConfigurableFilter();
         }
         return allOverviewsDataProvider;
@@ -196,9 +200,9 @@ public class OverviewView extends CustomComponent implements View {
     getAllOverviewsBySubgroupIdDataProvider(final ComboBox<SubgroupDTO> subgroupDTOComboBox) {
         if (allOverviewsBySubgroupIdDataProvider == null) {
             allOverviewsBySubgroupIdDataProvider = new CallbackDataProvider<OverviewDTO, String>(
-                    query -> overviewService.getAllOverviewsBySubgroupIdAndTag(
+                    query -> overviewService.findAllBySubgroupIdAndTag(
                             subgroupDTOComboBox.getValue().getId(), query.getFilter().orElse(null)).stream(),
-                    query -> (int) overviewService.overviewsBySubgroupIdAndTagCount(
+                    query -> (int) overviewService.countBySubgroupIdAndTag(
                             subgroupDTOComboBox.getValue().getId(), query.getFilter().orElse(null))
             ).withConfigurableFilter();
         }
@@ -250,14 +254,9 @@ public class OverviewView extends CustomComponent implements View {
                 final Set<OverviewDTO> selectedOverviewDTOSet =
                         overviewGrid.getSelectionModel().getSelectedItems();
                 selectedOverviewDTOSet.forEach(overviewDTO -> {
-                    try {
-                        overviewService.deleteOverview(overviewDTO.getId());
-                        Notification.show("Overview \'" + overviewDTO.getName() + "\' deleted!",
-                                Notification.Type.ASSISTIVE_NOTIFICATION);
-                    } catch (OverviewDeletingException e) {
-                        Notification.show("Error!", "Overview(s) deleting failed!",
-                                Notification.Type.ERROR_MESSAGE);
-                    }
+                    overviewService.delete(overviewDTO);
+                    Notification.show("Overview \'" + overviewDTO.getName() + "\' deleted!",
+                            Notification.Type.ASSISTIVE_NOTIFICATION);
                 });
                 overviewGrid.deselectAll();
                 overviewGrid.getDataProvider().refreshAll();
@@ -269,7 +268,7 @@ public class OverviewView extends CustomComponent implements View {
 
     private Window getOverviewWindow(final OverviewDTO overviewDTO) {
         final Window overviewWindow = new Window("New Overview");
-        final OverviewForm overviewForm = new OverviewForm(groupService, overviewService, tagService,
+        final OverviewForm overviewForm = new OverviewForm(groupService, subgroupService, overviewService, tagService,
                 overviewDTO, overviewWindow::close, overviewWindow::close);
         overviewWindow.addCloseListener(closeEvent -> {
             overviewGrid.deselectAll();

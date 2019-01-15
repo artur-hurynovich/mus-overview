@@ -1,7 +1,7 @@
 package by.hurynovich.mus_overview.vaadin.form;
 
 import by.hurynovich.mus_overview.dto.impl.UserDTO;
-import by.hurynovich.mus_overview.service.UserService;
+import by.hurynovich.mus_overview.service.impl.UserService;
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.data.validator.EmailValidator;

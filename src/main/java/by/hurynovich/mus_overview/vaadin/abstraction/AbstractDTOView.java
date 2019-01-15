@@ -1,6 +1,7 @@
 package by.hurynovich.mus_overview.vaadin.abstraction;
 
 import by.hurynovich.mus_overview.dto.AbstractDTO;
+import by.hurynovich.mus_overview.service.DTOService;
 import com.vaadin.data.provider.CallbackDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -8,7 +9,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,7 +17,7 @@ public abstract class AbstractDTOView<DTOClass extends AbstractDTO> extends Cust
 
     @Autowired
     @Qualifier("abstractionOverviewService")
-    private AbstractService<DTOClass> service;
+    private DTOService<DTOClass> service;
 
     private VerticalLayout parentLayout;
 

@@ -1,9 +1,7 @@
 package by.hurynovich.mus_overview.vaadin.form;
 
 import by.hurynovich.mus_overview.dto.impl.GroupDTO;
-import by.hurynovich.mus_overview.exception.GroupCreationException;
-import by.hurynovich.mus_overview.exception.GroupUpdatingException;
-import by.hurynovich.mus_overview.service.GroupService;
+import by.hurynovich.mus_overview.service.impl.GroupService;
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.event.ShortcutAction;
@@ -72,27 +70,22 @@ public class GroupForm extends Panel {
         if (saveButton == null) {
             saveButton = new Button("Save");
             saveButton.addClickListener(clickEvent -> {
-                try {
-                    if (binder.writeBeanIfValid(groupDTO)) {
-                        if (groupDTO.getId() == 0) {
-                            groupService.createGroup(groupDTO);
-                            Notification.show("Group \'" + groupDTO.getName() + "\' created!",
-                                    Notification.Type.HUMANIZED_MESSAGE);
-                        } else {
-                            groupService.updateGroup(groupDTO);
-                            Notification.show("Group updated!",
-                                    Notification.Type.HUMANIZED_MESSAGE);
-                        }
-                        onSave.run();
+                if (binder.writeBeanIfValid(groupDTO)) {
+                    if (groupDTO.getId() == 0) {
+                        groupService.save(groupDTO);
+                        Notification.show("Group \'" + groupDTO.getName() + "\' created!",
+                                Notification.Type.HUMANIZED_MESSAGE);
                     } else {
-                        final String validationError = binder.validate().getValidationErrors().stream().
-                                map(ValidationResult::getErrorMessage).collect(Collectors.joining("; "));
-                        Notification.show("Warning!\n" + validationError,
-                                Notification.Type.WARNING_MESSAGE);
+                        groupService.update(groupDTO);
+                        Notification.show("Group updated!",
+                                Notification.Type.HUMANIZED_MESSAGE);
                     }
-                } catch (GroupCreationException | GroupUpdatingException e) {
-                    Notification.show("Error!", "Group saving failed!",
-                            Notification.Type.ERROR_MESSAGE);
+                    onSave.run();
+                } else {
+                    final String validationError = binder.validate().getValidationErrors().stream().
+                            map(ValidationResult::getErrorMessage).collect(Collectors.joining("; "));
+                    Notification.show("Warning!\n" + validationError,
+                            Notification.Type.WARNING_MESSAGE);
                 }
             });
             saveButton.setClickShortcut(ShortcutAction.KeyCode.ENTER);

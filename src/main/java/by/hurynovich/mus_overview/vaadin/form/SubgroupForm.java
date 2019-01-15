@@ -1,9 +1,8 @@
 package by.hurynovich.mus_overview.vaadin.form;
 
 import by.hurynovich.mus_overview.dto.impl.SubgroupDTO;
-import by.hurynovich.mus_overview.exception.SubgroupCreationException;
-import by.hurynovich.mus_overview.exception.SubgroupUpdatingException;
-import by.hurynovich.mus_overview.service.GroupService;
+import by.hurynovich.mus_overview.service.impl.GroupService;
+import by.hurynovich.mus_overview.service.impl.SubgroupService;
 import by.hurynovich.mus_overview.vaadin.custom_field.SubgroupGroupField;
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationResult;
@@ -35,9 +34,12 @@ public class SubgroupForm extends Panel {
 
     private final GroupService groupService;
 
-    public SubgroupForm(final GroupService groupService, final SubgroupDTO subgroupDTO,
-                     final Runnable onSave, final Runnable onDiscard) {
+    private final SubgroupService subgroupService;
+
+    public SubgroupForm(final GroupService groupService, final SubgroupService subgroupService,
+                        final SubgroupDTO subgroupDTO, final Runnable onSave, final Runnable onDiscard) {
         this.groupService = groupService;
+        this.subgroupService = subgroupService;
         binder = new Binder<>(SubgroupDTO.class);
         parentLayout = new VerticalLayout();
         groupField = new SubgroupGroupField(groupService);
@@ -78,27 +80,22 @@ public class SubgroupForm extends Panel {
 
     private Button getSaveButton(final SubgroupDTO subgroupDTO, final Runnable onSave) {
         saveButton.addClickListener(clickEvent -> {
-            try {
-                if (binder.writeBeanIfValid(subgroupDTO)) {
-                    if (subgroupDTO.getId() == 0) {
-                        groupService.createSubgroup(subgroupDTO);
-                        Notification.show("Subgroup \'" + subgroupDTO.getName() + "\' created!",
-                                Notification.Type.HUMANIZED_MESSAGE);
-                    } else {
-                        groupService.updateSubgroup(subgroupDTO);
-                        Notification.show("Subgroup updated!",
-                                Notification.Type.HUMANIZED_MESSAGE);
-                    }
-                    onSave.run();
+            if (binder.writeBeanIfValid(subgroupDTO)) {
+                if (subgroupDTO.getId() == 0) {
+                    subgroupService.save(subgroupDTO);
+                    Notification.show("Subgroup \'" + subgroupDTO.getName() + "\' created!",
+                            Notification.Type.HUMANIZED_MESSAGE);
                 } else {
-                    final String validationError = binder.validate().getValidationErrors().stream().
-                            map(ValidationResult::getErrorMessage).collect(Collectors.joining("; "));
-                    Notification.show("Warning!\n" + validationError,
-                            Notification.Type.WARNING_MESSAGE);
+                    subgroupService.update(subgroupDTO);
+                    Notification.show("Subgroup updated!",
+                            Notification.Type.HUMANIZED_MESSAGE);
                 }
-            } catch (SubgroupCreationException | SubgroupUpdatingException e) {
-                Notification.show("Error!", "Subgroup saving failed!",
-                        Notification.Type.ERROR_MESSAGE);
+                onSave.run();
+            } else {
+                final String validationError = binder.validate().getValidationErrors().stream().
+                        map(ValidationResult::getErrorMessage).collect(Collectors.joining("; "));
+                Notification.show("Warning!\n" + validationError,
+                        Notification.Type.WARNING_MESSAGE);
             }
         });
         saveButton.setClickShortcut(ShortcutAction.KeyCode.ENTER);

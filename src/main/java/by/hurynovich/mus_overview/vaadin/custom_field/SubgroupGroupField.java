@@ -1,7 +1,7 @@
 package by.hurynovich.mus_overview.vaadin.custom_field;
 
 import by.hurynovich.mus_overview.dto.impl.GroupDTO;
-import by.hurynovich.mus_overview.service.GroupService;
+import by.hurynovich.mus_overview.service.impl.GroupService;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
@@ -27,7 +27,7 @@ public class SubgroupGroupField extends CustomField<Long> {
     @Override
     protected void doSetValue(final Long aLong) {
         if (aLong != null) {
-            final GroupDTO groupDTO = groupService.getGroupById(aLong);
+            final GroupDTO groupDTO = groupService.findOne(aLong);
             if (groupDTO != null) {
                 getGroupField().setSelectedItem(groupDTO);
             }
@@ -55,7 +55,7 @@ public class SubgroupGroupField extends CustomField<Long> {
     private ComboBox<GroupDTO> getGroupField() {
         if (groupField == null) {
             groupField = new ComboBox<>("Group:");
-            groupField.setItems(groupService.getAllGroups());
+            groupField.setItems(groupService.findAll());
             groupField.setItemCaptionGenerator(GroupDTO::getName);
         }
         return groupField;

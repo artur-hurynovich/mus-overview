@@ -2,9 +2,8 @@ package by.hurynovich.mus_overview.vaadin.view;
 
 import by.hurynovich.mus_overview.dto.impl.GroupDTO;
 import by.hurynovich.mus_overview.dto.impl.SubgroupDTO;
-import by.hurynovich.mus_overview.exception.GroupDeletingException;
-import by.hurynovich.mus_overview.exception.SubgroupDeletingException;
-import by.hurynovich.mus_overview.service.GroupService;
+import by.hurynovich.mus_overview.service.impl.GroupService;
+import by.hurynovich.mus_overview.service.impl.SubgroupService;
 import by.hurynovich.mus_overview.vaadin.form.GroupForm;
 import by.hurynovich.mus_overview.vaadin.form.SubgroupForm;
 import com.vaadin.data.provider.CallbackDataProvider;
@@ -29,6 +28,8 @@ public class GroupView extends CustomComponent implements View {
     public final static String NAME = "group";
 
     private final GroupService groupService;
+
+    private final SubgroupService subgroupService;
 
     private final HorizontalLayout parentLayout;
 
@@ -61,8 +62,9 @@ public class GroupView extends CustomComponent implements View {
     private final Button removeSubgroupButton;
 
     @Autowired
-    public GroupView(final GroupService groupService) {
+    public GroupView(final GroupService groupService, final SubgroupService subgroupService) {
         this.groupService = groupService;
+        this.subgroupService = subgroupService;
         parentLayout = new HorizontalLayout();
         groupLayout = new VerticalLayout();
         subgroupLayout = new VerticalLayout();
@@ -131,8 +133,8 @@ public class GroupView extends CustomComponent implements View {
 
     private CallbackDataProvider<GroupDTO, String> getGroupDataProvider() {
         groupDataProvider = new CallbackDataProvider<>(
-                query -> groupService.getAllGroups().stream(),
-                query -> (int) groupService.getGroupsCount()
+                query -> groupService.findAll().stream(),
+                query -> (int) groupService.count()
         );
         return groupDataProvider;
     }
@@ -166,14 +168,9 @@ public class GroupView extends CustomComponent implements View {
         removeGroupButton.addClickListener(clickEvent -> {
             final Set<GroupDTO> selectedGroups = groupGrid.getSelectionModel().getSelectedItems();
             selectedGroups.forEach(groupDTO -> {
-                try {
-                    groupService.deleteGroup(groupDTO.getId());
-                    Notification.show("Group \'" + groupDTO.getName() + "\' deleted!",
-                            Notification.Type.ASSISTIVE_NOTIFICATION);
-                } catch (GroupDeletingException e) {
-                    Notification.show("Error!", "Group deleting failed!",
-                            Notification.Type.ERROR_MESSAGE);
-                }
+                groupService.delete(groupDTO);
+                Notification.show("Group \'" + groupDTO.getName() + "\' deleted!",
+                        Notification.Type.ASSISTIVE_NOTIFICATION);
             });
             groupGrid.deselectAll();
             groupGrid.getDataProvider().refreshAll();
@@ -205,8 +202,8 @@ public class GroupView extends CustomComponent implements View {
 
     private CallbackDataProvider<SubgroupDTO, String> getSubgroupDataProvider(final long groupId) {
         subgroupDataProvider = new CallbackDataProvider<>(
-                query -> groupService.getAllSubgroupsByGroupId(groupId).stream(),
-                query -> (int) groupService.getSubgroupsByGroupIdCount(groupId)
+                query -> subgroupService.findAllByGroupId(groupId).stream(),
+                query -> (int) subgroupService.countByGroupId(groupId)
         );
         return subgroupDataProvider;
     }
@@ -242,14 +239,9 @@ public class GroupView extends CustomComponent implements View {
         removeSubgroupButton.addClickListener(clickEvent -> {
             final Set<SubgroupDTO> selectedSubgroups = subgroupGrid.getSelectionModel().getSelectedItems();
             selectedSubgroups.forEach(subgroupDTO -> {
-                try {
-                    groupService.deleteSubgroup(subgroupDTO.getId());
-                    Notification.show("Subgroup \'" + subgroupDTO.getName() + "\' deleted!",
-                            Notification.Type.ASSISTIVE_NOTIFICATION);
-                } catch (SubgroupDeletingException e) {
-                    Notification.show("Error!", "Subgroup deleting failed!",
-                            Notification.Type.ERROR_MESSAGE);
-                }
+                subgroupService.delete(subgroupDTO);
+                Notification.show("Subgroup \'" + subgroupDTO.getName() + "\' deleted!",
+                        Notification.Type.ASSISTIVE_NOTIFICATION);
             });
             subgroupGrid.deselectAll();
             subgroupGrid.getDataProvider().refreshAll();
@@ -271,8 +263,8 @@ public class GroupView extends CustomComponent implements View {
 
     private Window getSubgroupWindow(final SubgroupDTO subgroupDTO) {
         final Window subgroupWindow = new Window("New Subgroup");
-        final SubgroupForm subgroupForm = new SubgroupForm(groupService, subgroupDTO, subgroupWindow::close,
-                subgroupWindow::close);
+        final SubgroupForm subgroupForm = new SubgroupForm(groupService, subgroupService, subgroupDTO,
+                subgroupWindow::close, subgroupWindow::close);
         subgroupWindow.addCloseListener(closeEvent -> {
             subgroupGrid.deselectAll();
             groupGrid.deselectAll();
