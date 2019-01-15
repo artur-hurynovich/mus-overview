@@ -12,37 +12,45 @@ import java.util.List;
 public class TagConverter implements DTOEntityConverter<TagDTO, TagEntity> {
     @Override
     public TagDTO convertToDTO(final TagEntity tagEntity) {
-        if (tagEntity != null) {
-            final TagDTO tagDto = new TagDTO();
-            final long id = tagEntity.getId();
-            final String name = tagEntity.getName();
-            tagDto.setId(id);
-            tagDto.setName(name);
-            return tagDto;
-        } else {
+        if (tagEntity == null) {
             return null;
+        } else {
+            final TagDTO tagDto = new TagDTO();
+            tagDto.setId(tagEntity.getId());
+            tagDto.setName(tagEntity.getName());
+            return tagDto;
         }
     }
 
     @Override
     public TagEntity convertToEntity(final TagDTO tagDto) {
-        final TagEntity tagEntity = new TagEntity();
-        final long id = tagDto.getId();
-        final String name = tagDto.getName();
-        tagEntity.setId(id);
-        tagEntity.setName(name);
-        return tagEntity;
+        if (tagDto == null) {
+            return null;
+        } else {
+            final TagEntity tagEntity = new TagEntity();
+            tagEntity.setId(tagDto.getId());
+            tagEntity.setName(tagDto.getName());
+            return tagEntity;
+        }
     }
 
     public List<TagDTO> convertToDTO(final List<TagEntity> tagEntities) {
-        final List<TagDTO> tagDtos = new ArrayList<>();
-        tagEntities.forEach(tagEntity -> tagDtos.add(convertToDTO(tagEntity)));
-        return tagDtos;
+        if (tagEntities == null) {
+            return null;
+        } else {
+            final List<TagDTO> tagDtos = new ArrayList<>();
+            tagEntities.forEach(tagEntity -> tagDtos.add(convertToDTO(tagEntity)));
+            return tagDtos;
+        }
     }
 
     public List<TagEntity> convertToEntity(final List<TagDTO> tagDtos) {
-        final List<TagEntity> tagEntities = new ArrayList<>();
-        tagDtos.forEach(tagDto -> tagEntities.add(convertToEntity(tagDto)));
-        return tagEntities;
+        if (tagDtos == null) {
+            return null;
+        } else {
+            final List<TagEntity> tagEntities = new ArrayList<>();
+            tagDtos.forEach(tagDto -> tagEntities.add(convertToEntity(tagDto)));
+            return tagEntities;
+        }
     }
 }

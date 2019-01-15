@@ -21,8 +21,12 @@ public class SubgroupConverter implements DTOEntityConverter<SubgroupDTO, Subgro
 
     @Override
     public SubgroupEntity convertToEntity(final SubgroupDTO subgroupDto) {
-        final SubgroupEntity subgroupEntity = new SubgroupEntity();
-        BeanUtils.copyProperties(subgroupDto, subgroupEntity);
-        return subgroupEntity;
+        if (subgroupDto == null) {
+            return null;
+        } else {
+            final SubgroupEntity subgroupEntity = new SubgroupEntity();
+            BeanUtils.copyProperties(subgroupDto, subgroupEntity);
+            return subgroupEntity;
+        }
     }
 }

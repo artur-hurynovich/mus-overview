@@ -30,9 +30,13 @@ public class OverviewConverter implements DTOEntityConverter<OverviewDTO, Overvi
 
     @Override
     public OverviewEntity convertToEntity(final OverviewDTO overviewDto) {
-        final OverviewEntity overviewEntity = new OverviewEntity();
-        BeanUtils.copyProperties(overviewDto, overviewEntity, "tags");
-        overviewEntity.setTags(tagConverter.convertToEntity(overviewDto.getTags()));
-        return overviewEntity;
+        if (overviewDto == null) {
+            return null;
+        } else {
+            final OverviewEntity overviewEntity = new OverviewEntity();
+            BeanUtils.copyProperties(overviewDto, overviewEntity, "tags");
+            overviewEntity.setTags(tagConverter.convertToEntity(overviewDto.getTags()));
+            return overviewEntity;
+        }
     }
 }
