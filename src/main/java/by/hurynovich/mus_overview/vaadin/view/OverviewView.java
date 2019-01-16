@@ -65,16 +65,6 @@ public class OverviewView extends CustomComponent implements View {
 
     private Button removeButton;
 
-    private final static OverviewDTO EMPTY_OVERVIEW;
-
-    private final static List<TagDTO> EMPTY_TAGS;
-
-    static {
-        EMPTY_OVERVIEW = new OverviewDTO();
-        EMPTY_TAGS = new ArrayList<>();
-        EMPTY_OVERVIEW.setTags(EMPTY_TAGS);
-    }
-
     @Autowired
     public OverviewView(final OverviewService overviewService, final GroupService groupService,
                         final TagService tagService) {
@@ -227,8 +217,13 @@ public class OverviewView extends CustomComponent implements View {
     private Button getAddButton() {
         if (addButton == null) {
             addButton = new Button("Add");
-            addButton.addClickListener(clickEvent ->
-                    UI.getCurrent().addWindow(getOverviewWindow(EMPTY_OVERVIEW)));
+            addButton.addClickListener(clickEvent -> {
+                final OverviewDTO overviewDTO = new OverviewDTO();
+                final List<TagDTO> tagDTOList = new ArrayList<>();
+                overviewDTO.setTags(tagDTOList);
+                UI.getCurrent().addWindow(getOverviewWindow(overviewDTO));
+            });
+
         }
         return addButton;
     }
