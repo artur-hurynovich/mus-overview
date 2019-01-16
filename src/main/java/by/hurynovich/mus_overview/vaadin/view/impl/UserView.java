@@ -1,4 +1,4 @@
-package by.hurynovich.mus_overview.vaadin.view;
+package by.hurynovich.mus_overview.vaadin.view.impl;
 
 import by.hurynovich.mus_overview.dto.impl.UserDTO;
 import by.hurynovich.mus_overview.service.impl.UserService;
@@ -11,6 +11,7 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 @SpringView(name = UserView.NAME)
 public class UserView extends CustomComponent implements View {
@@ -32,7 +33,7 @@ public class UserView extends CustomComponent implements View {
     }
 
     @Autowired
-    public UserView(final UserService userService) {
+    public UserView(final @Qualifier("userService") UserService userService) {
         this.userService = userService;
     }
 
@@ -44,12 +45,12 @@ public class UserView extends CustomComponent implements View {
     private HorizontalLayout getParentLayout() {
         if (parentLayout == null) {
             parentLayout = new HorizontalLayout();
-            parentLayout.addComponents(getSignUpForm(userService), getSignInForm());
+            parentLayout.addComponents(getSignUpForm(), getSignInForm());
         }
         return parentLayout;
     }
 
-    private VerticalLayout getSignUpForm(final UserService userService) {
+    private VerticalLayout getSignUpForm() {
         if (signUpForm == null) {
             signUpForm = new SignUpForm(userService, EMPTY_USER);
         }

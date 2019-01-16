@@ -1,4 +1,4 @@
-package by.hurynovich.mus_overview.vaadin.abstraction;
+package by.hurynovich.mus_overview.vaadin.view;
 
 import by.hurynovich.mus_overview.dto.impl.OverviewDTO;
 import com.vaadin.spring.annotation.SpringView;

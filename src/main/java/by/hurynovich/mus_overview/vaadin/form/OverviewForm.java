@@ -18,6 +18,7 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -53,7 +54,6 @@ public class OverviewForm extends Panel {
 
     private final TagService tagService;
 
-    @Autowired
     public OverviewForm(final GroupService groupService, final SubgroupService subgroupService,
                         final OverviewService overviewService, final TagService tagService,
                         final OverviewDTO overviewDTO, final Runnable onSave, final Runnable onDiscard) {

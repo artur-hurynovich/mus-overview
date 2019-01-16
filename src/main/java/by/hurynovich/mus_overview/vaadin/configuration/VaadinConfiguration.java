@@ -17,7 +17,7 @@ import java.util.List;
 @Configuration
 public class VaadinConfiguration {
 
-    @Bean("abstractionOverviewGrid")
+    @Bean("grid")
     @ViewScope
     public <DTOClass extends AbstractDTO> Grid<DTOClass> getGrid(
             final DependencyDescriptor descriptor) {

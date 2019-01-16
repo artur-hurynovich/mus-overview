@@ -1,4 +1,4 @@
-package by.hurynovich.mus_overview.vaadin.view;
+package by.hurynovich.mus_overview.vaadin.view.impl;
 
 import by.hurynovich.mus_overview.dto.impl.GroupDTO;
 import by.hurynovich.mus_overview.dto.impl.OverviewDTO;
@@ -29,6 +29,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.components.grid.HeaderRow;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,13 +38,13 @@ import java.util.Set;
 @SpringView(name = OverviewView.NAME)
 public class OverviewView extends CustomComponent implements View {
 
-    public final static String NAME = "overview";
-
-    private final OverviewService overviewService;
+    public final static String NAME = "";
 
     private final GroupService groupService;
 
     private final SubgroupService subgroupService;
+
+    private final OverviewService overviewService;
 
     private final TagService tagService;
 
@@ -78,9 +79,11 @@ public class OverviewView extends CustomComponent implements View {
     }
 
     @Autowired
-    public OverviewView(final GroupService groupService, final SubgroupService subgroupService,
-                        final OverviewService overviewService, final TagService tagService,
-                        final Grid<OverviewDTO> overviewGrid) {
+    public OverviewView(final @Qualifier("groupService") GroupService groupService,
+                        final @Qualifier("subgroupService") SubgroupService subgroupService,
+                        final @Qualifier("overviewService") OverviewService overviewService,
+                        final @Qualifier("tagService") TagService tagService,
+                        final @Qualifier("grid") Grid<OverviewDTO> overviewGrid) {
         this.groupService = groupService;
         this.subgroupService = subgroupService;
         this.overviewService = overviewService;

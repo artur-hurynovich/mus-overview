@@ -1,4 +1,4 @@
-package by.hurynovich.mus_overview.vaadin.view;
+package by.hurynovich.mus_overview.vaadin.view.impl;
 
 import by.hurynovich.mus_overview.dto.impl.GroupDTO;
 import by.hurynovich.mus_overview.dto.impl.SubgroupDTO;
@@ -19,6 +19,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.Set;
 
@@ -62,7 +63,8 @@ public class GroupView extends CustomComponent implements View {
     private final Button removeSubgroupButton;
 
     @Autowired
-    public GroupView(final GroupService groupService, final SubgroupService subgroupService) {
+    public GroupView(final @Qualifier("groupService") GroupService groupService,
+                     final @Qualifier("subgroupService") SubgroupService subgroupService) {
         this.groupService = groupService;
         this.subgroupService = subgroupService;
         parentLayout = new HorizontalLayout();

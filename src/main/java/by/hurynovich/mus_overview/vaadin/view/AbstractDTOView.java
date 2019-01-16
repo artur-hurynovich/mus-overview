@@ -1,4 +1,4 @@
-package by.hurynovich.mus_overview.vaadin.abstraction;
+package by.hurynovich.mus_overview.vaadin.view;
 
 import by.hurynovich.mus_overview.dto.AbstractDTO;
 import by.hurynovich.mus_overview.service.IDTOService;
@@ -15,19 +15,17 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 public abstract class AbstractDTOView<DTOClass extends AbstractDTO> extends CustomComponent implements View {
 
-    @Autowired
-    @Qualifier("abstractionOverviewService")
-    private IDTOService<DTOClass> service;
-
     private VerticalLayout parentLayout;
 
     @Autowired
-    @Qualifier("abstractionOverviewGrid")
+    @Qualifier("grid")
     private Grid<DTOClass> grid;
 
     private HorizontalLayout buttonsLayout;
 
     private Button addButton;
+
+    private Button editButton;
 
     private Button deleteButton;
 
@@ -48,12 +46,10 @@ public abstract class AbstractDTOView<DTOClass extends AbstractDTO> extends Cust
     }
 
     private void setupGrid() {
-        grid.setDataProvider(getDataProvider());
-        grid.getDataProvider().refreshAll();
         grid.addSelectionListener(selection -> {
             final int selectedItemsSize = selection.getAllSelectedItems().size();
-            addButton.setEnabled(selectedItemsSize == 1);
-            deleteButton.setEnabled(selectedItemsSize > 0);
+            getEditButton().setEnabled(selectedItemsSize == 1);
+            getDeleteButton().setEnabled(selectedItemsSize > 0);
         });
     }
 
@@ -61,17 +57,10 @@ public abstract class AbstractDTOView<DTOClass extends AbstractDTO> extends Cust
         return grid;
     }
 
-    private CallbackDataProvider<DTOClass, String> getDataProvider() {
-        return new CallbackDataProvider<>(
-                query -> service.findAll().stream(),
-                query -> (int) service.count()
-        );
-    }
-
     private HorizontalLayout getButtonsLayout() {
         if (buttonsLayout == null) {
             buttonsLayout = new HorizontalLayout();
-            buttonsLayout.addComponents(getAddButton(), getDeleteButton());
+            buttonsLayout.addComponents(getAddButton(), getEditButton(), getDeleteButton());
         }
         return buttonsLayout;
     }
@@ -81,6 +70,13 @@ public abstract class AbstractDTOView<DTOClass extends AbstractDTO> extends Cust
             addButton = new Button("Add");
         }
         return addButton;
+    }
+
+    private Button getEditButton() {
+        if (editButton == null) {
+            editButton = new Button("Edit");
+        }
+        return editButton;
     }
 
     private Button getDeleteButton() {

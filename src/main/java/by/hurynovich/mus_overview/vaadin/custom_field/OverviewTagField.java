@@ -47,7 +47,6 @@ public class OverviewTagField extends CustomField<List<TagDTO>> {
 
     private List<TagDTO> value;
 
-    @Autowired
     public OverviewTagField(final TagService tagService) {
         this.tagService = tagService;
     }

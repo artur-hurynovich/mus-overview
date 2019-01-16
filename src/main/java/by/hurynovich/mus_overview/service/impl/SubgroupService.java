@@ -13,7 +13,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+@Service("subgroupService")
 public class SubgroupService implements ISubgroupDTOService {
 
     private final SubgroupRepository subgroupRepository;

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+@Service("tagService")
 public class TagService implements ITagDTOService {
 
     private final TagRepository tagRepository;
