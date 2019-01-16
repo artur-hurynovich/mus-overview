@@ -8,7 +8,7 @@ import by.hurynovich.mus_overview.dto.impl.OverviewDTO;
 import by.hurynovich.mus_overview.entity.impl.TagEntity;
 import by.hurynovich.mus_overview.repository.OverviewRepository;
 import by.hurynovich.mus_overview.repository.TagRepository;
-import by.hurynovich.mus_overview.service.DTOService;
+import by.hurynovich.mus_overview.service.IOverviewDTOService;
 import by.hurynovich.mus_overview.util.TagNameFormatter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class OverviewService implements DTOService<OverviewDTO> {
+public class OverviewService implements IOverviewDTOService {
 
     private final OverviewRepository overviewRepository;
     private final OverviewConverter overviewConverter;
@@ -69,11 +69,19 @@ public class OverviewService implements DTOService<OverviewDTO> {
                 collect(Collectors.toList());
     }
 
+    @Override
+    public List<OverviewDTO> findAllBySubgroupId(final long subgroupId) {
+        return overviewRepository.findAllBySubgroupId(subgroupId).stream().map(overviewConverter::convertToDTO).
+                collect(Collectors.toList());
+    }
+
+    @Override
     public List<OverviewDTO> findAllByTag(final String tagName) {
         return overviewRepository.findAllByTags(tagName).stream().map(overviewConverter::convertToDTO).
                 collect(Collectors.toList());
     }
 
+    @Override
     public List<OverviewDTO> findAllBySubgroupIdAndTag(final long subgroupId, final String tagName) {
         return overviewRepository.findAllBySubgroupIdAndTags(subgroupId, tagName).stream().
                 map(overviewConverter::convertToDTO).collect(Collectors.toList());
@@ -115,45 +123,19 @@ public class OverviewService implements DTOService<OverviewDTO> {
         return overviewRepository.count();
     }
 
+    @Override
+    public long countBySubgroupId(final long subgroupId) {
+        return overviewRepository.countBySubgroupId(subgroupId);
+    }
+
+    @Override
     public long countByTag(final String tagName) {
         return overviewRepository.countByTags(tagName);
     }
 
+    @Override
     public long countBySubgroupIdAndTag(final long subgroupId, final String tagName) {
         return overviewRepository.countBySubgroupIdAndTags(subgroupId, tagName);
     }
-
-    /*public List<OverviewDTO> getAllOverviewsBySubgroupId(final long subgroupId) {
-        return overviewRepository.findAllBySubgroupId(subgroupId).stream().
-                map(overviewConverter::convertToDTO).collect(Collectors.toList());
-    }
-
-    public List<OverviewDTO> getAllOverviewsByTag(final String tagName) {
-        if (tagName == null || tagName.isEmpty()) {
-            return getAllOverviews();
-        } else {
-            final List<TagEntity> tagEntities = tagRepository.findByNameContaining(tagName);
-            final Set<OverviewEntity> uniqueOverviewEntities = new HashSet<>();
-            tagEntities.forEach(tagEntity -> uniqueOverviewEntities.addAll(tagEntity.getOverviews()));
-            return uniqueOverviewEntities.stream().map(overviewConverter::convertToDTO).collect(Collectors.toList());
-        }
-    }
-
-    public List<OverviewDTO> getAllOverviewsBySubgroupIdAndTag(final long subgroupId, final String tagName) {
-        if (tagName == null) {
-            return getAllOverviewsBySubgroupId(subgroupId);
-        } else {
-            return getAllOverviewsByTag(tagName).stream().
-                    filter(overviewDTO -> overviewDTO.getSubgroupId() == subgroupId).collect(Collectors.toList());
-        }
-    }
-
-    public long overviewsByTagCount(final String tagName) {
-        return getAllOverviewsByTag(tagName).size();
-    }
-
-    public long overviewsBySubgroupIdAndTagCount(final long subgroupId, final String tagName) {
-        return getAllOverviewsBySubgroupIdAndTag(subgroupId, tagName).size();
-    }*/
 
 }

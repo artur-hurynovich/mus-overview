@@ -140,7 +140,7 @@ public class OverviewTagField extends CustomField<List<TagDTO>> {
 
     private ListDataProvider<TagDTO> getExistingTagsDataProvider() {
         if (existingTagsDataProvider == null) {
-            tagDTOList = tagService.getAllTags();
+            tagDTOList = tagService.findAll();
             tagDTOList.removeAll(getValue());
             existingTagsDataProvider = DataProvider.ofCollection(tagDTOList);
         }
@@ -173,7 +173,7 @@ public class OverviewTagField extends CustomField<List<TagDTO>> {
             setValue(tags);
             getChildLayouts().remove(childLayout);
             parentLayout.removeComponent(childLayout);
-            TagDTO tagDTO = tagService.getTagByName(tagToDeleteName);
+            TagDTO tagDTO = tagService.findByName(tagToDeleteName);
             if (tagDTO != null) {
                 tagDTOList.add(tagDTO);
                 existingTagsDataProvider = DataProvider.ofCollection(tagDTOList);

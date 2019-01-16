@@ -1,7 +1,7 @@
 package by.hurynovich.mus_overview.vaadin.abstraction;
 
 import by.hurynovich.mus_overview.dto.AbstractDTO;
-import by.hurynovich.mus_overview.service.DTOService;
+import by.hurynovich.mus_overview.service.IDTOService;
 import com.vaadin.data.provider.CallbackDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -17,7 +17,7 @@ public abstract class AbstractDTOView<DTOClass extends AbstractDTO> extends Cust
 
     @Autowired
     @Qualifier("abstractionOverviewService")
-    private DTOService<DTOClass> service;
+    private IDTOService<DTOClass> service;
 
     private VerticalLayout parentLayout;
 

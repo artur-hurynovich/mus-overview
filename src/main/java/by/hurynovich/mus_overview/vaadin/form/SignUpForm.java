@@ -65,12 +65,12 @@ public class SignUpForm extends VerticalLayout {
             signUpButton.addClickListener(clickEvent -> {
                 if (binder.writeBeanIfValid(userDTO)) {
                     final String email = userDTO.getEmail();
-                    if (!userService.isUniqueEmail(email)) {
+                    if (userService.emailExists(email)) {
                         Notification.show("Warning!\n" + "User with E-mail \'" + userDTO.getEmail() +
                                 "\' already exists!",
                                 Notification.Type.WARNING_MESSAGE);
                     } else {
-                        userService.signUp(userDTO);
+                        userService.save(userDTO);
                         Notification.show("User \'" + userDTO.getName() + "\' signed up!",
                                 Notification.Type.HUMANIZED_MESSAGE);
                     }

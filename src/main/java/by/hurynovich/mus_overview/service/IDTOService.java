@@ -4,7 +4,7 @@ import by.hurynovich.mus_overview.dto.AbstractDTO;
 
 import java.util.List;
 
-public interface DTOService<DTOClass extends AbstractDTO> {
+public interface IDTOService<DTOClass extends AbstractDTO> {
 
     DTOClass save(final DTOClass dtoClass);
 

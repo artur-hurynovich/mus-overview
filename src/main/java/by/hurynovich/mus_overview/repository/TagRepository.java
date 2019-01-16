@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface TagRepository extends JpaRepository<TagEntity, Long> {
-    TagEntity findByName(String name);
-    List<TagEntity> findByNameContaining(final String name);
+    TagEntity findByName(String tagName);
+    List<TagEntity> findByNameContaining(final String tagName);
 }

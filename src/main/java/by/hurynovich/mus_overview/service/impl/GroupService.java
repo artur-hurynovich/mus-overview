@@ -4,7 +4,7 @@ import by.hurynovich.mus_overview.converter.impl.GroupConverter;
 import by.hurynovich.mus_overview.entity.impl.GroupEntity;
 import by.hurynovich.mus_overview.dto.impl.GroupDTO;
 import by.hurynovich.mus_overview.repository.GroupRepository;
-import by.hurynovich.mus_overview.service.DTOService;
+import by.hurynovich.mus_overview.service.IGroupDTOService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class GroupService implements DTOService<GroupDTO> {
+public class GroupService implements IGroupDTOService {
 
     private final GroupRepository groupRepository;
 

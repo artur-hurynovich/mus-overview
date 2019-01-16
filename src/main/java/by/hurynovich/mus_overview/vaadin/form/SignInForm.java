@@ -51,7 +51,7 @@ public class SignInForm extends VerticalLayout {
             signInButton = new Button("Sign In");
             signInButton.addClickListener(clickEvent -> {
                 if (binder.writeBeanIfValid(userDTO)) {
-                    final UserDTO signedInUser = userService.signIn(userDTO);
+                    final UserDTO signedInUser = userService.findByEmailAndPassword(userDTO);
                     if (signedInUser == null) {
                         Notification.show("Warning!\n" + "Incorrect E-mail or/and Password!",
                                 Notification.Type.WARNING_MESSAGE);
