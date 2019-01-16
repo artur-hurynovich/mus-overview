@@ -2,8 +2,10 @@ package by.hurynovich.mus_overview.vaadin.configuration;
 
 import by.hurynovich.mus_overview.dto.AbstractDTO;
 import by.hurynovich.mus_overview.vaadin.annotation.GridColumn;
+import by.hurynovich.mus_overview.vaadin.annotation.GridRenderer;
 import com.vaadin.spring.annotation.ViewScope;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.renderers.TextRenderer;
 import org.springframework.beans.factory.config.DependencyDescriptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,7 +23,7 @@ public class VaadinConfiguration {
     @ViewScope
     public <DTOClass extends AbstractDTO> Grid<DTOClass> getGrid(
             final DependencyDescriptor descriptor) {
-        Grid<DTOClass> grid = new Grid<>();
+        final Grid<DTOClass> grid = new Grid<>();
         grid.setSizeFull();
         grid.setSelectionMode(Grid.SelectionMode.MULTI);
         final Class<?> type = descriptor.getResolvableType().getGeneric(0).resolve();
@@ -33,7 +35,7 @@ public class VaadinConfiguration {
         final List<Field> fields = new ArrayList<>();
         ReflectionUtils.doWithFields(dtoClass, fields::add);
         fields.stream().filter(field -> field.getAnnotation(GridColumn.class) != null).
-                sorted(Comparator.comparing(this::retrieveColumnPosition)).
+                sorted(Comparator.comparing(this::getColumnPosition)).
                 forEach(field -> {
                     final Grid.Column<DTOClass, ?> column = grid.addColumn(dto -> {
                         try {
@@ -42,19 +44,32 @@ public class VaadinConfiguration {
                             }
                             return field.get(dto);
                         } catch (IllegalAccessException e) {
-                            throw new RuntimeException("Failed to retrieve property value", e);
+                            throw new RuntimeException("Failed to retrieve property value!", e);
                         }
                     });
-                    column.setCaption(retrieveColumnCaption(field));
+                    column.setCaption(getColumnCaption(field));
+                    setRenderer(field, column);
                 });
     }
 
-    private String retrieveColumnCaption(final Field field) {
+    private String getColumnCaption(final Field field) {
         return field.getAnnotation(GridColumn.class).caption();
     }
 
-    private int retrieveColumnPosition(final Field field) {
+    private int getColumnPosition(final Field field) {
         return field.getAnnotation(GridColumn.class).position();
+    }
+
+    @SuppressWarnings("unchecked")
+    private void setRenderer(final Field field, final Grid.Column column) {
+        final GridRenderer gridRenderer = field.getAnnotation(GridRenderer.class);
+        if (gridRenderer != null) {
+            try {
+                column.setRenderer((TextRenderer) Class.forName(gridRenderer.rendererClass()).newInstance());
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException("Renderer class retrieving failed!", e);
+            }
+        }
     }
 
 }

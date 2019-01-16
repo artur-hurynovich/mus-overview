@@ -2,6 +2,7 @@ package by.hurynovich.mus_overview.dto.impl;
 
 import by.hurynovich.mus_overview.dto.AbstractNamedDTO;
 import by.hurynovich.mus_overview.vaadin.annotation.GridColumn;
+import by.hurynovich.mus_overview.vaadin.annotation.GridRenderer;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,7 @@ public class OverviewDTO extends AbstractNamedDTO {
     private long subgroupId;
 
     @GridColumn(caption = "Tags", position = 40)
+    @GridRenderer(rendererClass = "by.hurynovich.mus_overview.vaadin.renderer.TagRenderer")
     private List<TagDTO> tags;
 
 }

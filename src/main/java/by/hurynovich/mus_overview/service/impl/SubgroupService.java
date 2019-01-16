@@ -45,8 +45,12 @@ public class SubgroupService implements ISubgroupDTOService {
 
     @Override
     public List<SubgroupDTO> findAllByGroupId(final long groupId) {
-        return subgroupRepository.findAllByGroupId(groupId).stream().map(subgroupConverter::convertToDTO).
-                collect(Collectors.toList());
+        if (groupId == -1L) {
+            return findAll();
+        } else {
+            return subgroupRepository.findAllByGroupId(groupId).stream().map(subgroupConverter::convertToDTO).
+                    collect(Collectors.toList());
+        }
     }
 
     @Override
@@ -69,7 +73,11 @@ public class SubgroupService implements ISubgroupDTOService {
 
     @Override
     public long countByGroupId(final long groupId) {
-        return subgroupRepository.countByGroupId(groupId);
+        if (groupId == -1L) {
+            return count();
+        } else {
+            return subgroupRepository.countByGroupId(groupId);
+        }
     }
 
 }

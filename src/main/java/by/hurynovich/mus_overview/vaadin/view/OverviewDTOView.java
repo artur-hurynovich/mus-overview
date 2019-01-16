@@ -1,13 +1,11 @@
 package by.hurynovich.mus_overview.vaadin.view;
 
 import by.hurynovich.mus_overview.dto.impl.OverviewDTO;
-import com.vaadin.spring.annotation.SpringView;
 
-@SpringView(name = "")
 public class OverviewDTOView extends AbstractDTOView<OverviewDTO> {
 
     @Override
-    protected Class<OverviewDTO> getEntityClass() {
+    protected Class<OverviewDTO> getDTOClass() {
         return OverviewDTO.class;
     }
 

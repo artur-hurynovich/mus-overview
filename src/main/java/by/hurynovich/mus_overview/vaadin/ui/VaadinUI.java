@@ -2,6 +2,7 @@ package by.hurynovich.mus_overview.vaadin.ui;
 
 import by.hurynovich.mus_overview.vaadin.view.impl.GroupView;
 import by.hurynovich.mus_overview.vaadin.view.impl.OverviewView;
+import by.hurynovich.mus_overview.vaadin.view.impl.SubgroupView;
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewDisplay;
@@ -29,6 +30,7 @@ public class VaadinUI extends UI implements ViewDisplay {
     @Override
     protected void init(final VaadinRequest vaadinRequest) {
         getMenuLayout().addComponents(getMenuButton("Groups", GroupView.NAME),
+                getMenuButton("Subgroups", SubgroupView.NAME),
                 getMenuButton("Overviews", OverviewView.NAME));
         getParentLayout().addComponents(getMenuLayout(), getViewPanel());
         setContent(getParentLayout());

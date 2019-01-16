@@ -1,8 +1,8 @@
 package by.hurynovich.mus_overview.vaadin.view;
 
 import by.hurynovich.mus_overview.dto.AbstractDTO;
-import by.hurynovich.mus_overview.service.IDTOService;
 import com.vaadin.data.provider.CallbackDataProvider;
+import com.vaadin.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Button;
@@ -21,6 +21,8 @@ public abstract class AbstractDTOView<DTOClass extends AbstractDTO> extends Cust
     @Qualifier("grid")
     private Grid<DTOClass> grid;
 
+    private ConfigurableFilterDataProvider<DTOClass, Void, ?> startDataProvider;
+
     private HorizontalLayout buttonsLayout;
 
     private Button addButton;
@@ -29,20 +31,34 @@ public abstract class AbstractDTOView<DTOClass extends AbstractDTO> extends Cust
 
     private Button deleteButton;
 
+    public AbstractDTOView() {
+        parentLayout = new VerticalLayout();
+    }
+
     @Override
     public void enter(final ViewChangeListener.ViewChangeEvent event) {
+        setupButtonsLayout();
+        setupGrid();
+        setupParentLayout();
         setCompositionRoot(getParentLayout());
     }
 
-    protected abstract Class<DTOClass> getEntityClass();
+    protected void setStartDataProvider(final CallbackDataProvider<DTOClass, ?> startDataProvider) {
+        this.startDataProvider = startDataProvider.withConfigurableFilter();
+    }
 
-    private VerticalLayout getParentLayout() {
-        if (parentLayout == null) {
-            parentLayout = new VerticalLayout();
-            setupGrid();
-            parentLayout.addComponents(getGrid(), getButtonsLayout());
-        }
-        return parentLayout;
+    protected void setStartDataProvider(final ConfigurableFilterDataProvider<DTOClass, Void, ?> startDataProvider) {
+        this.startDataProvider = startDataProvider;
+    }
+
+    private void setupButtonsLayout() {
+        buttonsLayout = new HorizontalLayout();
+        addButton = new Button("Add");
+        editButton = new Button("Edit");
+        editButton.setEnabled(false);
+        deleteButton = new Button("Delete");
+        deleteButton.setEnabled(false);
+        buttonsLayout.addComponents(addButton, editButton, deleteButton);
     }
 
     private void setupGrid() {
@@ -51,39 +67,38 @@ public abstract class AbstractDTOView<DTOClass extends AbstractDTO> extends Cust
             getEditButton().setEnabled(selectedItemsSize == 1);
             getDeleteButton().setEnabled(selectedItemsSize > 0);
         });
+        grid.setDataProvider(startDataProvider);
+        grid.getDataProvider().refreshAll();
     }
 
-    private Grid<DTOClass> getGrid() {
+    private void setupParentLayout() {
+        parentLayout.addComponents(getGrid(), getButtonsLayout());
+    }
+
+    protected VerticalLayout getParentLayout() {
+        return parentLayout;
+    }
+
+    protected Grid<DTOClass> getGrid() {
         return grid;
     }
 
-    private HorizontalLayout getButtonsLayout() {
-        if (buttonsLayout == null) {
-            buttonsLayout = new HorizontalLayout();
-            buttonsLayout.addComponents(getAddButton(), getEditButton(), getDeleteButton());
-        }
+    protected HorizontalLayout getButtonsLayout() {
         return buttonsLayout;
     }
 
-    private Button getAddButton() {
-        if (addButton == null) {
-            addButton = new Button("Add");
-        }
+    protected Button getAddButton() {
         return addButton;
     }
 
-    private Button getEditButton() {
-        if (editButton == null) {
-            editButton = new Button("Edit");
-        }
+    protected Button getEditButton() {
         return editButton;
     }
 
-    private Button getDeleteButton() {
-        if (deleteButton == null) {
-            deleteButton = new Button("Delete");
-        }
+    protected Button getDeleteButton() {
         return deleteButton;
     }
+
+    protected abstract Class<DTOClass> getDTOClass();
 
 }

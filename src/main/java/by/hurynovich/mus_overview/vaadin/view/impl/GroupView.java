@@ -2,10 +2,14 @@ package by.hurynovich.mus_overview.vaadin.view.impl;
 
 import by.hurynovich.mus_overview.dto.impl.GroupDTO;
 import by.hurynovich.mus_overview.dto.impl.SubgroupDTO;
+import by.hurynovich.mus_overview.service.IGroupDTOService;
+import by.hurynovich.mus_overview.service.ISubgroupDTOService;
 import by.hurynovich.mus_overview.service.impl.GroupService;
 import by.hurynovich.mus_overview.service.impl.SubgroupService;
 import by.hurynovich.mus_overview.vaadin.form.GroupForm;
 import by.hurynovich.mus_overview.vaadin.form.SubgroupForm;
+import by.hurynovich.mus_overview.vaadin.view.AbstractDTOView;
+import by.hurynovich.mus_overview.vaadin.view.GroupDTOView;
 import com.vaadin.data.provider.CallbackDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -24,234 +28,32 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import java.util.Set;
 
 @SpringView(name = GroupView.NAME)
-public class GroupView extends CustomComponent implements View {
+public class GroupView extends GroupDTOView {
 
     public final static String NAME = "group";
 
-    private final GroupService groupService;
-
-    private final SubgroupService subgroupService;
-
-    private final HorizontalLayout parentLayout;
-
-    private final VerticalLayout groupLayout;
-
-    private final VerticalLayout subgroupLayout;
-
-    private final Grid<GroupDTO> groupGrid;
-
-    private final Grid<SubgroupDTO> subgroupGrid;
-
-    private CallbackDataProvider<GroupDTO, String> groupDataProvider;
-
-    private CallbackDataProvider<SubgroupDTO, String> subgroupDataProvider;
-
-    private final HorizontalLayout groupButtonsLayout;
-
-    private final HorizontalLayout subgroupButtonsLayout;
-
-    private final Button addGroupButton;
-
-    private final Button addSubgroupButton;
-
-    private final Button editGroupButton;
-
-    private final Button editSubgroupButton;
-
-    private final Button removeGroupButton;
-
-    private final Button removeSubgroupButton;
-
     @Autowired
-    public GroupView(final @Qualifier("groupService") GroupService groupService,
-                     final @Qualifier("subgroupService") SubgroupService subgroupService) {
-        this.groupService = groupService;
-        this.subgroupService = subgroupService;
-        parentLayout = new HorizontalLayout();
-        groupLayout = new VerticalLayout();
-        subgroupLayout = new VerticalLayout();
-        groupGrid = new Grid<>(GroupDTO.class);
-        subgroupGrid = new Grid<>(SubgroupDTO.class);
-        groupButtonsLayout = new HorizontalLayout();
-        subgroupButtonsLayout = new HorizontalLayout();
-        addGroupButton = new Button("Add");
-        editGroupButton = new Button("Edit");
-        removeGroupButton = new Button("Remove");
-        addSubgroupButton = new Button("Add");
-        editSubgroupButton = new Button("Edit");
-        removeSubgroupButton = new Button("Remove");
+    @Qualifier("groupService")
+    private IGroupDTOService groupService;
+
+    private CallbackDataProvider<GroupDTO, String> groupDTOGridDataProvider;
+
+    public GroupView() {
+        setStartDataProvider(getGroupDTOGridDataProvider());
     }
 
-    @Override
-    public void enter(final ViewChangeListener.ViewChangeEvent event) {
-        parentLayout.addComponents(getGroupLayout(), getSubgroupLayout());
-        setCompositionRoot(parentLayout);
+    private CallbackDataProvider<GroupDTO, String> getGroupDTOGridDataProvider() {
+        if (groupDTOGridDataProvider == null) {
+            groupDTOGridDataProvider = new CallbackDataProvider<>(
+                    query -> groupService.findAll().stream(),
+                    query -> (int) groupService.count()
+            );
+            return groupDTOGridDataProvider;
+        }
+        return groupDTOGridDataProvider;
     }
 
-    private VerticalLayout getGroupLayout() {
-        groupLayout.addComponents(getGroupGrid(), getGroupButtonsLayout());
-        return groupLayout;
-    }
-
-    private VerticalLayout getSubgroupLayout() {
-        subgroupLayout.addComponents(getSubgroupGrid(), getSubgroupButtonsLayout());
-        return subgroupLayout;
-    }
-
-    private Grid<GroupDTO> getGroupGrid() {
-        groupDataProvider = getGroupDataProvider();
-        groupGrid.removeColumn("id");
-        groupGrid.setCaption("Groups:");
-        groupGrid.setDataProvider(groupDataProvider);
-        groupGrid.getDataProvider().refreshAll();
-        groupGrid.setSelectionMode(Grid.SelectionMode.MULTI);
-        groupGrid.addSelectionListener(selectionEvent -> {
-            final int selectedItemsCount = groupGrid.getSelectionModel().getSelectedItems().size();
-            if (selectedItemsCount == 0) {
-                editGroupButton.setEnabled(false);
-                removeGroupButton.setEnabled(false);
-                subgroupGrid.setEnabled(false);
-            } else if (selectedItemsCount == 1){
-                editGroupButton.setEnabled(true);
-                removeGroupButton.setEnabled(true);
-                subgroupGrid.setEnabled(true);
-                final GroupDTO selectedGroup = selectionEvent.getFirstSelectedItem().orElse(null);
-                if (selectedGroup != null) {
-                    final long selectedGroupId = selectedGroup.getId();
-                    subgroupDataProvider = getSubgroupDataProvider(selectedGroupId);
-                    subgroupGrid.setDataProvider(subgroupDataProvider);
-                    subgroupGrid.getDataProvider().refreshAll();
-                }
-                subgroupGrid.setEnabled(true);
-            } else {
-                editGroupButton.setEnabled(false);
-                removeGroupButton.setEnabled(true);
-                subgroupGrid.setEnabled(true);
-                subgroupGrid.setEnabled(false);
-            }
-        });
-        return groupGrid;
-    }
-
-    private CallbackDataProvider<GroupDTO, String> getGroupDataProvider() {
-        groupDataProvider = new CallbackDataProvider<>(
-                query -> groupService.findAll().stream(),
-                query -> (int) groupService.count()
-        );
-        return groupDataProvider;
-    }
-
-    private HorizontalLayout getGroupButtonsLayout() {
-        groupButtonsLayout.addComponents(getAddGroupButton(), getEditGroupButton(), getRemoveGroupButton());
-        return groupButtonsLayout;
-    }
-
-    private Button getAddGroupButton() {
-        addGroupButton.addClickListener(clickEvent -> {
-            final GroupDTO newGroup = new GroupDTO();
-            final Window groupWindow = getGroupWindow(newGroup);
-            UI.getCurrent().addWindow(groupWindow);
-        });
-        return addGroupButton;
-    }
-
-    private Button getEditGroupButton() {
-        editGroupButton.addClickListener(clickEvent -> {
-            final GroupDTO groupToUpdate = groupGrid.getSelectionModel().getSelectedItems().iterator().next();
-            final Window groupWindow = getGroupWindow(groupToUpdate);
-            UI.getCurrent().addWindow(groupWindow);
-        });
-        editGroupButton.setEnabled(false);
-        return editGroupButton;
-    }
-
-    private Button getRemoveGroupButton() {
-        removeGroupButton.setEnabled(false);
-        removeGroupButton.addClickListener(clickEvent -> {
-            final Set<GroupDTO> selectedGroups = groupGrid.getSelectionModel().getSelectedItems();
-            selectedGroups.forEach(groupDTO -> {
-                groupService.delete(groupDTO);
-                Notification.show("Group \'" + groupDTO.getName() + "\' deleted!",
-                        Notification.Type.ASSISTIVE_NOTIFICATION);
-            });
-            groupGrid.deselectAll();
-            groupGrid.getDataProvider().refreshAll();
-        });
-        return removeGroupButton;
-    }
-
-    private Grid<SubgroupDTO> getSubgroupGrid() {
-        subgroupGrid.setEnabled(false);
-        subgroupGrid.removeColumn("id");
-        subgroupGrid.removeColumn("groupId");
-        subgroupGrid.setCaption("Subgroups:");
-        subgroupGrid.setSelectionMode(Grid.SelectionMode.MULTI);
-        subgroupGrid.addSelectionListener(selectionEvent -> {
-            final int selectedItemsCount = subgroupGrid.getSelectionModel().getSelectedItems().size();
-            if (selectedItemsCount == 0) {
-                editSubgroupButton.setEnabled(false);
-                removeSubgroupButton.setEnabled(false);
-            } else if (selectedItemsCount == 1){
-                editSubgroupButton.setEnabled(true);
-                removeSubgroupButton.setEnabled(true);
-            } else {
-                editSubgroupButton.setEnabled(false);
-                removeSubgroupButton.setEnabled(true);
-            }
-        });
-        return subgroupGrid;
-    }
-
-    private CallbackDataProvider<SubgroupDTO, String> getSubgroupDataProvider(final long groupId) {
-        subgroupDataProvider = new CallbackDataProvider<>(
-                query -> subgroupService.findAllByGroupId(groupId).stream(),
-                query -> (int) subgroupService.countByGroupId(groupId)
-        );
-        return subgroupDataProvider;
-    }
-
-    private HorizontalLayout getSubgroupButtonsLayout() {
-        subgroupButtonsLayout.addComponents(getAddSubgroupButton(), getEditSubgroupButton(),
-                getRemoveSubgroupButton());
-        return subgroupButtonsLayout;
-    }
-
-    private Button getAddSubgroupButton() {
-        addSubgroupButton.addClickListener(clickEvent -> {
-            final SubgroupDTO subgroupDTO = new SubgroupDTO();
-            final Window subgroupWindow = getSubgroupWindow(subgroupDTO);
-            UI.getCurrent().addWindow(subgroupWindow);
-        });
-        return addSubgroupButton;
-    }
-
-    private Button getEditSubgroupButton() {
-        editSubgroupButton.addClickListener(clickEvent -> {
-            final SubgroupDTO subgroupToUpdate = subgroupGrid.getSelectionModel().getSelectedItems().
-                    iterator().next();
-            final Window subgroupWindow = getSubgroupWindow(subgroupToUpdate);
-            UI.getCurrent().addWindow(subgroupWindow);
-        });
-        editSubgroupButton.setEnabled(false);
-        return editSubgroupButton;
-    }
-
-    private Button getRemoveSubgroupButton() {
-        removeSubgroupButton.setEnabled(false);
-        removeSubgroupButton.addClickListener(clickEvent -> {
-            final Set<SubgroupDTO> selectedSubgroups = subgroupGrid.getSelectionModel().getSelectedItems();
-            selectedSubgroups.forEach(subgroupDTO -> {
-                subgroupService.delete(subgroupDTO);
-                Notification.show("Subgroup \'" + subgroupDTO.getName() + "\' deleted!",
-                        Notification.Type.ASSISTIVE_NOTIFICATION);
-            });
-            subgroupGrid.deselectAll();
-            subgroupGrid.getDataProvider().refreshAll();
-        });
-        return removeSubgroupButton;
-    }
-
-    private Window getGroupWindow(final GroupDTO groupDTO) {
+    /*private Window getGroupWindow(final GroupDTO groupDTO) {
         final Window groupWindow = new Window("New Group");
         final GroupForm groupForm = new GroupForm(groupService, groupDTO, groupWindow::close,
                 groupWindow::close);
@@ -261,19 +63,6 @@ public class GroupView extends CustomComponent implements View {
         });
         groupWindow.setContent(groupForm);
         return groupWindow;
-    }
-
-    private Window getSubgroupWindow(final SubgroupDTO subgroupDTO) {
-        final Window subgroupWindow = new Window("New Subgroup");
-        final SubgroupForm subgroupForm = new SubgroupForm(groupService, subgroupService, subgroupDTO,
-                subgroupWindow::close, subgroupWindow::close);
-        subgroupWindow.addCloseListener(closeEvent -> {
-            subgroupGrid.deselectAll();
-            groupGrid.deselectAll();
-            subgroupDataProvider.refreshAll();
-        });
-        subgroupWindow.setContent(subgroupForm);
-        return subgroupWindow;
-    }
+    }*/
 
 }
