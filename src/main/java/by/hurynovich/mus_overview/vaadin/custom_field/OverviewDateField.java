@@ -9,16 +9,14 @@ import java.time.LocalDate;
 
 public class OverviewDateField extends CustomField<LocalDate> {
 
-    private final VerticalLayout parentLayout;
+    private VerticalLayout parentLayout;
 
-    private final DateField dateField;
+    private DateField dateField;
 
     private LocalDate value;
 
     public OverviewDateField(final String caption) {
         setCaption(caption);
-        parentLayout = new VerticalLayout();
-        dateField = new DateField();
     }
 
     @Override
@@ -37,13 +35,19 @@ public class OverviewDateField extends CustomField<LocalDate> {
     }
 
     private VerticalLayout getParentLayout() {
-        parentLayout.addComponent(getDateField());
+        if (parentLayout == null) {
+            parentLayout = new VerticalLayout();
+            parentLayout.addComponent(getDateField());
+        }
         return parentLayout;
     }
 
     private DateField getDateField() {
-        dateField.setValue(getValue());
-        dateField.addValueChangeListener(valueChangeEvent -> doSetValue(valueChangeEvent.getValue()));
+        if (dateField == null) {
+            dateField = new DateField();
+            dateField.setValue(getValue());
+            dateField.addValueChangeListener(valueChangeEvent -> doSetValue(valueChangeEvent.getValue()));
+        }
         return dateField;
     }
 

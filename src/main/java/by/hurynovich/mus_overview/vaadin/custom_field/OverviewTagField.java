@@ -1,6 +1,6 @@
 package by.hurynovich.mus_overview.vaadin.custom_field;
 
-import by.hurynovich.mus_overview.dto.TagDTO;
+import by.hurynovich.mus_overview.dto.impl.TagDTO;
 import by.hurynovich.mus_overview.service.TagService;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
@@ -183,10 +183,8 @@ public class OverviewTagField extends CustomField<List<TagDTO>> {
     }
 
     private void addTag(final TagDTO tagDTO) {
-        final List<TagDTO> tags = getValue();
+        getValue().add(tagDTO);
         final HorizontalLayout childLayout = getChildLayout(tagDTO);
-        tags.add(tagDTO);
-        doSetValue(tags);
         parentLayout.removeComponent(getAddTagLayout());
         parentLayout.addComponent(childLayout);
         parentLayout.addComponent(getAddTagLayout());

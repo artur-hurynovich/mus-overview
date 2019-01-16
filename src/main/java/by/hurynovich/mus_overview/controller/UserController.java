@@ -1,6 +1,6 @@
 package by.hurynovich.mus_overview.controller;
 
-import by.hurynovich.mus_overview.dto.UserDTO;
+import by.hurynovich.mus_overview.dto.impl.UserDTO;
 import by.hurynovich.mus_overview.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

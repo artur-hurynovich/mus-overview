@@ -1,6 +1,6 @@
 package by.hurynovich.mus_overview.vaadin.form;
 
-import by.hurynovich.mus_overview.dto.UserDTO;
+import by.hurynovich.mus_overview.dto.impl.UserDTO;
 import by.hurynovich.mus_overview.service.UserService;
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationResult;
@@ -11,7 +11,6 @@ import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class SignInForm extends VerticalLayout {

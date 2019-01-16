@@ -1,9 +1,9 @@
 package by.hurynovich.mus_overview.vaadin.view;
 
-import by.hurynovich.mus_overview.dto.GroupDTO;
-import by.hurynovich.mus_overview.dto.OverviewDTO;
-import by.hurynovich.mus_overview.dto.SubgroupDTO;
-import by.hurynovich.mus_overview.dto.TagDTO;
+import by.hurynovich.mus_overview.dto.impl.GroupDTO;
+import by.hurynovich.mus_overview.dto.impl.OverviewDTO;
+import by.hurynovich.mus_overview.dto.impl.SubgroupDTO;
+import by.hurynovich.mus_overview.dto.impl.TagDTO;
 import by.hurynovich.mus_overview.exception.OverviewDeletingException;
 import by.hurynovich.mus_overview.service.GroupService;
 import by.hurynovich.mus_overview.service.OverviewService;
@@ -176,7 +176,7 @@ public class OverviewView extends CustomComponent implements View {
             });
             final HeaderRow filterRow = overviewGrid.appendHeaderRow();
             filterRow.getCell("tags").setComponent(getTagFilterField());
-            overviewGrid.setColumnOrder("title", "text", "date", "tags");
+            overviewGrid.setColumnOrder("name", "text", "date", "tags");
             overviewGrid.getColumn("tags").setRenderer(new TagRenderer());
             overviewGrid.removeColumn("id");
             overviewGrid.removeColumn("subgroupId");
@@ -255,13 +255,14 @@ public class OverviewView extends CustomComponent implements View {
                 selectedOverviewDTOSet.forEach(overviewDTO -> {
                     try {
                         overviewService.deleteOverview(overviewDTO.getId());
-                        Notification.show("Overview \'" + overviewDTO.getTitle() + "\' deleted!",
+                        Notification.show("Overview \'" + overviewDTO.getName() + "\' deleted!",
                                 Notification.Type.ASSISTIVE_NOTIFICATION);
                     } catch (OverviewDeletingException e) {
                         Notification.show("Error!", "Overview(s) deleting failed!",
                                 Notification.Type.ERROR_MESSAGE);
                     }
                 });
+                overviewGrid.deselectAll();
                 overviewGrid.getDataProvider().refreshAll();
             });
             removeButton.setEnabled(false);
@@ -271,7 +272,7 @@ public class OverviewView extends CustomComponent implements View {
 
     private Window getOverviewWindow(final OverviewDTO overviewDTO) {
         final Window overviewWindow = new Window("New Overview");
-        final OverviewForm overviewForm = new OverviewForm(overviewService, groupService, tagService,
+        final OverviewForm overviewForm = new OverviewForm(groupService, overviewService, tagService,
                 overviewDTO, overviewWindow::close, overviewWindow::close);
         overviewWindow.addCloseListener(closeEvent -> {
             overviewGrid.deselectAll();

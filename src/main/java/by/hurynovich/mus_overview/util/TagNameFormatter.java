@@ -1,7 +1,6 @@
 package by.hurynovich.mus_overview.util;
 
-import by.hurynovich.mus_overview.dto.TagDTO;
-import by.hurynovich.mus_overview.entity.TagEntity;
+import by.hurynovich.mus_overview.dto.impl.TagDTO;
 import org.springframework.stereotype.Service;
 
 @Service

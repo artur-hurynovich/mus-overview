@@ -1,7 +1,7 @@
 package by.hurynovich.mus_overview.service;
 
 import by.hurynovich.mus_overview.converter.impl.UserConverter;
-import by.hurynovich.mus_overview.dto.UserDTO;
+import by.hurynovich.mus_overview.dto.impl.UserDTO;
 import by.hurynovich.mus_overview.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,8 +31,8 @@ public class UserService {
     }
 
     public boolean isUniqueEmail (final String email) {
-        List<UserDTO> usersList = userRepository.findAll().stream().map(userConverter::convertToDTO).collect(Collectors.toList());
-
+        List<UserDTO> usersList = userRepository.findAll().stream().
+                map(userConverter::convertToDTO).collect(Collectors.toList());
         for (UserDTO user : usersList) {
             if (user.getEmail().equals(email)) {
                 return false;

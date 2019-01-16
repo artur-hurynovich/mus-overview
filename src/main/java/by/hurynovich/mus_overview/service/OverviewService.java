@@ -2,16 +2,17 @@ package by.hurynovich.mus_overview.service;
 
 import by.hurynovich.mus_overview.converter.impl.OverviewConverter;
 import by.hurynovich.mus_overview.converter.impl.TagConverter;
-import by.hurynovich.mus_overview.dto.TagDTO;
-import by.hurynovich.mus_overview.entity.OverviewEntity;
-import by.hurynovich.mus_overview.dto.OverviewDTO;
-import by.hurynovich.mus_overview.entity.TagEntity;
+import by.hurynovich.mus_overview.dto.impl.TagDTO;
+import by.hurynovich.mus_overview.entity.impl.OverviewEntity;
+import by.hurynovich.mus_overview.dto.impl.OverviewDTO;
+import by.hurynovich.mus_overview.entity.impl.TagEntity;
 import by.hurynovich.mus_overview.exception.OverviewCreationException;
 import by.hurynovich.mus_overview.exception.OverviewDeletingException;
 import by.hurynovich.mus_overview.exception.OverviewUpdatingException;
 import by.hurynovich.mus_overview.repository.OverviewRepository;
 import by.hurynovich.mus_overview.repository.TagRepository;
 import by.hurynovich.mus_overview.util.TagNameFormatter;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -107,14 +108,7 @@ public class OverviewService {
     @Transactional
     public OverviewDTO updateOverview(final OverviewDTO overviewDTO) throws OverviewUpdatingException {
         final OverviewEntity overviewEntity = overviewRepository.findById(overviewDTO.getId());
-        final String title = overviewDTO.getTitle();
-        if (title != null) {
-            overviewEntity.setTitle(title);
-        }
-        final String text = overviewDTO.getText();
-        if (text != null) {
-            overviewEntity.setText(text);
-        }
+        BeanUtils.copyProperties(overviewDTO, overviewDTO, "id", "tags");
         final List<TagDTO> tags = overviewDTO.getTags();
         final List<TagEntity> toSaveTagsEntities = new ArrayList<>();
         if (tags != null) {
@@ -129,12 +123,12 @@ public class OverviewService {
                     toSaveTagsEntities.add(existingTag);
                 }
             }
-
             overviewEntity.setTags(toSaveTagsEntities);
         }
+
         try {
-            final OverviewEntity savedOverviewEntity = overviewRepository.save(overviewEntity);
             tagRepository.saveAll(toSaveTagsEntities);
+            final OverviewEntity savedOverviewEntity = overviewRepository.save(overviewEntity);
             return overviewConverter.convertToDTO(savedOverviewEntity);
         } catch (final Exception e) {
             final String exceptionMessage = "Overview updating failed: " + e.getMessage();

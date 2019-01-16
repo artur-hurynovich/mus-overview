@@ -2,10 +2,10 @@ package by.hurynovich.mus_overview.service;
 
 import by.hurynovich.mus_overview.converter.impl.GroupConverter;
 import by.hurynovich.mus_overview.converter.impl.SubgroupConverter;
-import by.hurynovich.mus_overview.entity.GroupEntity;
-import by.hurynovich.mus_overview.entity.SubgroupEntity;
-import by.hurynovich.mus_overview.dto.GroupDTO;
-import by.hurynovich.mus_overview.dto.SubgroupDTO;
+import by.hurynovich.mus_overview.entity.impl.GroupEntity;
+import by.hurynovich.mus_overview.entity.impl.SubgroupEntity;
+import by.hurynovich.mus_overview.dto.impl.GroupDTO;
+import by.hurynovich.mus_overview.dto.impl.SubgroupDTO;
 import by.hurynovich.mus_overview.exception.GroupCreationException;
 import by.hurynovich.mus_overview.exception.GroupDeletingException;
 import by.hurynovich.mus_overview.exception.GroupUpdatingException;

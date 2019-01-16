@@ -1,7 +1,7 @@
 package by.hurynovich.mus_overview.vaadin.custom_field;
 
-import by.hurynovich.mus_overview.dto.GroupDTO;
-import by.hurynovich.mus_overview.dto.SubgroupDTO;
+import by.hurynovich.mus_overview.dto.impl.GroupDTO;
+import by.hurynovich.mus_overview.dto.impl.SubgroupDTO;
 import by.hurynovich.mus_overview.service.GroupService;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
@@ -14,17 +14,14 @@ public class OverviewSubgroupField extends CustomField<Long> {
 
     private final GroupService groupService;
 
-    private final HorizontalLayout parentLayout;
+    private HorizontalLayout parentLayout;
 
-    private final ComboBox<GroupDTO> groupField;
+    private ComboBox<GroupDTO> groupField;
 
-    private final ComboBox<SubgroupDTO> subgroupField;
+    private ComboBox<SubgroupDTO> subgroupField;
 
     public OverviewSubgroupField(final GroupService groupService) {
         this.groupService = groupService;
-        parentLayout = new HorizontalLayout();
-        groupField = new ComboBox<>("Group:");
-        subgroupField = new ComboBox<>("Subgroup:");
     }
 
     @Override
@@ -39,16 +36,16 @@ public class OverviewSubgroupField extends CustomField<Long> {
             if (subgroupDTO != null) {
                 final long groupId = subgroupDTO.getGroupId();
                 final GroupDTO groupDTO = groupService.getGroupById(groupId);
-                groupField.setSelectedItem(groupDTO);
-                subgroupField.setSelectedItem(subgroupDTO);
-                subgroupField.setEnabled(true);
+                getGroupField().setSelectedItem(groupDTO);
+                getSubgroupField().setSelectedItem(subgroupDTO);
+                getSubgroupField().setEnabled(true);
             }
         }
     }
 
     @Override
     public Long getValue() {
-        final SubgroupDTO subgroupDTO = subgroupField.getSelectedItem().orElse(null);
+        final SubgroupDTO subgroupDTO = getSubgroupField().getSelectedItem().orElse(null);
         if (subgroupDTO == null) {
             return null;
         } else {
@@ -57,31 +54,40 @@ public class OverviewSubgroupField extends CustomField<Long> {
     }
 
     private HorizontalLayout getParentLayout() {
-        parentLayout.addComponents(getGroupField(), getSubgroupField());
+        if (parentLayout == null) {
+            parentLayout = new HorizontalLayout();
+            parentLayout.addComponents(getGroupField(), getSubgroupField());
+        }
         return parentLayout;
     }
 
     private ComboBox<GroupDTO> getGroupField() {
-        final List<GroupDTO> groups = groupService.getAllGroups();
-        groupField.setItems(groups);
-        groupField.addValueChangeListener(valueChangeEvent -> {
-            final GroupDTO groupDTO = valueChangeEvent.getValue();
-            if (groupDTO != null) {
-                final long groupId = groupDTO.getId();
-                final List<SubgroupDTO> subgroups = groupService.getAllSubgroupsByGroupId(groupId);
-                subgroupField.setItems(subgroups);
-                subgroupField.setEnabled(true);
-            } else {
-                subgroupField.setEnabled(false);
-            }
-        });
-        groupField.setItemCaptionGenerator(GroupDTO::getName);
+        if (groupField == null) {
+            groupField = new ComboBox<>("Group:");
+            final List<GroupDTO> groups = groupService.getAllGroups();
+            groupField.setItems(groups);
+            groupField.addValueChangeListener(valueChangeEvent -> {
+                final GroupDTO groupDTO = valueChangeEvent.getValue();
+                if (groupDTO != null) {
+                    final long groupId = groupDTO.getId();
+                    final List<SubgroupDTO> subgroups = groupService.getAllSubgroupsByGroupId(groupId);
+                    getSubgroupField().setItems(subgroups);
+                    getSubgroupField().setEnabled(true);
+                } else {
+                    getSubgroupField().setEnabled(false);
+                }
+            });
+            groupField.setItemCaptionGenerator(GroupDTO::getName);
+        }
         return groupField;
     }
 
     private ComboBox<SubgroupDTO> getSubgroupField() {
-        subgroupField.setEnabled(false);
-        subgroupField.setItemCaptionGenerator(SubgroupDTO::getName);
+        if (subgroupField == null) {
+            subgroupField = new ComboBox<>("Subgroup:");
+            subgroupField.setEnabled(false);
+            subgroupField.setItemCaptionGenerator(SubgroupDTO::getName);
+        }
         return subgroupField;
     }
 }
