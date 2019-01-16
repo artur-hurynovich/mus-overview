@@ -8,4 +8,5 @@ public class GroupDTOView extends AbstractDTOView<GroupDTO> {
     protected Class<GroupDTO> getDTOClass() {
         return GroupDTO.class;
     }
+
 }

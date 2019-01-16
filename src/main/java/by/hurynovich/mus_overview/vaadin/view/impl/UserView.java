@@ -2,8 +2,8 @@ package by.hurynovich.mus_overview.vaadin.view.impl;
 
 import by.hurynovich.mus_overview.dto.impl.UserDTO;
 import by.hurynovich.mus_overview.service.impl.UserService;
-import by.hurynovich.mus_overview.vaadin.form.SignInForm;
-import by.hurynovich.mus_overview.vaadin.form.SignUpForm;
+import by.hurynovich.mus_overview.vaadin.form.impl.SignInForm;
+import by.hurynovich.mus_overview.vaadin.form.impl.SignUpForm;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
@@ -50,16 +50,16 @@ public class UserView extends CustomComponent implements View {
         return parentLayout;
     }
 
-    private VerticalLayout getSignUpForm() {
+    private SignUpForm getSignUpForm() {
         if (signUpForm == null) {
-            signUpForm = new SignUpForm(userService, EMPTY_USER);
+            signUpForm = new SignUpForm();
         }
         return signUpForm;
     }
 
     private SignInForm getSignInForm() {
         if (signInForm == null) {
-            signInForm = new SignInForm(userService, EMPTY_USER);
+            signInForm = new SignInForm();
         }
         return signInForm;
     }

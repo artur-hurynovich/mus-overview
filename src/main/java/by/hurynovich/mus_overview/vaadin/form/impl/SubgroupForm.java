@@ -1,9 +1,10 @@
-package by.hurynovich.mus_overview.vaadin.form;
+package by.hurynovich.mus_overview.vaadin.form.impl;
 
 import by.hurynovich.mus_overview.dto.impl.SubgroupDTO;
 import by.hurynovich.mus_overview.service.impl.GroupService;
 import by.hurynovich.mus_overview.service.impl.SubgroupService;
 import by.hurynovich.mus_overview.vaadin.custom_field.SubgroupGroupField;
+import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.event.ShortcutAction;
@@ -16,29 +17,28 @@ import com.vaadin.ui.VerticalLayout;
 
 import java.util.stream.Collectors;
 
-public class SubgroupForm extends Panel {
+public class SubgroupForm extends AbstractDTOForm<SubgroupDTO> {
 
-    private final VerticalLayout parentLayout;
+    private VerticalLayout parentLayout;
 
-    private final SubgroupGroupField groupField;
+    private SubgroupGroupField groupField;
 
-    private final TextField nameField;
+    private TextField nameField;
 
-    private final Binder<SubgroupDTO> binder;
+    private Binder<SubgroupDTO> binder;
 
-    private final HorizontalLayout buttonsLayout;
+    private HorizontalLayout buttonsLayout;
 
-    private final Button saveButton;
+    private Button saveButton;
 
-    private final Button cancelButton;
+    private Button cancelButton;
 
-    private final GroupService groupService;
+    private GroupService groupService;
 
-    private final SubgroupService subgroupService;
+    private SubgroupService subgroupService;
 
-    public SubgroupForm(final GroupService groupService, final SubgroupService subgroupService,
-                        final SubgroupDTO subgroupDTO, final Runnable onSave, final Runnable onDiscard) {
-        this.groupService = groupService;
+    public SubgroupForm() {
+        /*this.groupService = groupService;
         this.subgroupService = subgroupService;
         binder = new Binder<>(SubgroupDTO.class);
         parentLayout = new VerticalLayout();
@@ -54,7 +54,7 @@ public class SubgroupForm extends Panel {
         binder.forField(groupField).withValidator(groupId -> groupId != null && groupId != 0,
                 "Please choose the corresponding group!").bind(SubgroupDTO::getGroupId, SubgroupDTO::setGroupId);
         binder.readBean(subgroupDTO);
-        setContent(getParentLayout(subgroupDTO, onSave, onDiscard));
+        setContent(getParentLayout(subgroupDTO, onSave, onDiscard));*/
     }
 
     private VerticalLayout getParentLayout(final SubgroupDTO subgroupDTO,
@@ -108,4 +108,8 @@ public class SubgroupForm extends Panel {
         return cancelButton;
     }
 
+    @Override
+    protected Class<SubgroupDTO> getDTOClass() {
+        return SubgroupDTO.class;
+    }
 }

@@ -1,6 +1,7 @@
 package by.hurynovich.mus_overview.dto.impl;
 
 import by.hurynovich.mus_overview.dto.AbstractNamedDTO;
+import by.hurynovich.mus_overview.vaadin.annotation.Bind;
 import by.hurynovich.mus_overview.vaadin.annotation.GridColumn;
 import by.hurynovich.mus_overview.vaadin.annotation.GridRenderer;
 import lombok.Data;
@@ -16,15 +17,19 @@ import java.util.List;
 public class OverviewDTO extends AbstractNamedDTO {
 
     @GridColumn(caption = "Text", position = 20)
+    @Bind(fieldClass = "com.vaadin.ui.TextArea")
     private String text;
 
     @GridColumn(caption = "Date", position = 30)
+    @Bind(fieldClass = "by.hurynovich.mus_overview.vaadin.custom_field.OverviewDateField")
     private LocalDate date;
 
+    @Bind(fieldClass = "by.hurynovich.mus_overview.vaadin.custom_field.OverviewSubgroupField")
     private long subgroupId;
 
     @GridColumn(caption = "Tags", position = 40)
     @GridRenderer(rendererClass = "by.hurynovich.mus_overview.vaadin.renderer.TagRenderer")
+    @Bind(fieldClass = "by.hurynovich.mus_overview.vaadin.custom_field.OverviewTagField")
     private List<TagDTO> tags;
 
 }

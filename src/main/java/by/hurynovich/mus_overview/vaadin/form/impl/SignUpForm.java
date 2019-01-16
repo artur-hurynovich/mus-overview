@@ -1,8 +1,9 @@
-package by.hurynovich.mus_overview.vaadin.form;
+package by.hurynovich.mus_overview.vaadin.form.impl;
 
 import by.hurynovich.mus_overview.dto.impl.UserDTO;
 import by.hurynovich.mus_overview.service.impl.UserService;
 import by.hurynovich.mus_overview.vaadin.custom_field.UserRoleField;
+import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.data.validator.EmailValidator;
@@ -15,7 +16,7 @@ import com.vaadin.ui.VerticalLayout;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class SignUpForm extends VerticalLayout {
+public class SignUpForm extends AbstractDTOForm<UserDTO> {
 
     private TextField nameField;
 
@@ -29,20 +30,20 @@ public class SignUpForm extends VerticalLayout {
 
     private Button signUpButton;
 
-    private final UserService userService;
+    private UserService userService;
 
-    public SignUpForm(final UserService userService, final UserDTO userDTO) {
-        this.userService = userService;
+    public SignUpForm() {
+        /*this.userService = userService;
         nameField = new TextField("Name:");
         emailField = new TextField("E-mail:");
         passwordField = new PasswordField("Password:");
         userRoleField = new UserRoleField("User Role:");
         binder = getBinder();
         binder.readBean(userDTO);
-        addComponents(nameField, emailField, passwordField, userRoleField, getSignUpButton(userDTO));
+        addComponents(nameField, emailField, passwordField, userRoleField, getSignUpButton(userDTO));*/
     }
 
-    private Binder<UserDTO> getBinder() {
+    public Binder<UserDTO> getBinder() {
         if (binder == null) {
             binder = new Binder<>(UserDTO.class);
             binder.forField(nameField).withValidator(name -> name != null && name.length() > 4,
@@ -85,4 +86,8 @@ public class SignUpForm extends VerticalLayout {
         return signUpButton;
     }
 
+    @Override
+    protected Class<UserDTO> getDTOClass() {
+        return null;
+    }
 }

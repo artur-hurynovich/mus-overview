@@ -1,4 +1,4 @@
-package by.hurynovich.mus_overview.vaadin.form;
+package by.hurynovich.mus_overview.vaadin.form.impl;
 
 import by.hurynovich.mus_overview.dto.impl.OverviewDTO;
 import by.hurynovich.mus_overview.service.impl.GroupService;
@@ -8,6 +8,7 @@ import by.hurynovich.mus_overview.service.impl.TagService;
 import by.hurynovich.mus_overview.vaadin.custom_field.OverviewDateField;
 import by.hurynovich.mus_overview.vaadin.custom_field.OverviewSubgroupField;
 import by.hurynovich.mus_overview.vaadin.custom_field.OverviewTagField;
+import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
 import com.vaadin.data.Binder;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.Button;
@@ -24,7 +25,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Objects;
 
-public class OverviewForm extends Panel {
+public class OverviewForm extends AbstractDTOForm<OverviewDTO> {
 
     private VerticalLayout parentLayout;
 
@@ -46,17 +47,15 @@ public class OverviewForm extends Panel {
 
     private Button cancelButton;
 
-    private final GroupService groupService;
+    private GroupService groupService;
 
-    private final SubgroupService subgroupService;
+    private SubgroupService subgroupService;
 
-    private final OverviewService overviewService;
+    private OverviewService overviewService;
 
-    private final TagService tagService;
+    private TagService tagService;
 
-    public OverviewForm(final GroupService groupService, final SubgroupService subgroupService,
-                        final OverviewService overviewService, final TagService tagService,
-                        final OverviewDTO overviewDTO, final Runnable onSave, final Runnable onDiscard) {
+    public OverviewForm() {/*
         this.groupService = groupService;
         this.subgroupService = subgroupService;
         this.overviewService = overviewService;
@@ -78,7 +77,7 @@ public class OverviewForm extends Panel {
                 withValidator(tagDTOList -> tagDTOList != null && tagDTOList.size() > 0,
                         "Please enter at least one tag!").bind(OverviewDTO::getTags, OverviewDTO::setTags);
         binder.readBean(overviewDTO);
-        setContent(getParentLayout(overviewDTO, onSave, onDiscard));
+        setContent(getParentLayout(overviewDTO, onSave, onDiscard))*/;
     }
 
     private VerticalLayout getParentLayout(final OverviewDTO overviewDTO, final Runnable onSave,
@@ -167,4 +166,8 @@ public class OverviewForm extends Panel {
         return cancelButton;
     }
 
+    @Override
+    protected Class<OverviewDTO> getDTOClass() {
+        return OverviewDTO.class;
+    }
 }

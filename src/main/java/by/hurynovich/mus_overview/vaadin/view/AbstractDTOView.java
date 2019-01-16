@@ -99,6 +99,6 @@ public abstract class AbstractDTOView<DTOClass extends AbstractDTO> extends Cust
         return deleteButton;
     }
 
-    protected abstract Class<DTOClass> getDTOClass();
+    abstract protected Class<DTOClass> getDTOClass();
 
 }

@@ -1,8 +1,19 @@
 package by.hurynovich.mus_overview.vaadin.configuration;
 
 import by.hurynovich.mus_overview.dto.AbstractDTO;
+import by.hurynovich.mus_overview.dto.impl.GroupDTO;
+import by.hurynovich.mus_overview.dto.impl.OverviewDTO;
+import by.hurynovich.mus_overview.dto.impl.SubgroupDTO;
+import by.hurynovich.mus_overview.dto.impl.UserDTO;
 import by.hurynovich.mus_overview.vaadin.annotation.GridColumn;
 import by.hurynovich.mus_overview.vaadin.annotation.GridRenderer;
+import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
+import by.hurynovich.mus_overview.vaadin.form.impl.GroupForm;
+import by.hurynovich.mus_overview.vaadin.form.impl.OverviewForm;
+import by.hurynovich.mus_overview.vaadin.form.impl.SignInForm;
+import by.hurynovich.mus_overview.vaadin.form.impl.SignUpForm;
+import by.hurynovich.mus_overview.vaadin.form.impl.SubgroupForm;
+import com.vaadin.data.Binder;
 import com.vaadin.spring.annotation.ViewScope;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.TextRenderer;
@@ -21,8 +32,7 @@ public class VaadinConfiguration {
 
     @Bean("grid")
     @ViewScope
-    public <DTOClass extends AbstractDTO> Grid<DTOClass> getGrid(
-            final DependencyDescriptor descriptor) {
+    public <DTOClass extends AbstractDTO> Grid<DTOClass> getGrid(final DependencyDescriptor descriptor) {
         final Grid<DTOClass> grid = new Grid<>();
         grid.setSizeFull();
         grid.setSelectionMode(Grid.SelectionMode.MULTI);
@@ -71,5 +81,47 @@ public class VaadinConfiguration {
             }
         }
     }
+
+    @Bean("groupForm")
+    @ViewScope
+    public AbstractDTOForm<GroupDTO> getGroupForm(final DependencyDescriptor descriptor) {
+        final AbstractDTOForm<GroupDTO> form = new GroupForm();
+        /*final Binder<GroupDTO> binder = form.getBinder();
+        final Class<?> type = descriptor.getResolvableType().getGeneric(0).resolve();
+        setupBinder(binder, type);*/
+        return form;
+    }
+
+    @Bean("subgroupForm")
+    @ViewScope
+    public AbstractDTOForm<SubgroupDTO> getSubgroupForm() {
+        return new SubgroupForm();
+    }
+
+    @Bean("overviewForm")
+    @ViewScope
+    public AbstractDTOForm<OverviewDTO> getOverviewForm() {
+        return new OverviewForm();
+    }
+
+    @Bean("signUpForm")
+    @ViewScope
+    public AbstractDTOForm<UserDTO> getSignUpForm() {
+        return new SignUpForm();
+    }
+
+    @Bean("signInForm")
+    @ViewScope
+    public AbstractDTOForm<UserDTO> getSignInForm() {
+        return new SignInForm();
+    }
+
+    /*private <DTOClass> void setupBinder(final Binder<DTOClass> binder, Class<?> dtoClass) {
+        final List<Field> fields = new ArrayList<>();
+        ReflectionUtils.doWithFields(dtoClass, fields::add);
+        fields.forEach(field -> {
+                    binder.bind(field, );
+                });
+    }*/
 
 }

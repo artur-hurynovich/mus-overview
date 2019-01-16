@@ -1,7 +1,8 @@
-package by.hurynovich.mus_overview.vaadin.form;
+package by.hurynovich.mus_overview.vaadin.form.impl;
 
 import by.hurynovich.mus_overview.dto.impl.UserDTO;
 import by.hurynovich.mus_overview.service.impl.UserService;
+import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.data.validator.EmailValidator;
@@ -13,7 +14,7 @@ import com.vaadin.ui.VerticalLayout;
 
 import java.util.stream.Collectors;
 
-public class SignInForm extends VerticalLayout {
+public class SignInForm extends AbstractDTOForm<UserDTO> {
 
     private TextField emailField;
 
@@ -23,18 +24,18 @@ public class SignInForm extends VerticalLayout {
 
     private Button signInButton;
 
-    private final UserService userService;
+    private UserService userService;
 
-    public SignInForm(final UserService userService, final UserDTO userDTO) {
-        this.userService = userService;
+    public SignInForm() {
+        /*this.userService = userService;
         emailField = new TextField("E-mail:");
         passwordField = new PasswordField("Password:");
         binder = getBinder();
         binder.readBean(userDTO);
-        addComponents(emailField, passwordField, getSignInButton(userDTO));
+        addComponents(emailField, passwordField, getSignInButton(userDTO));*/
     }
 
-    private Binder<UserDTO> getBinder() {
+    public Binder<UserDTO> getBinder() {
         if (binder == null) {
             binder = new Binder<>(UserDTO.class);
             binder.forField(emailField).withValidator(new EmailValidator("Please enter a valid e-mail!")).
@@ -70,4 +71,8 @@ public class SignInForm extends VerticalLayout {
         return signInButton;
     }
 
+    @Override
+    protected Class<UserDTO> getDTOClass() {
+        return UserDTO.class;
+    }
 }

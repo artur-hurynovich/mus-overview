@@ -1,20 +1,20 @@
-package by.hurynovich.mus_overview.vaadin.form;
+package by.hurynovich.mus_overview.vaadin.form.impl;
 
 import by.hurynovich.mus_overview.dto.impl.GroupDTO;
 import by.hurynovich.mus_overview.service.impl.GroupService;
+import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 import java.util.stream.Collectors;
 
-public class GroupForm extends Panel {
+public class GroupForm extends AbstractDTOForm<GroupDTO> {
 
     private VerticalLayout parentLayout;
 
@@ -30,14 +30,13 @@ public class GroupForm extends Panel {
 
     private GroupService groupService;
 
-    public GroupForm(final GroupService groupService, final GroupDTO groupDTO,
-                     final Runnable onSave, final Runnable onDiscard) {
-        this.groupService = groupService;
+    public GroupForm() {
+        this.groupService = groupService;/*
         binder = new Binder<>(GroupDTO.class);
         binder.forField(getNameField()).withValidator(groupName -> groupName != null && !groupName.isEmpty(),
                 "Please enter the group name!").bind(GroupDTO::getName, GroupDTO::setName);
         binder.readBean(groupDTO);
-        setContent(getParentLayout(groupDTO, onSave, onDiscard));
+        setContent(getParentLayout(groupDTO, onSave, onDiscard))*/;
     }
 
     private VerticalLayout getParentLayout(final GroupDTO groupDTO,
@@ -101,4 +100,8 @@ public class GroupForm extends Panel {
         return cancelButton;
     }
 
+    @Override
+    protected Class<GroupDTO> getDTOClass() {
+        return GroupDTO.class;
+    }
 }
