@@ -13,6 +13,7 @@ import by.hurynovich.mus_overview.vaadin.form.impl.OverviewForm;
 import by.hurynovich.mus_overview.vaadin.form.impl.SignInForm;
 import by.hurynovich.mus_overview.vaadin.form.impl.SignUpForm;
 import by.hurynovich.mus_overview.vaadin.form.impl.SubgroupForm;
+import by.hurynovich.mus_overview.vaadin.util.FilterWrapper;
 import com.vaadin.data.Binder;
 import com.vaadin.spring.annotation.ViewScope;
 import com.vaadin.ui.Grid;
@@ -58,6 +59,7 @@ public class VaadinConfiguration {
                         }
                     });
                     column.setCaption(getColumnCaption(field));
+                    column.setId(field.getName());
                     setRenderer(field, column);
                 });
     }
@@ -110,6 +112,14 @@ public class VaadinConfiguration {
     @ViewScope
     public AbstractDTOForm<UserDTO> getSignInForm() {
         return new SignInForm();
+    }
+
+    @Bean("filter")
+    @ViewScope
+    public FilterWrapper getFilter() {
+        final FilterWrapper filter = new FilterWrapper();
+        filter.setTagName("");
+        return filter;
     }
 
 }

@@ -9,6 +9,7 @@ import by.hurynovich.mus_overview.service.IOverviewDTOService;
 import by.hurynovich.mus_overview.service.ISubgroupDTOService;
 import by.hurynovich.mus_overview.service.ITagDTOService;
 import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
+import by.hurynovich.mus_overview.vaadin.util.FilterWrapper;
 import by.hurynovich.mus_overview.vaadin.view.OverviewDTOView;
 import com.vaadin.data.provider.CallbackDataProvider;
 import com.vaadin.data.provider.ConfigurableFilterDataProvider;
@@ -18,8 +19,10 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.components.grid.HeaderRow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -65,9 +68,13 @@ public class OverviewView extends OverviewDTOView {
 
     private ConfigurableFilterDataProvider<SubgroupDTO, Void, Long> subgroupDTOComboBoxDataProvider;
 
-    private ConfigurableFilterDataProvider<OverviewDTO, Void, String> overviewDTOGridDataProvider;
+    private ConfigurableFilterDataProvider<OverviewDTO, Void, FilterWrapper> overviewDTOGridDataProvider;
 
-    private ConfigurableFilterDataProvider<OverviewDTO, Void, Long> overviewDTOBySubgroupIdGridDataProvider;
+    private ConfigurableFilterDataProvider<OverviewDTO, Void, FilterWrapper> overviewDTOBySubgroupIdGridDataProvider;
+
+    @Autowired
+    @Qualifier("filter")
+    private FilterWrapper filter;
 
     private final Window overviewWindow;
 
@@ -85,7 +92,10 @@ public class OverviewView extends OverviewDTOView {
         setupAddButton();
         setupEditButton();
         setupDeleteButton();
+        setupFilter();
         getParentLayout().addComponents(getComboBoxesLayout(), getGrid(), getButtonsLayout());
+        getOverviewDTOGridDataProvider().setFilter(filter);
+        getOverviewDTOBySubgroupIdGridDataProvider().setFilter(filter);
     }
 
     private HorizontalLayout getComboBoxesLayout() {
@@ -134,7 +144,8 @@ public class OverviewView extends OverviewDTOView {
             subgroupDTOComboBox.addValueChangeListener(valueChangeEvent -> {
                 final SubgroupDTO selectedSubgroupDTO = valueChangeEvent.getValue();
                 if (selectedSubgroupDTO != null) {
-                    getOverviewDTOBySubgroupIdGridDataProvider().setFilter(selectedSubgroupDTO.getId());
+                    filter.setSubgroupId(selectedSubgroupDTO.getId());
+                    getOverviewDTOBySubgroupIdGridDataProvider().setFilter(filter);
                     getGrid().setDataProvider(getOverviewDTOBySubgroupIdGridDataProvider());
                     getGrid().getDataProvider().refreshAll();
                 }
@@ -184,6 +195,28 @@ public class OverviewView extends OverviewDTOView {
         });
     }
 
+    private void setupFilter() {
+        HeaderRow filterRow;
+        if (getGrid().getHeaderRow(0) == null) {
+            filterRow = getGrid().addHeaderRowAt(0);
+        } else {
+            filterRow = getGrid().addHeaderRowAt(1);
+        }
+        filterRow.getCell("tags").setComponent(getFilterTextField());
+    }
+
+    @SuppressWarnings("unchecked")
+    private TextField getFilterTextField() {
+        final TextField filterField = new TextField();
+        filterField.setCaption("Filter...");
+        filterField.addValueChangeListener(valueChangeEvent -> {
+            filter.setTagName(valueChangeEvent.getValue());
+            ((ConfigurableFilterDataProvider<OverviewDTO, Void, FilterWrapper>) getGrid()
+                    .getDataProvider()).setFilter(filter);
+        });
+        return filterField;
+    }
+
     private CallbackDataProvider<GroupDTO, String> getGroupDTOComboBoxDataProvider() {
         if (groupDTOComboBoxDataProvider == null) {
             groupDTOComboBoxDataProvider = new CallbackDataProvider<>(
@@ -204,21 +237,54 @@ public class OverviewView extends OverviewDTOView {
         return subgroupDTOComboBoxDataProvider;
     }
 
-    private ConfigurableFilterDataProvider<OverviewDTO, Void, String> getOverviewDTOGridDataProvider() {
+    private ConfigurableFilterDataProvider<OverviewDTO, Void, FilterWrapper> getOverviewDTOGridDataProvider() {
         if (overviewDTOGridDataProvider == null) {
-            overviewDTOGridDataProvider = new CallbackDataProvider<OverviewDTO, String>(
-                    query -> overviewDTOService.findAll().stream(),
-                    query -> (int) overviewDTOService.count()
+            overviewDTOGridDataProvider = new CallbackDataProvider<OverviewDTO, FilterWrapper>(
+                    query -> {
+                        final FilterWrapper filter = query.getFilter().orElse(null);
+                        if (filter.getTagName() == null || filter.getTagName().isEmpty()) {
+                            return overviewDTOService.findAll().stream();
+                        } else {
+                            return overviewDTOService.findAllByTagName(filter.getTagName()).stream();
+                        }
+                    },
+                    query -> {
+                        final FilterWrapper filter = query.getFilter().orElse(null);
+                        if (filter.getTagName() == null || filter.getTagName().isEmpty()) {
+                            return (int) overviewDTOService.count();
+                        } else {
+                            return (int) overviewDTOService.countByTagName(filter.getTagName());
+                        }
+                    }
             ).withConfigurableFilter();
         }
         return overviewDTOGridDataProvider;
     }
 
-    private ConfigurableFilterDataProvider<OverviewDTO, Void, Long> getOverviewDTOBySubgroupIdGridDataProvider() {
+    private ConfigurableFilterDataProvider<OverviewDTO, Void, FilterWrapper>
+    getOverviewDTOBySubgroupIdGridDataProvider() {
         if (overviewDTOBySubgroupIdGridDataProvider == null) {
-            overviewDTOBySubgroupIdGridDataProvider = new CallbackDataProvider<OverviewDTO, Long>(
-                    query -> overviewDTOService.findAllBySubgroupId(query.getFilter().orElse(-1L)).stream(),
-                    query -> (int) overviewDTOService.countBySubgroupId(query.getFilter().orElse(-1L))
+            overviewDTOBySubgroupIdGridDataProvider = new CallbackDataProvider<OverviewDTO, FilterWrapper>(
+                    query -> {
+                        final FilterWrapper filter = query.getFilter().orElse(null);
+                        if (filter.getTagName() == null || filter.getTagName().isEmpty()) {
+                            return overviewDTOService.
+                                    findAllBySubgroupId(filter.getSubgroupId()).stream();
+                        } else {
+                            return overviewDTOService.findAllBySubgroupIdAndTagName(filter.getSubgroupId(),
+                                    filter.getTagName()).stream();
+                        }
+
+                    },
+                    query -> {
+                        final FilterWrapper filter = query.getFilter().orElse(null);
+                        if (filter.getTagName() == null || filter.getTagName().isEmpty()) {
+                            return (int) overviewDTOService.countBySubgroupId(filter.getSubgroupId());
+                        } else {
+                            return (int) overviewDTOService.countBySubgroupIdAndTagName(filter.getSubgroupId(),
+                                            filter.getTagName());
+                        }
+                    }
             ).withConfigurableFilter();
         }
         return overviewDTOBySubgroupIdGridDataProvider;

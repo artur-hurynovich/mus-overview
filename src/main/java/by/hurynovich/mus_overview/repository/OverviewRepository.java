@@ -9,10 +9,10 @@ import java.util.List;
 @Repository
 public interface OverviewRepository extends JpaRepository<OverviewEntity, Long> {
     List<OverviewEntity> findAllBySubgroupId(final long subgroupId);
-    List<OverviewEntity> findAllByTags(final String tagName);
-    List<OverviewEntity> findAllBySubgroupIdAndTags(final long subgroupId, final String tagName);
+    List<OverviewEntity> findAllByTagsNameContaining(final String tagName);
+    List<OverviewEntity> findAllBySubgroupIdAndTagsNameContaining(final long subgroupId, final String tagName);
     OverviewEntity findById(final long id);
     long countBySubgroupId(final long subgroupId);
-    long countByTags(final String tagName);
-    long countBySubgroupIdAndTags(final long subgroupId, final String tagName);
+    long countByTagsNameContaining(final String tagName);
+    long countBySubgroupIdAndTagsNameContaining(final long subgroupId, final String tagName);
 }

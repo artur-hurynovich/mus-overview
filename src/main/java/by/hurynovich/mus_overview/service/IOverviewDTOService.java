@@ -8,14 +8,14 @@ public interface IOverviewDTOService extends IDTOService<OverviewDTO> {
 
     List<OverviewDTO> findAllBySubgroupId(final long subgroupId);
 
-    List<OverviewDTO> findAllByTag(final String tagName);
+    List<OverviewDTO> findAllByTagName(final String tagName);
 
-    List<OverviewDTO> findAllBySubgroupIdAndTag(final long subgroupId, final String tagName);
+    List<OverviewDTO> findAllBySubgroupIdAndTagName(final long subgroupId, final String tagName);
 
     long countBySubgroupId(final long subgroupId);
 
-    long countByTag(final String tagName);
+    long countByTagName(final String tagName);
 
-    long countBySubgroupIdAndTag(final long subgroupId, final String tagName);
+    long countBySubgroupIdAndTagName(final long subgroupId, final String tagName);
 
 }

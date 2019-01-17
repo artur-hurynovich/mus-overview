@@ -76,14 +76,14 @@ public class OverviewService implements IOverviewDTOService {
     }
 
     @Override
-    public List<OverviewDTO> findAllByTag(final String tagName) {
-        return overviewRepository.findAllByTags(tagName).stream().map(overviewConverter::convertToDTO).
+    public List<OverviewDTO> findAllByTagName(final String tagName) {
+        return overviewRepository.findAllByTagsNameContaining(tagName).stream().map(overviewConverter::convertToDTO).
                 collect(Collectors.toList());
     }
 
     @Override
-    public List<OverviewDTO> findAllBySubgroupIdAndTag(final long subgroupId, final String tagName) {
-        return overviewRepository.findAllBySubgroupIdAndTags(subgroupId, tagName).stream().
+    public List<OverviewDTO> findAllBySubgroupIdAndTagName(final long subgroupId, final String tagName) {
+        return overviewRepository.findAllBySubgroupIdAndTagsNameContaining(subgroupId, tagName).stream().
                 map(overviewConverter::convertToDTO).collect(Collectors.toList());
     }
 
@@ -129,13 +129,13 @@ public class OverviewService implements IOverviewDTOService {
     }
 
     @Override
-    public long countByTag(final String tagName) {
-        return overviewRepository.countByTags(tagName);
+    public long countByTagName(final String tagName) {
+        return overviewRepository.countByTagsNameContaining(tagName);
     }
 
     @Override
-    public long countBySubgroupIdAndTag(final long subgroupId, final String tagName) {
-        return overviewRepository.countBySubgroupIdAndTags(subgroupId, tagName);
+    public long countBySubgroupIdAndTagName(final long subgroupId, final String tagName) {
+        return overviewRepository.countBySubgroupIdAndTagsNameContaining(subgroupId, tagName);
     }
 
 }
