@@ -1,8 +1,10 @@
 package by.hurynovich.mus_overview.vaadin.ui;
 
-import by.hurynovich.mus_overview.vaadin.view.GroupView;
-import by.hurynovich.mus_overview.vaadin.view.OverviewView;
-import by.hurynovich.mus_overview.vaadin.view.UserView;
+import by.hurynovich.mus_overview.vaadin.view.impl.GroupView;
+import by.hurynovich.mus_overview.vaadin.view.impl.OverviewView;
+import by.hurynovich.mus_overview.vaadin.view.impl.SignInView;
+import by.hurynovich.mus_overview.vaadin.view.impl.SignUpView;
+import by.hurynovich.mus_overview.vaadin.view.impl.SubgroupView;
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewDisplay;
@@ -29,11 +31,11 @@ public class VaadinUI extends UI implements ViewDisplay {
 
     @Override
     protected void init(final VaadinRequest vaadinRequest) {
-        final Button groupViewButton = getMenuButton("Groups", GroupView.NAME);
-        final Button overviewViewButton = getMenuButton("Overviews", OverviewView.NAME);
-        final Button userViewButton = getMenuButton("Users", UserView.NAME);
-        overviewViewButton.click();
-        getMenuLayout().addComponents(groupViewButton, overviewViewButton, userViewButton);
+        getMenuLayout().addComponents(getMenuButton("Groups", GroupView.NAME),
+                getMenuButton("Subgroups", SubgroupView.NAME),
+                getMenuButton("Overviews", OverviewView.NAME),
+                getMenuButton("Sign Up", SignUpView.NAME),
+                getMenuButton("Sign In", SignInView.NAME));
         getParentLayout().addComponents(getMenuLayout(), getViewPanel());
         setContent(getParentLayout());
     }

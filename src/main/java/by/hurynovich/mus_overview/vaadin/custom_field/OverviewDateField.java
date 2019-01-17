@@ -7,6 +7,7 @@ import com.vaadin.ui.VerticalLayout;
 
 import java.time.LocalDate;
 
+@org.springframework.stereotype.Component("overviewDateField")
 public class OverviewDateField extends CustomField<LocalDate> {
 
     private VerticalLayout parentLayout;
@@ -14,10 +15,6 @@ public class OverviewDateField extends CustomField<LocalDate> {
     private DateField dateField;
 
     private LocalDate value;
-
-    public OverviewDateField(final String caption) {
-        setCaption(caption);
-    }
 
     @Override
     protected Component initContent() {
