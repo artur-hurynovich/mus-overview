@@ -74,7 +74,7 @@ public class SubgroupForm extends AbstractDTOForm<SubgroupDTO> {
                 onSave.run();
             } else {
                 final String validationError = getBinder().validate().getValidationErrors().stream().
-                        map(ValidationResult::getErrorMessage).collect(Collectors.joining("; "));
+                        map(ValidationResult::getErrorMessage).collect(Collectors.joining(";\n"));
                 Notification.show("Warning!\n" + validationError,
                         Notification.Type.WARNING_MESSAGE);
             }

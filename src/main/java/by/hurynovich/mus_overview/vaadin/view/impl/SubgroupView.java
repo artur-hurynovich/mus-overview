@@ -126,9 +126,9 @@ public class SubgroupView extends SubgroupDTOView {
             final Set<SubgroupDTO> selectedSubgroups = getGrid().getSelectionModel().getSelectedItems();
             selectedSubgroups.forEach(subgroupDTO -> {
                 subgroupService.delete(subgroupDTO);
-                Notification.show("Group \'" + subgroupDTO.getName() + "\' deleted!",
-                        Notification.Type.ASSISTIVE_NOTIFICATION);
             });
+            Notification.show("Subgroup(s) deleted!",
+                    Notification.Type.ASSISTIVE_NOTIFICATION);
             getGrid().deselectAll();
             getGrid().getDataProvider().refreshAll();
         });

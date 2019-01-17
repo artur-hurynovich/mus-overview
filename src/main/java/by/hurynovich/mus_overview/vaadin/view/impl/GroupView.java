@@ -82,9 +82,9 @@ public class GroupView extends GroupDTOView {
             final Set<GroupDTO> selectedGroups = getGrid().getSelectionModel().getSelectedItems();
             selectedGroups.forEach(groupDTO -> {
                 groupService.delete(groupDTO);
-                Notification.show("Group \'" + groupDTO.getName() + "\' deleted!",
-                        Notification.Type.ASSISTIVE_NOTIFICATION);
             });
+            Notification.show("Group(s) deleted!",
+                    Notification.Type.ASSISTIVE_NOTIFICATION);
             getGrid().deselectAll();
             getGrid().getDataProvider().refreshAll();
         });

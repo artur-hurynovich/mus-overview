@@ -3,7 +3,6 @@ package by.hurynovich.mus_overview.dto.impl;
 import by.hurynovich.mus_overview.dto.AbstractNamedDTO;
 import by.hurynovich.mus_overview.vaadin.annotation.GridColumn;
 import by.hurynovich.mus_overview.vaadin.annotation.GridRenderer;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,7 +12,6 @@ import java.util.List;
 
 @Getter
 @Setter
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class OverviewDTO extends AbstractNamedDTO {
 

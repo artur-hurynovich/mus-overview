@@ -8,25 +8,27 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.List;
 
+@org.springframework.stereotype.Component("overviewSubgroupField")
 public class OverviewSubgroupField extends CustomField<Long> {
 
-    private final GroupService groupService;
+    @Autowired
+    @Qualifier("groupService")
+    private GroupService groupService;
 
-    private final SubgroupService subgroupService;
+    @Autowired
+    @Qualifier("subgroupService")
+    private SubgroupService subgroupService;
 
     private HorizontalLayout parentLayout;
 
     private ComboBox<GroupDTO> groupField;
 
     private ComboBox<SubgroupDTO> subgroupField;
-
-    public OverviewSubgroupField(final GroupService groupService, final SubgroupService subgroupService) {
-        this.groupService = groupService;
-        this.subgroupService = subgroupService;
-    }
 
     @Override
     protected Component initContent() {
@@ -77,6 +79,7 @@ public class OverviewSubgroupField extends CustomField<Long> {
                     final List<SubgroupDTO> subgroups = subgroupService.findAllByGroupId(groupId);
                     getSubgroupField().setItems(subgroups);
                     getSubgroupField().setEnabled(true);
+                    getSubgroupField().setSelectedItem(null);
                 } else {
                     getSubgroupField().setEnabled(false);
                 }

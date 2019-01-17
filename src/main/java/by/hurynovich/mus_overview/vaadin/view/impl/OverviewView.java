@@ -8,29 +8,25 @@ import by.hurynovich.mus_overview.service.IGroupDTOService;
 import by.hurynovich.mus_overview.service.IOverviewDTOService;
 import by.hurynovich.mus_overview.service.ISubgroupDTOService;
 import by.hurynovich.mus_overview.service.ITagDTOService;
-import by.hurynovich.mus_overview.service.impl.GroupService;
-import by.hurynovich.mus_overview.service.impl.OverviewService;
-import by.hurynovich.mus_overview.service.impl.SubgroupService;
-import by.hurynovich.mus_overview.service.impl.TagService;
-import by.hurynovich.mus_overview.vaadin.renderer.TagRenderer;
+import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
 import by.hurynovich.mus_overview.vaadin.view.OverviewDTOView;
 import com.vaadin.data.provider.CallbackDataProvider;
 import com.vaadin.data.provider.ConfigurableFilterDataProvider;
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.server.SerializableFunction;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.components.grid.HeaderRow;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.Window;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @SpringView(name = OverviewView.NAME)
 public class OverviewView extends OverviewDTOView {
@@ -53,6 +49,10 @@ public class OverviewView extends OverviewDTOView {
     @Qualifier("tagService")
     private ITagDTOService tagDTOService;
 
+    @Autowired
+    @Qualifier("overviewForm")
+    private AbstractDTOForm overviewForm;
+
     private HorizontalLayout comboBoxesLayout;
 
     private ComboBox<GroupDTO> groupDTOComboBox;
@@ -69,22 +69,22 @@ public class OverviewView extends OverviewDTOView {
 
     private ConfigurableFilterDataProvider<OverviewDTO, Void, Long> overviewDTOBySubgroupIdGridDataProvider;
 
-    private final static OverviewDTO EMPTY_OVERVIEW;
-
-    private final static List<TagDTO> EMPTY_TAGS;
-
-    static {
-        EMPTY_OVERVIEW = new OverviewDTO();
-        EMPTY_TAGS = new ArrayList<>();
-        EMPTY_OVERVIEW.setTags(EMPTY_TAGS);
-    }
+    private final Window overviewWindow;
 
     public OverviewView() {
         setStartDataProvider(getOverviewDTOGridDataProvider());
+        overviewWindow = new Window("Edit Overview");
+        overviewWindow.addCloseListener(closeEvent -> {
+            getGrid().deselectAll();
+            getGrid().getDataProvider().refreshAll();
+        });
     }
 
     @PostConstruct
     public void init() {
+        setupAddButton();
+        setupEditButton();
+        setupDeleteButton();
         getParentLayout().addComponents(getComboBoxesLayout(), getGrid(), getButtonsLayout());
     }
 
@@ -151,15 +151,38 @@ public class OverviewView extends OverviewDTOView {
         return showAllButton;
     }
 
-    /*@SuppressWarnings("unchecked")
-    private TextField getTagFilterField() {
-        final TextField tagFilterField = new TextField();
-        tagFilterField.setPlaceholder("Filter by tag...");
-        tagFilterField.addValueChangeListener(valueChangeEvent ->
-                ((ConfigurableFilterDataProvider<OverviewDTO, Void, String>) getGrid()
-                        .getDataProvider()).setFilter(valueChangeEvent.getValue()));
-        return tagFilterField;
-    }*/
+    private void setupAddButton() {
+        getAddButton().addClickListener(clickEvent -> {
+            final OverviewDTO overviewDTO = new OverviewDTO();
+            final List<TagDTO> tagDTOList = new ArrayList<>();
+            overviewDTO.setTags(tagDTOList);
+            overviewForm.setupForm(overviewDTO, overviewWindow::close, overviewWindow::close);
+            overviewWindow.setContent(overviewForm);
+            UI.getCurrent().addWindow(overviewWindow);
+        });
+    }
+
+    private void setupEditButton() {
+        getEditButton().addClickListener(clickEvent -> {
+            final OverviewDTO selectedOverviewDTO = getGrid().getSelectionModel().getSelectedItems().iterator().next();
+            overviewForm.setupForm(selectedOverviewDTO, overviewWindow::close, overviewWindow::close);
+            overviewWindow.setContent(overviewForm);
+            UI.getCurrent().addWindow(overviewWindow);
+        });
+    }
+
+    private void setupDeleteButton() {
+        getDeleteButton().addClickListener(clickEvent -> {
+            final Set<OverviewDTO> selectedOverviews = getGrid().getSelectionModel().getSelectedItems();
+            selectedOverviews.forEach(overviewDTO -> {
+                overviewDTOService.delete(overviewDTO);
+            });
+            Notification.show("Overview(s) deleted!",
+                    Notification.Type.ASSISTIVE_NOTIFICATION);
+            getGrid().deselectAll();
+            getGrid().getDataProvider().refreshAll();
+        });
+    }
 
     private CallbackDataProvider<GroupDTO, String> getGroupDTOComboBoxDataProvider() {
         if (groupDTOComboBoxDataProvider == null) {
@@ -200,17 +223,5 @@ public class OverviewView extends OverviewDTOView {
         }
         return overviewDTOBySubgroupIdGridDataProvider;
     }
-
-    /*private Window getOverviewWindow(final OverviewDTO overviewDTO) {
-        final Window overviewWindow = new Window("New Overview");
-        final OverviewForm overviewForm = new OverviewForm(groupService, subgroupService, overviewService, tagService,
-                overviewDTO, overviewWindow::close, overviewWindow::close);
-        overviewWindow.addCloseListener(closeEvent -> {
-            getGrid().deselectAll();
-            getGrid().getDataProvider().refreshAll();
-        });
-        overviewWindow.setContent(overviewForm);
-        return overviewWindow;
-    }*/
 
 }
