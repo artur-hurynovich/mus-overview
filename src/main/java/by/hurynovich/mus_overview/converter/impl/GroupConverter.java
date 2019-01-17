@@ -6,7 +6,7 @@ import by.hurynovich.mus_overview.dto.impl.GroupDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-@Service
+@Service("groupConverter")
 public class GroupConverter implements DTOEntityConverter<GroupDTO, GroupEntity> {
     @Override
     public GroupDTO convertToDTO(final GroupEntity groupEntity) {
