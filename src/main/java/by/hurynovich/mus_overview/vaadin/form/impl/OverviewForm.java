@@ -37,6 +37,8 @@ public class OverviewForm extends AbstractDTOForm<OverviewDTO> {
 
     private OverviewSubgroupField subgroupField;
 
+    @Autowired
+    @Qualifier("overviewTagField")
     private OverviewTagField tagField;
 
     private Binder<OverviewDTO> binder;
@@ -166,4 +168,8 @@ public class OverviewForm extends AbstractDTOForm<OverviewDTO> {
         return cancelButton;
     }
 
+    @Override
+    public void setupForm(final OverviewDTO overviewDTO, final Runnable onSave, final Runnable inDiscard) {
+
+    }
 }

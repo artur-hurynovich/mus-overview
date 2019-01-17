@@ -4,15 +4,20 @@ import by.hurynovich.mus_overview.dto.impl.GroupDTO;
 import by.hurynovich.mus_overview.dto.impl.SubgroupDTO;
 import by.hurynovich.mus_overview.service.IGroupDTOService;
 import by.hurynovich.mus_overview.service.ISubgroupDTOService;
+import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
 import by.hurynovich.mus_overview.vaadin.view.SubgroupDTOView;
 import com.vaadin.data.provider.CallbackDataProvider;
 import com.vaadin.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.Window;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.annotation.PostConstruct;
+import java.util.Set;
 
 @SpringView(name = SubgroupView.NAME)
 public class SubgroupView extends SubgroupDTOView {
@@ -21,11 +26,15 @@ public class SubgroupView extends SubgroupDTOView {
 
     @Autowired
     @Qualifier("groupService")
-    private IGroupDTOService groupDTOService;
+    private IGroupDTOService groupService;
 
     @Autowired
     @Qualifier("subgroupService")
-    private ISubgroupDTOService subgroupDTOService;
+    private ISubgroupDTOService subgroupService;
+
+    @Autowired
+    @Qualifier("subgroupForm")
+    private AbstractDTOForm subgroupForm;
 
     private ComboBox<GroupDTO> groupDTOComboBox;
 
@@ -33,12 +42,22 @@ public class SubgroupView extends SubgroupDTOView {
 
     private ConfigurableFilterDataProvider<SubgroupDTO, Void, Long> subgroupDTOGridDataProvider;
 
+    private final Window subgroupWindow;
+
     public SubgroupView() {
         setStartDataProvider(getSubgroupDTOGridDataProvider());
+        subgroupWindow = new Window("Edit Subgroup");
+        subgroupWindow.addCloseListener(closeEvent -> {
+            getGrid().deselectAll();
+            getGrid().getDataProvider().refreshAll();
+        });
     }
 
     @PostConstruct
     public void init() {
+        setupAddButton();
+        setupEditButton();
+        setupDeleteButton();
         getParentLayout().addComponents(getGroupDTOComboBox(), getGrid(), getButtonsLayout());
     }
 
@@ -68,8 +87,8 @@ public class SubgroupView extends SubgroupDTOView {
     private CallbackDataProvider<GroupDTO, String> getGroupDTOComboBoxDataProvider() {
         if (groupDTOComboBoxDataProvider == null) {
             groupDTOComboBoxDataProvider = new CallbackDataProvider<>(
-                    query -> groupDTOService.findAll().stream(),
-                    query -> (int) groupDTOService.count()
+                    query -> groupService.findAll().stream(),
+                    query -> (int) groupService.count()
             );
         }
         return groupDTOComboBoxDataProvider;
@@ -78,11 +97,41 @@ public class SubgroupView extends SubgroupDTOView {
     private ConfigurableFilterDataProvider<SubgroupDTO, Void, Long> getSubgroupDTOGridDataProvider() {
         if (subgroupDTOGridDataProvider == null) {
             subgroupDTOGridDataProvider = new CallbackDataProvider<SubgroupDTO, Long>(
-                    query -> subgroupDTOService.findAllByGroupId(query.getFilter().orElse(-1L)).stream(),
-                    query -> (int) subgroupDTOService.countByGroupId(query.getFilter().orElse(-1L))
+                    query -> subgroupService.findAllByGroupId(query.getFilter().orElse(-1L)).stream(),
+                    query -> (int) subgroupService.countByGroupId(query.getFilter().orElse(-1L))
             ).withConfigurableFilter();
         }
         return subgroupDTOGridDataProvider;
+    }
+
+    private void setupAddButton() {
+        getAddButton().addClickListener(clickEvent -> {
+            subgroupForm.setupForm(new SubgroupDTO(), subgroupWindow::close, subgroupWindow::close);
+            subgroupWindow.setContent(subgroupForm);
+            UI.getCurrent().addWindow(subgroupWindow);
+        });
+    }
+
+    private void setupEditButton() {
+        getEditButton().addClickListener(clickEvent -> {
+            final SubgroupDTO selectedSubgroupDTO = getGrid().getSelectionModel().getSelectedItems().iterator().next();
+            subgroupForm.setupForm(selectedSubgroupDTO, subgroupWindow::close, subgroupWindow::close);
+            subgroupWindow.setContent(subgroupForm);
+            UI.getCurrent().addWindow(subgroupWindow);
+        });
+    }
+
+    private void setupDeleteButton() {
+        getDeleteButton().addClickListener(clickEvent -> {
+            final Set<SubgroupDTO> selectedSubgroups = getGrid().getSelectionModel().getSelectedItems();
+            selectedSubgroups.forEach(subgroupDTO -> {
+                subgroupService.delete(subgroupDTO);
+                Notification.show("Group \'" + subgroupDTO.getName() + "\' deleted!",
+                        Notification.Type.ASSISTIVE_NOTIFICATION);
+            });
+            getGrid().deselectAll();
+            getGrid().getDataProvider().refreshAll();
+        });
     }
 
 }

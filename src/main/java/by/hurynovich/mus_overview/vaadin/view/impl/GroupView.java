@@ -6,12 +6,14 @@ import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
 import by.hurynovich.mus_overview.vaadin.view.GroupDTOView;
 import com.vaadin.data.provider.CallbackDataProvider;
 import com.vaadin.spring.annotation.SpringView;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.annotation.PostConstruct;
+import java.util.Set;
 
 @SpringView(name = GroupView.NAME)
 public class GroupView extends GroupDTOView {
@@ -28,13 +30,22 @@ public class GroupView extends GroupDTOView {
 
     private CallbackDataProvider<GroupDTO, String> groupDTOGridDataProvider;
 
+    private final Window groupWindow;
+
     public GroupView() {
         setStartDataProvider(getGroupDTOGridDataProvider());
+        groupWindow = new Window("Edit Group");
+        groupWindow.addCloseListener(closeEvent -> {
+            getGrid().deselectAll();
+            getGrid().getDataProvider().refreshAll();
+        });
     }
 
     @PostConstruct
     public void init() {
         setupAddButton();
+        setupEditButton();
+        setupDeleteButton();
         getParentLayout().addComponents(getGrid(), getButtonsLayout());
     }
 
@@ -51,22 +62,32 @@ public class GroupView extends GroupDTOView {
 
     private void setupAddButton() {
         getAddButton().addClickListener(clickEvent -> {
-            final Window groupWindow = new Window("New Group");
+            groupForm.setupForm(new GroupDTO(), groupWindow::close, groupWindow::close);
             groupWindow.setContent(groupForm);
             UI.getCurrent().addWindow(groupWindow);
         });
     }
 
-    /*private Window getGroupWindow(final GroupDTO groupDTO) {
-        final Window groupWindow = new Window("New Group");
-        final GroupForm groupForm = new GroupForm(groupService, groupDTO, groupWindow::close,
-                groupWindow::close);
-        groupWindow.addCloseListener(closeEvent -> {
-            groupGrid.deselectAll();
-            groupDataProvider.refreshAll();
+    private void setupEditButton() {
+        getEditButton().addClickListener(clickEvent -> {
+            final GroupDTO selectedGroupDTO = getGrid().getSelectionModel().getSelectedItems().iterator().next();
+            groupForm.setupForm(selectedGroupDTO, groupWindow::close, groupWindow::close);
+            groupWindow.setContent(groupForm);
+            UI.getCurrent().addWindow(groupWindow);
         });
-        groupWindow.setContent(groupForm);
-        return groupWindow;
-    }*/
+    }
+
+    private void setupDeleteButton() {
+        getDeleteButton().addClickListener(clickEvent -> {
+            final Set<GroupDTO> selectedGroups = getGrid().getSelectionModel().getSelectedItems();
+            selectedGroups.forEach(groupDTO -> {
+                groupService.delete(groupDTO);
+                Notification.show("Group \'" + groupDTO.getName() + "\' deleted!",
+                        Notification.Type.ASSISTIVE_NOTIFICATION);
+            });
+            getGrid().deselectAll();
+            getGrid().getDataProvider().refreshAll();
+        });
+    }
 
 }

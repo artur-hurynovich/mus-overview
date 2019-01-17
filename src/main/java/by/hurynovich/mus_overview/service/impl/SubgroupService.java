@@ -34,7 +34,7 @@ public class SubgroupService implements ISubgroupDTOService {
 
     @Override
     public SubgroupDTO findOne(final long id) {
-        return subgroupConverter.convertToDTO(subgroupRepository.getOne(id));
+        return subgroupConverter.convertToDTO(subgroupRepository.findById(id));
     }
 
     @Override
@@ -56,7 +56,7 @@ public class SubgroupService implements ISubgroupDTOService {
     @Override
     @Transactional
     public SubgroupDTO update(final SubgroupDTO subgroupDTO) {
-        final SubgroupEntity subgroupEntity = subgroupRepository.getOne(subgroupDTO.getId());
+        final SubgroupEntity subgroupEntity = subgroupRepository.findById(subgroupDTO.getId());
         BeanUtils.copyProperties(subgroupDTO, subgroupEntity, "id");
         return subgroupConverter.convertToDTO(subgroupRepository.save(subgroupEntity));
     }

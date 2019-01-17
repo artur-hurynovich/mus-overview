@@ -2,6 +2,7 @@ package by.hurynovich.mus_overview.vaadin.form;
 
 import by.hurynovich.mus_overview.dto.AbstractDTO;
 import com.vaadin.data.Binder;
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
@@ -24,7 +25,9 @@ public abstract class AbstractDTOForm<DTOClass extends AbstractDTO> extends Pane
         binder = new Binder<>();
         buttonsLayout = new HorizontalLayout();
         saveButton = new Button("Save");
+        saveButton.setClickShortcut(ShortcutAction.KeyCode.ENTER);
         cancelButton = new Button("Cancel");
+        cancelButton.setClickShortcut(ShortcutAction.KeyCode.ESCAPE);
         buttonsLayout.addComponents(saveButton, cancelButton);
     }
 
@@ -34,10 +37,6 @@ public abstract class AbstractDTOForm<DTOClass extends AbstractDTO> extends Pane
 
     public Binder<DTOClass> getBinder() {
         return binder;
-    }
-
-    private void setupButtonsLayout() {
-
     }
 
     protected HorizontalLayout getButtonsLayout() {
@@ -51,5 +50,7 @@ public abstract class AbstractDTOForm<DTOClass extends AbstractDTO> extends Pane
     protected Button getCancelButton() {
         return cancelButton;
     }
+
+    public abstract void setupForm(final DTOClass dtoClass, final Runnable onSave, final Runnable inDiscard);
 
 }

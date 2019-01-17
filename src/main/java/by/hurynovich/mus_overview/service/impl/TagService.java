@@ -33,7 +33,7 @@ public class TagService implements ITagDTOService {
 
     @Override
     public TagDTO findOne(final long id) {
-        return tagConverter.convertToDTO(tagRepository.getOne(id));
+        return tagConverter.convertToDTO(tagRepository.findById(id));
     }
 
     @Override
@@ -48,7 +48,7 @@ public class TagService implements ITagDTOService {
 
     @Override
     public TagDTO update(final TagDTO tagDTO) {
-        final TagEntity tagEntity = tagRepository.getOne(tagDTO.getId());
+        final TagEntity tagEntity = tagRepository.findById(tagDTO.getId());
         BeanUtils.copyProperties(tagDTO, tagEntity, "overviews");
         return tagConverter.convertToDTO(tagRepository.save(tagEntity));
     }

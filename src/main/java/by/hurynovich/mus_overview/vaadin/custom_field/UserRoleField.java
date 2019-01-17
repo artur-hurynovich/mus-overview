@@ -8,6 +8,7 @@ import com.vaadin.ui.CustomField;
 import com.vaadin.ui.RadioButtonGroup;
 import com.vaadin.ui.VerticalLayout;
 
+@org.springframework.stereotype.Component("userRoleField")
 public class UserRoleField extends CustomField<UserRole> {
 
     private VerticalLayout parentLayout;
@@ -15,10 +16,6 @@ public class UserRoleField extends CustomField<UserRole> {
     private RadioButtonGroup<UserRole> userRoleRadioButtonGroup;
 
     private ListDataProvider<UserRole> dataProvider;
-
-    public UserRoleField(final String caption) {
-        setCaption(caption);
-    }
 
     @Override
     protected Component initContent() {

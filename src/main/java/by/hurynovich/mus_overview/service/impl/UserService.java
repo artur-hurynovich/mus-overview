@@ -31,7 +31,7 @@ public class UserService implements IUserDTOService {
 
     @Override
     public UserDTO findOne(final long id) {
-        return userConverter.convertToDTO(userRepository.getOne(id));
+        return userConverter.convertToDTO(userRepository.findById(id));
     }
 
     @Override
@@ -47,7 +47,7 @@ public class UserService implements IUserDTOService {
 
     @Override
     public UserDTO update(final UserDTO userDTO) {
-        final UserEntity userEntity = userRepository.getOne(userDTO.getId());
+        final UserEntity userEntity = userRepository.findById(userDTO.getId());
         BeanUtils.copyProperties(userDTO, userEntity);
         return userConverter.convertToDTO(userRepository.save(userEntity));
     }

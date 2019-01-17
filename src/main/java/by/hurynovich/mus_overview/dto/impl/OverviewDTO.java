@@ -3,14 +3,16 @@ package by.hurynovich.mus_overview.dto.impl;
 import by.hurynovich.mus_overview.dto.AbstractNamedDTO;
 import by.hurynovich.mus_overview.vaadin.annotation.GridColumn;
 import by.hurynovich.mus_overview.vaadin.annotation.GridRenderer;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class OverviewDTO extends AbstractNamedDTO {

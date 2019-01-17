@@ -1,86 +1,67 @@
 package by.hurynovich.mus_overview.vaadin.form.impl;
 
 import by.hurynovich.mus_overview.dto.impl.SubgroupDTO;
-import by.hurynovich.mus_overview.service.impl.GroupService;
-import by.hurynovich.mus_overview.service.impl.SubgroupService;
+import by.hurynovich.mus_overview.service.IGroupDTOService;
+import by.hurynovich.mus_overview.service.ISubgroupDTOService;
 import by.hurynovich.mus_overview.vaadin.custom_field.SubgroupGroupField;
 import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
-import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationResult;
-import com.vaadin.event.ShortcutAction;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
+import javax.annotation.PostConstruct;
 import java.util.stream.Collectors;
 
 public class SubgroupForm extends AbstractDTOForm<SubgroupDTO> {
 
-    private VerticalLayout parentLayout;
+    @Autowired
+    @Qualifier("groupService")
+    private IGroupDTOService groupService;
 
+    @Autowired
+    @Qualifier("subgroupService")
+    private ISubgroupDTOService subgroupService;
+
+    @Autowired
+    @Qualifier("subgroupGroupField")
     private SubgroupGroupField groupField;
 
     private TextField nameField;
 
-    private Binder<SubgroupDTO> binder;
+    private SubgroupDTO subgroupDTO;
 
-    private HorizontalLayout buttonsLayout;
+    private Runnable onSave;
 
-    private Button saveButton;
+    private Runnable onDiscard;
 
-    private Button cancelButton;
-
-    private GroupService groupService;
-
-    private SubgroupService subgroupService;
-
-    public SubgroupForm() {
-        /*this.groupService = groupService;
-        this.subgroupService = subgroupService;
-        binder = new Binder<>(SubgroupDTO.class);
-        parentLayout = new VerticalLayout();
-        groupField = new SubgroupGroupField(groupService);
-        groupField.setCaption("Group:");
-        nameField = new TextField("Name");
-        nameField.focus();
-        buttonsLayout = new HorizontalLayout();
-        saveButton = new Button("Save");
-        cancelButton = new Button("Cancel");
-        binder.forField(nameField).withValidator(subgroupName -> subgroupName != null && !subgroupName.isEmpty(),
-                "Subgroup name can't be empty!").bind(SubgroupDTO::getName, SubgroupDTO::setName);
-        binder.forField(groupField).withValidator(groupId -> groupId != null && groupId != 0,
-                "Please choose the corresponding group!").bind(SubgroupDTO::getGroupId, SubgroupDTO::setGroupId);
-        binder.readBean(subgroupDTO);
-        setContent(getParentLayout(subgroupDTO, onSave, onDiscard));*/
+    @PostConstruct
+    public void init() {
+        groupField.setCaption("Groups:");
+        setupButtonsLayout();
+        setupBinder();
+        setupParentLayout();
+        setContent(getParentLayout());
     }
 
-    private VerticalLayout getParentLayout(final SubgroupDTO subgroupDTO,
-                                           final Runnable onSave, final Runnable onDiscard) {
-        parentLayout.addComponents(getNameField(), getGroupField(),
-                getButtonsLayout(subgroupDTO, onSave, onDiscard));
-        return parentLayout;
+    @Override
+    public void setupForm(final SubgroupDTO subgroupDTO, final Runnable onSave, final Runnable onDiscard) {
+        this.subgroupDTO = subgroupDTO;
+        getBinder().readBean(subgroupDTO);
+        this.onSave = onSave;
+        this.onDiscard = onDiscard;
     }
 
-    private SubgroupGroupField getGroupField() {
-        return groupField;
+    private void setupButtonsLayout() {
+        setupSaveButton();
+        setupCancelButton();
+        getButtonsLayout().addComponents(getSaveButton(), getCancelButton());
     }
 
-    private TextField getNameField() {
-        return nameField;
-    }
-
-    private HorizontalLayout getButtonsLayout(final SubgroupDTO subgroupDTO, final Runnable onSave,
-                                              final Runnable onDiscard) {
-        buttonsLayout.addComponents(getSaveButton(subgroupDTO, onSave), getCancelButton(onDiscard));
-        return buttonsLayout;
-    }
-
-    private Button getSaveButton(final SubgroupDTO subgroupDTO, final Runnable onSave) {
-        saveButton.addClickListener(clickEvent -> {
-            if (binder.writeBeanIfValid(subgroupDTO)) {
+    private void setupSaveButton() {
+        getSaveButton().addClickListener(clickEvent -> {
+            if (getBinder().writeBeanIfValid(subgroupDTO)) {
                 if (subgroupDTO.getId() == 0) {
                     subgroupService.save(subgroupDTO);
                     Notification.show("Subgroup \'" + subgroupDTO.getName() + "\' created!",
@@ -92,20 +73,39 @@ public class SubgroupForm extends AbstractDTOForm<SubgroupDTO> {
                 }
                 onSave.run();
             } else {
-                final String validationError = binder.validate().getValidationErrors().stream().
+                final String validationError = getBinder().validate().getValidationErrors().stream().
                         map(ValidationResult::getErrorMessage).collect(Collectors.joining("; "));
                 Notification.show("Warning!\n" + validationError,
                         Notification.Type.WARNING_MESSAGE);
             }
         });
-        saveButton.setClickShortcut(ShortcutAction.KeyCode.ENTER);
-        return saveButton;
     }
 
-    private Button getCancelButton(final Runnable onDiscard) {
-        cancelButton.addClickListener(clickEvent -> onDiscard.run());
-        cancelButton.setClickShortcut(ShortcutAction.KeyCode.ESCAPE);
-        return cancelButton;
+    private void setupCancelButton() {
+        getCancelButton().addClickListener(clickEvent -> onDiscard.run());
+    }
+
+    private void setupBinder() {
+        getBinder().forField(getGroupField()).withValidator(groupId -> groupId != null && groupId != 0,
+                "Please, select the corresponding group!").
+                bind(SubgroupDTO::getGroupId, SubgroupDTO::setGroupId);
+        getBinder().forField(getNameField()).withValidator(name -> name != null && !name.isEmpty(),
+                "Please, enter the group name!").bind(SubgroupDTO::getName, SubgroupDTO::setName);
+    }
+
+    private void setupParentLayout() {
+        getParentLayout().addComponents(getNameField(), getGroupField(), getButtonsLayout());
+    }
+
+    private SubgroupGroupField getGroupField() {
+        return groupField;
+    }
+
+    private TextField getNameField() {
+        if (nameField == null) {
+            nameField = new TextField("Name:");
+        }
+        return nameField;
     }
 
 }

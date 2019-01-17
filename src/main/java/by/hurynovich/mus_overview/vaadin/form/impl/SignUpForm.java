@@ -86,4 +86,8 @@ public class SignUpForm extends AbstractDTOForm<UserDTO> {
         return signUpButton;
     }
 
+    @Override
+    public void setupForm(final UserDTO userDTO, final Runnable onSave, final Runnable inDiscard) {
+
+    }
 }

@@ -16,9 +16,9 @@ import java.util.stream.Collectors;
 @Service("groupService")
 public class GroupService implements IGroupDTOService {
 
-    private final GroupRepository groupRepository;
+    private GroupRepository groupRepository;
 
-    private final GroupConverter groupConverter;
+    private GroupConverter groupConverter;
 
     @Autowired
     public GroupService(final GroupRepository groupRepository, final GroupConverter groupConverter) {
@@ -34,7 +34,7 @@ public class GroupService implements IGroupDTOService {
 
     @Override
     public GroupDTO findOne(final long id) {
-        return groupConverter.convertToDTO(groupRepository.getOne(id));
+        return groupConverter.convertToDTO(groupRepository.findById(id));
     }
 
     @Override
@@ -46,7 +46,7 @@ public class GroupService implements IGroupDTOService {
     @Override
     @Transactional
     public GroupDTO update(final GroupDTO groupDTO) {
-        final GroupEntity groupEntity = groupRepository.getOne(groupDTO.getId());
+        final GroupEntity groupEntity = groupRepository.findById(groupDTO.getId());
         BeanUtils.copyProperties(groupDTO, groupEntity, "id");
         return groupConverter.convertToDTO(groupRepository.save(groupEntity));
     }

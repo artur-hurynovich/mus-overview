@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.ArrayList;
 import java.util.List;
 
+@org.springframework.stereotype.Component("overviewTagField")
 public class OverviewTagField extends CustomField<List<TagDTO>> {
 
     private final TagService tagService;
