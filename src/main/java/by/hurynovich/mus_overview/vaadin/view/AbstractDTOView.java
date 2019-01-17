@@ -33,13 +33,16 @@ public abstract class AbstractDTOView<DTOClass extends AbstractDTO> extends Cust
 
     public AbstractDTOView() {
         parentLayout = new VerticalLayout();
+        buttonsLayout = new HorizontalLayout();
+        addButton = new Button("Add");
+        editButton = new Button("Edit");
+        deleteButton = new Button("Delete");
     }
 
     @Override
     public void enter(final ViewChangeListener.ViewChangeEvent event) {
         setupButtonsLayout();
         setupGrid();
-        setupParentLayout();
         setCompositionRoot(getParentLayout());
     }
 
@@ -52,11 +55,7 @@ public abstract class AbstractDTOView<DTOClass extends AbstractDTO> extends Cust
     }
 
     private void setupButtonsLayout() {
-        buttonsLayout = new HorizontalLayout();
-        addButton = new Button("Add");
-        editButton = new Button("Edit");
         editButton.setEnabled(false);
-        deleteButton = new Button("Delete");
         deleteButton.setEnabled(false);
         buttonsLayout.addComponents(addButton, editButton, deleteButton);
     }
@@ -69,10 +68,6 @@ public abstract class AbstractDTOView<DTOClass extends AbstractDTO> extends Cust
         });
         grid.setDataProvider(startDataProvider);
         grid.getDataProvider().refreshAll();
-    }
-
-    private void setupParentLayout() {
-        parentLayout.addComponents(getGrid(), getButtonsLayout());
     }
 
     protected VerticalLayout getParentLayout() {

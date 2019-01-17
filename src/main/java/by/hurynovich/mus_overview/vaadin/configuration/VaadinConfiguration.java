@@ -85,11 +85,7 @@ public class VaadinConfiguration {
     @Bean("groupForm")
     @ViewScope
     public AbstractDTOForm<GroupDTO> getGroupForm(final DependencyDescriptor descriptor) {
-        final AbstractDTOForm<GroupDTO> form = new GroupForm();
-        /*final Binder<GroupDTO> binder = form.getBinder();
-        final Class<?> type = descriptor.getResolvableType().getGeneric(0).resolve();
-        setupBinder(binder, type);*/
-        return form;
+        return new GroupForm();
     }
 
     @Bean("subgroupForm")
@@ -115,13 +111,5 @@ public class VaadinConfiguration {
     public AbstractDTOForm<UserDTO> getSignInForm() {
         return new SignInForm();
     }
-
-    /*private <DTOClass> void setupBinder(final Binder<DTOClass> binder, Class<?> dtoClass) {
-        final List<Field> fields = new ArrayList<>();
-        ReflectionUtils.doWithFields(dtoClass, fields::add);
-        fields.forEach(field -> {
-                    binder.bind(field, );
-                });
-    }*/
 
 }

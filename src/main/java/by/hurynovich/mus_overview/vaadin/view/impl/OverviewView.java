@@ -28,6 +28,7 @@ import com.vaadin.ui.components.grid.HeaderRow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,8 +80,12 @@ public class OverviewView extends OverviewDTOView {
     }
 
     public OverviewView() {
-        getParentLayout().addComponent(getComboBoxesLayout());
         setStartDataProvider(getOverviewDTOGridDataProvider());
+    }
+
+    @PostConstruct
+    public void init() {
+        getParentLayout().addComponents(getComboBoxesLayout(), getGrid(), getButtonsLayout());
     }
 
     private HorizontalLayout getComboBoxesLayout() {

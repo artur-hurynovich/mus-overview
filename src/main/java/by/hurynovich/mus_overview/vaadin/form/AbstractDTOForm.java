@@ -20,21 +20,16 @@ public abstract class AbstractDTOForm<DTOClass extends AbstractDTO> extends Pane
     private Binder<DTOClass> binder;
 
     public AbstractDTOForm() {
-        setupBinder();
-        setupParentLayout();
-        setupButtonsLayout();
-    }
-
-    private void setupParentLayout() {
         parentLayout = new VerticalLayout();
+        binder = new Binder<>();
+        buttonsLayout = new HorizontalLayout();
+        saveButton = new Button("Save");
+        cancelButton = new Button("Cancel");
+        buttonsLayout.addComponents(saveButton, cancelButton);
     }
 
     public VerticalLayout getParentLayout() {
         return parentLayout;
-    }
-
-    private void setupBinder() {
-        binder = new Binder<>();
     }
 
     public Binder<DTOClass> getBinder() {
@@ -42,10 +37,7 @@ public abstract class AbstractDTOForm<DTOClass extends AbstractDTO> extends Pane
     }
 
     private void setupButtonsLayout() {
-        buttonsLayout = new HorizontalLayout();
-        saveButton = new Button("Save");
-        cancelButton = new Button("Cancel");
-        buttonsLayout.addComponents(saveButton, cancelButton);
+
     }
 
     protected HorizontalLayout getButtonsLayout() {
@@ -59,7 +51,5 @@ public abstract class AbstractDTOForm<DTOClass extends AbstractDTO> extends Pane
     protected Button getCancelButton() {
         return cancelButton;
     }
-
-    abstract protected Class<DTOClass> getDTOClass();
 
 }

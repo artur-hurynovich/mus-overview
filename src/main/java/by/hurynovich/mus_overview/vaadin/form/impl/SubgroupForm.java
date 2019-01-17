@@ -108,8 +108,4 @@ public class SubgroupForm extends AbstractDTOForm<SubgroupDTO> {
         return cancelButton;
     }
 
-    @Override
-    protected Class<SubgroupDTO> getDTOClass() {
-        return SubgroupDTO.class;
-    }
 }

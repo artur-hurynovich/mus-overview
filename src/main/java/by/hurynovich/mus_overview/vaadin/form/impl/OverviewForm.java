@@ -166,8 +166,4 @@ public class OverviewForm extends AbstractDTOForm<OverviewDTO> {
         return cancelButton;
     }
 
-    @Override
-    protected Class<OverviewDTO> getDTOClass() {
-        return OverviewDTO.class;
-    }
 }

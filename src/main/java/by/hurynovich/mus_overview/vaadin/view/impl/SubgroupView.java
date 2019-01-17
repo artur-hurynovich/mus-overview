@@ -12,6 +12,8 @@ import com.vaadin.ui.ComboBox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import javax.annotation.PostConstruct;
+
 @SpringView(name = SubgroupView.NAME)
 public class SubgroupView extends SubgroupDTOView {
 
@@ -32,8 +34,12 @@ public class SubgroupView extends SubgroupDTOView {
     private ConfigurableFilterDataProvider<SubgroupDTO, Void, Long> subgroupDTOGridDataProvider;
 
     public SubgroupView() {
-        getParentLayout().addComponent(getGroupDTOComboBox());
         setStartDataProvider(getSubgroupDTOGridDataProvider());
+    }
+
+    @PostConstruct
+    public void init() {
+        getParentLayout().addComponents(getGroupDTOComboBox(), getGrid(), getButtonsLayout());
     }
 
     private ComboBox<GroupDTO> getGroupDTOComboBox() {

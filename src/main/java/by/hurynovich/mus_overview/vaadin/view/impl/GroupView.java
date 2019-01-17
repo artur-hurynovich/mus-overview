@@ -35,6 +35,7 @@ public class GroupView extends GroupDTOView {
     @PostConstruct
     public void init() {
         setupAddButton();
+        getParentLayout().addComponents(getGrid(), getButtonsLayout());
     }
 
     private CallbackDataProvider<GroupDTO, String> getGroupDTOGridDataProvider() {

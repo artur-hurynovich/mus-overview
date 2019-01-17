@@ -86,8 +86,4 @@ public class SignUpForm extends AbstractDTOForm<UserDTO> {
         return signUpButton;
     }
 
-    @Override
-    protected Class<UserDTO> getDTOClass() {
-        return null;
-    }
 }

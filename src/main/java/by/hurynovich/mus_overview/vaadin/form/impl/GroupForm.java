@@ -31,12 +31,12 @@ public class GroupForm extends AbstractDTOForm<GroupDTO> {
     private GroupService groupService;
 
     public GroupForm() {
-        this.groupService = groupService;/*
+        /*this.groupService = groupService;
         binder = new Binder<>(GroupDTO.class);
         binder.forField(getNameField()).withValidator(groupName -> groupName != null && !groupName.isEmpty(),
                 "Please enter the group name!").bind(GroupDTO::getName, GroupDTO::setName);
         binder.readBean(groupDTO);
-        setContent(getParentLayout(groupDTO, onSave, onDiscard))*/;
+        setContent(getParentLayout(groupDTO, onSave, onDiscard));*/
     }
 
     private VerticalLayout getParentLayout(final GroupDTO groupDTO,
@@ -100,8 +100,4 @@ public class GroupForm extends AbstractDTOForm<GroupDTO> {
         return cancelButton;
     }
 
-    @Override
-    protected Class<GroupDTO> getDTOClass() {
-        return GroupDTO.class;
-    }
 }
