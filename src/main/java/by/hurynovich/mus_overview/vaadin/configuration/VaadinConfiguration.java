@@ -73,11 +73,4 @@ public class VaadinConfiguration {
         }
     }
 
-    @Bean("filter")
-    public FilterWrapper getFilter() {
-        final FilterWrapper filter = new FilterWrapper();
-        filter.setTagName("");
-        return filter;
-    }
-
 }

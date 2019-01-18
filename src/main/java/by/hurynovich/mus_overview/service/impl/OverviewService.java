@@ -12,6 +12,7 @@ import by.hurynovich.mus_overview.service.IOverviewDTOService;
 import by.hurynovich.mus_overview.util.TagNameFormatter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -22,9 +23,16 @@ import java.util.stream.Collectors;
 @Service("overviewService")
 public class OverviewService implements IOverviewDTOService {
 
+    @Autowired
+    @Qualifier("tagNameFormatter")
+    private TagNameFormatter tagNameFormatter;
+
     private final OverviewRepository overviewRepository;
+
     private final OverviewConverter overviewConverter;
+
     private final TagRepository tagRepository;
+
     private final TagConverter tagConverter;
 
     @Autowired
@@ -39,7 +47,7 @@ public class OverviewService implements IOverviewDTOService {
     @Override
     @Transactional
     public OverviewDTO save(final OverviewDTO overviewDTO) {
-        overviewDTO.getTags().forEach(TagNameFormatter::format);
+        overviewDTO.getTags().forEach(tagNameFormatter::format);
         final List<TagEntity> toSaveTagsEntities = new ArrayList<>();
         for (final TagDTO tagDto : overviewDTO.getTags()) {
             final String tagName = tagDto.getName();
@@ -95,7 +103,7 @@ public class OverviewService implements IOverviewDTOService {
         final List<TagDTO> tags = overviewDTO.getTags();
         final List<TagEntity> toSaveTagsEntities = new ArrayList<>();
         if (tags != null) {
-            tags.forEach(TagNameFormatter::format);
+            tags.forEach(tagNameFormatter::format);
             for (final TagDTO tagDto : tags) {
                 final String tagName = tagDto.getName();
                 final TagEntity existingTag = tagRepository.findByName(tagName);
