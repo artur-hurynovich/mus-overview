@@ -4,6 +4,7 @@ import by.hurynovich.mus_overview.dto.impl.GroupDTO;
 import by.hurynovich.mus_overview.dto.impl.OverviewDTO;
 import by.hurynovich.mus_overview.dto.impl.SubgroupDTO;
 import by.hurynovich.mus_overview.dto.impl.TagDTO;
+import by.hurynovich.mus_overview.enumeration.UserRole;
 import by.hurynovich.mus_overview.service.IGroupDTOService;
 import by.hurynovich.mus_overview.service.IOverviewDTOService;
 import by.hurynovich.mus_overview.service.ISubgroupDTOService;
@@ -164,34 +165,47 @@ public class OverviewView extends OverviewDTOView {
 
     private void setupAddButton() {
         getAddButton().addClickListener(clickEvent -> {
-            final OverviewDTO overviewDTO = new OverviewDTO();
-            final List<TagDTO> tagDTOList = new ArrayList<>();
-            overviewDTO.setTags(tagDTOList);
-            overviewForm.setupForm(overviewDTO, overviewWindow::close, overviewWindow::close);
-            overviewWindow.setContent(overviewForm);
-            UI.getCurrent().addWindow(overviewWindow);
+            if (checkAuth(UserRole.ADMIN)) {
+                final OverviewDTO overviewDTO = new OverviewDTO();
+                final List<TagDTO> tagDTOList = new ArrayList<>();
+                overviewDTO.setTags(tagDTOList);
+                overviewForm.setupForm(overviewDTO, overviewWindow::close, overviewWindow::close);
+                overviewWindow.setContent(overviewForm);
+                UI.getCurrent().addWindow(overviewWindow);
+            } else {
+                Notification.show("Warning!", "You have no permission for performing this operation!",
+                        Notification.Type.WARNING_MESSAGE);
+            }
         });
     }
 
     private void setupEditButton() {
         getEditButton().addClickListener(clickEvent -> {
-            final OverviewDTO selectedOverviewDTO = getGrid().getSelectionModel().getSelectedItems().iterator().next();
-            overviewForm.setupForm(selectedOverviewDTO, overviewWindow::close, overviewWindow::close);
-            overviewWindow.setContent(overviewForm);
-            UI.getCurrent().addWindow(overviewWindow);
+            if (checkAuth(UserRole.ADMIN)) {
+                final OverviewDTO selectedOverviewDTO = getGrid().getSelectionModel().getSelectedItems().iterator().next();
+                overviewForm.setupForm(selectedOverviewDTO, overviewWindow::close, overviewWindow::close);
+                overviewWindow.setContent(overviewForm);
+                UI.getCurrent().addWindow(overviewWindow);
+            } else {
+                Notification.show("Warning!", "You have no permission for performing this operation!",
+                        Notification.Type.WARNING_MESSAGE);
+            }
         });
     }
 
     private void setupDeleteButton() {
         getDeleteButton().addClickListener(clickEvent -> {
-            final Set<OverviewDTO> selectedOverviews = getGrid().getSelectionModel().getSelectedItems();
-            selectedOverviews.forEach(overviewDTO -> {
-                overviewDTOService.delete(overviewDTO);
-            });
-            Notification.show("Overview(s) deleted!",
-                    Notification.Type.ASSISTIVE_NOTIFICATION);
-            getGrid().deselectAll();
-            getGrid().getDataProvider().refreshAll();
+            if (checkAuth(UserRole.ADMIN)) {
+                final Set<OverviewDTO> selectedOverviews = getGrid().getSelectionModel().getSelectedItems();
+                selectedOverviews.forEach(overviewDTO -> overviewDTOService.delete(overviewDTO));
+                Notification.show("Overview(s) deleted!",
+                        Notification.Type.ASSISTIVE_NOTIFICATION);
+                getGrid().deselectAll();
+                getGrid().getDataProvider().refreshAll();
+            } else {
+                Notification.show("Warning!", "You have no permission for performing this operation!",
+                        Notification.Type.WARNING_MESSAGE);
+            }
         });
     }
 

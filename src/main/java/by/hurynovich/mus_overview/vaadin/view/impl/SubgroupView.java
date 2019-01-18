@@ -1,7 +1,9 @@
 package by.hurynovich.mus_overview.vaadin.view.impl;
 
 import by.hurynovich.mus_overview.dto.impl.GroupDTO;
+import by.hurynovich.mus_overview.dto.impl.OverviewDTO;
 import by.hurynovich.mus_overview.dto.impl.SubgroupDTO;
+import by.hurynovich.mus_overview.enumeration.UserRole;
 import by.hurynovich.mus_overview.service.IGroupDTOService;
 import by.hurynovich.mus_overview.service.ISubgroupDTOService;
 import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
@@ -21,7 +23,7 @@ import javax.annotation.PostConstruct;
 import java.util.Set;
 
 @SpringView(name = SubgroupView.NAME)
-@Secured("USER")
+@Secured({"USER", "ADMIN"})
 public class SubgroupView extends SubgroupDTOView {
 
     public final static String NAME = "subgroup";
@@ -108,31 +110,46 @@ public class SubgroupView extends SubgroupDTOView {
 
     private void setupAddButton() {
         getAddButton().addClickListener(clickEvent -> {
-            subgroupForm.setupForm(new SubgroupDTO(), subgroupWindow::close, subgroupWindow::close);
-            subgroupWindow.setContent(subgroupForm);
-            UI.getCurrent().addWindow(subgroupWindow);
+            if (checkAuth(UserRole.ADMIN)) {
+                subgroupForm.setupForm(new SubgroupDTO(), subgroupWindow::close, subgroupWindow::close);
+                subgroupWindow.setContent(subgroupForm);
+                UI.getCurrent().addWindow(subgroupWindow);
+            } else {
+                Notification.show("Warning!", "You have no permission for performing this operation!",
+                        Notification.Type.WARNING_MESSAGE);
+            }
         });
     }
 
     private void setupEditButton() {
         getEditButton().addClickListener(clickEvent -> {
-            final SubgroupDTO selectedSubgroupDTO = getGrid().getSelectionModel().getSelectedItems().iterator().next();
-            subgroupForm.setupForm(selectedSubgroupDTO, subgroupWindow::close, subgroupWindow::close);
-            subgroupWindow.setContent(subgroupForm);
-            UI.getCurrent().addWindow(subgroupWindow);
+            if (checkAuth(UserRole.ADMIN)) {
+                final SubgroupDTO selectedSubgroupDTO = getGrid().getSelectionModel().getSelectedItems().iterator().next();
+                subgroupForm.setupForm(selectedSubgroupDTO, subgroupWindow::close, subgroupWindow::close);
+                subgroupWindow.setContent(subgroupForm);
+                UI.getCurrent().addWindow(subgroupWindow);
+            } else {
+                Notification.show("Warning!", "You have no permission for performing this operation!",
+                        Notification.Type.WARNING_MESSAGE);
+            }
         });
     }
 
     private void setupDeleteButton() {
         getDeleteButton().addClickListener(clickEvent -> {
-            final Set<SubgroupDTO> selectedSubgroups = getGrid().getSelectionModel().getSelectedItems();
-            selectedSubgroups.forEach(subgroupDTO -> {
-                subgroupService.delete(subgroupDTO);
-            });
-            Notification.show("Subgroup(s) deleted!",
-                    Notification.Type.ASSISTIVE_NOTIFICATION);
-            getGrid().deselectAll();
-            getGrid().getDataProvider().refreshAll();
+            if (checkAuth(UserRole.ADMIN)) {
+                final Set<SubgroupDTO> selectedSubgroups = getGrid().getSelectionModel().getSelectedItems();
+                selectedSubgroups.forEach(subgroupDTO -> {
+                    subgroupService.delete(subgroupDTO);
+                });
+                Notification.show("Subgroup(s) deleted!",
+                        Notification.Type.HUMANIZED_MESSAGE);
+                getGrid().deselectAll();
+                getGrid().getDataProvider().refreshAll();
+            } else {
+                Notification.show("Warning!", "You have no permission for performing this operation!",
+                        Notification.Type.WARNING_MESSAGE);
+            }
         });
     }
 

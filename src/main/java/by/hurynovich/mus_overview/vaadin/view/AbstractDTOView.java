@@ -1,6 +1,7 @@
 package by.hurynovich.mus_overview.vaadin.view;
 
 import by.hurynovich.mus_overview.dto.AbstractDTO;
+import by.hurynovich.mus_overview.enumeration.UserRole;
 import com.vaadin.data.provider.CallbackDataProvider;
 import com.vaadin.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.navigator.View;
@@ -12,8 +13,25 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import javax.servlet.http.HttpSession;
 
 public abstract class AbstractDTOView<DTOClass extends AbstractDTO> extends CustomComponent implements View {
+
+
+
+
+
+    @Autowired
+    private HttpSession httpSession;
+
+
+
+
 
     private VerticalLayout parentLayout;
 
@@ -92,6 +110,23 @@ public abstract class AbstractDTOView<DTOClass extends AbstractDTO> extends Cust
 
     protected Button getDeleteButton() {
         return deleteButton;
+    }
+
+    protected boolean checkAuth(final UserRole ... grantedRoles) {
+        final Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            for (GrantedAuthority authority : authentication.getAuthorities()) {
+                for (UserRole role : grantedRoles) {
+                    if (authority.getAuthority().equals(role.name())) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        } else {
+            return false;
+        }
     }
 
     abstract protected Class<DTOClass> getDTOClass();

@@ -18,7 +18,7 @@ import javax.annotation.PostConstruct;
 import java.util.Set;
 
 @SpringView(name = GroupView.NAME)
-@Secured("ADMIN")
+@Secured({"USER", "ADMIN"})
 public class GroupView extends GroupDTOView {
 
     public final static String NAME = "group";
@@ -65,31 +65,44 @@ public class GroupView extends GroupDTOView {
 
     private void setupAddButton() {
         getAddButton().addClickListener(clickEvent -> {
-            groupForm.setupForm(new GroupDTO(), groupWindow::close, groupWindow::close);
-            groupWindow.setContent(groupForm);
-            UI.getCurrent().addWindow(groupWindow);
+            if (checkAuth(UserRole.ADMIN)) {
+                groupForm.setupForm(new GroupDTO(), groupWindow::close, groupWindow::close);
+                groupWindow.setContent(groupForm);
+                UI.getCurrent().addWindow(groupWindow);
+            } else {
+                Notification.show("Warning!", "You have no permission for performing this operation!",
+                        Notification.Type.WARNING_MESSAGE);
+            }
         });
     }
 
     private void setupEditButton() {
         getEditButton().addClickListener(clickEvent -> {
-            final GroupDTO selectedGroupDTO = getGrid().getSelectionModel().getSelectedItems().iterator().next();
-            groupForm.setupForm(selectedGroupDTO, groupWindow::close, groupWindow::close);
-            groupWindow.setContent(groupForm);
-            UI.getCurrent().addWindow(groupWindow);
+            if (checkAuth(UserRole.ADMIN)) {
+                final GroupDTO selectedGroupDTO = getGrid().getSelectionModel().getSelectedItems().iterator().next();
+                groupForm.setupForm(selectedGroupDTO, groupWindow::close, groupWindow::close);
+                groupWindow.setContent(groupForm);
+                UI.getCurrent().addWindow(groupWindow);
+            } else {
+                Notification.show("Warning!", "You have no permission for performing this operation!",
+                        Notification.Type.WARNING_MESSAGE);
+            }
         });
     }
 
     private void setupDeleteButton() {
         getDeleteButton().addClickListener(clickEvent -> {
-            final Set<GroupDTO> selectedGroups = getGrid().getSelectionModel().getSelectedItems();
-            selectedGroups.forEach(groupDTO -> {
-                groupService.delete(groupDTO);
-            });
-            Notification.show("Group(s) deleted!",
-                    Notification.Type.ASSISTIVE_NOTIFICATION);
-            getGrid().deselectAll();
-            getGrid().getDataProvider().refreshAll();
+            if (checkAuth(UserRole.ADMIN)) {
+                final Set<GroupDTO> selectedGroups = getGrid().getSelectionModel().getSelectedItems();
+                selectedGroups.forEach(groupDTO -> groupService.delete(groupDTO));
+                Notification.show("Group(s) deleted!",
+                        Notification.Type.ASSISTIVE_NOTIFICATION);
+                getGrid().deselectAll();
+                getGrid().getDataProvider().refreshAll();
+            } else {
+                Notification.show("Warning!", "You have no permission for performing this operation!",
+                        Notification.Type.WARNING_MESSAGE);
+            }
         });
     }
 
