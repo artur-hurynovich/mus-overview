@@ -14,7 +14,7 @@ public class UserConverter implements DTOEntityConverter<UserDTO, UserEntity> {
             return null;
         } else {
             final UserDTO userDTO = new UserDTO();
-            BeanUtils.copyProperties(userEntity, userDTO, "password");
+            BeanUtils.copyProperties(userEntity, userDTO);
             return userDTO;
         }
     }

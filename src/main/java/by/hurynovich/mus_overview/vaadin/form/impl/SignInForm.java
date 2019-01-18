@@ -1,11 +1,12 @@
 package by.hurynovich.mus_overview.vaadin.form.impl;
 
 import by.hurynovich.mus_overview.dto.impl.UserDTO;
-import by.hurynovich.mus_overview.service.IUserDTOService;
+import by.hurynovich.mus_overview.service.UserDetailsServiceImpl;
 import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
-import by.hurynovich.mus_overview.vaadin.view.impl.SignUpView;
+import by.hurynovich.mus_overview.vaadin.view.SignUpView;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.data.validator.EmailValidator;
+import com.vaadin.spring.annotation.ViewScope;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -15,19 +16,23 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Scope;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.annotation.ApplicationScope;
 
 import javax.annotation.PostConstruct;
 import java.util.stream.Collectors;
 
 @Component("signInForm")
+@ViewScope
 public class SignInForm extends AbstractDTOForm<UserDTO> {
 
     @Autowired
     @Qualifier("userService")
-    private IUserDTOService userService;
+    private UserDetailsServiceImpl userService;
 
     private UserDTO userDTO;
 
@@ -81,13 +86,14 @@ public class SignInForm extends AbstractDTOForm<UserDTO> {
             signInButton = new Button("Sign In");
             signInButton.addClickListener(clickEvent -> {
                 if (getBinder().writeBeanIfValid(userDTO)) {
-                    final UserDTO signedInUser = userService.findByEmailAndPassword(userDTO);
-                    if (signedInUser == null) {
-                        Notification.show("Warning!\nIncorrect E-mail or/and Password!",
+                    try {
+                        final UserDetails userDetails = userService.loadUserByUsername(userDTO.getEmail());
+                        final Authentication authentication = new UsernamePasswordAuthenticationToken(
+                                userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities());
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    } catch (UsernameNotFoundException e) {
+                        Notification.show("Warning!\n" + e.getMessage(),
                                 Notification.Type.WARNING_MESSAGE);
-                    } else {
-                        Notification.show("User signed in!",
-                                Notification.Type.HUMANIZED_MESSAGE);
                     }
                 } else {
                     final String validationError = getBinder().validate().getValidationErrors().stream().

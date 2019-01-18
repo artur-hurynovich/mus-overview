@@ -1,6 +1,5 @@
 package by.hurynovich.mus_overview.vaadin.security;
 
-import by.hurynovich.mus_overview.enumeration.UserRole;
 import com.vaadin.spring.access.SecuredViewAccessControl;
 import com.vaadin.spring.access.ViewAccessControl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,18 +13,14 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
 public class VaadinSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    @Qualifier("userDetailsService")
+    @Qualifier("userService")
     private UserDetailsService userDetailsService;
-
-    @Autowired
-    private AuthenticationSuccessHandler authenticationSuccessHandler;
 
     @Override
     protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
@@ -35,13 +30,14 @@ public class VaadinSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
         http.authorizeRequests().
-                antMatchers("/mus_overview/VAADIN/**", "/mus_overview/**").permitAll();
+                antMatchers("/mus_overview/VAADIN/**", "/mus_overview/**").
+                permitAll();
         http.csrf().disable();
     }
 
     @Bean("passwordEncoder")
     public PasswordEncoder getPasswordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(7);
     }
 
     @Bean

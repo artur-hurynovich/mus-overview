@@ -1,19 +1,16 @@
 package by.hurynovich.mus_overview.vaadin.form.impl;
 
 import by.hurynovich.mus_overview.dto.impl.UserDTO;
-import by.hurynovich.mus_overview.service.IUserDTOService;
+import by.hurynovich.mus_overview.service.UserDetailsServiceImpl;
 import by.hurynovich.mus_overview.vaadin.custom_field.UserRoleField;
 import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
-import by.hurynovich.mus_overview.vaadin.view.impl.SignInView;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.data.validator.EmailValidator;
+import com.vaadin.spring.annotation.ViewScope;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -23,11 +20,12 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component("signUpForm")
+@ViewScope
 public class SignUpForm extends AbstractDTOForm<UserDTO> {
 
     @Autowired
     @Qualifier("userService")
-    private IUserDTOService userService;
+    private UserDetailsServiceImpl userService;
 
     private UserDTO userDTO;
 

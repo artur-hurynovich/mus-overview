@@ -1,6 +1,5 @@
 package by.hurynovich.mus_overview.vaadin.view;
 
-import by.hurynovich.mus_overview.vaadin.view.impl.SignInView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Alignment;

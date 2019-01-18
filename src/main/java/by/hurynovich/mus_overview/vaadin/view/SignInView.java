@@ -1,7 +1,5 @@
-package by.hurynovich.mus_overview.vaadin.view.impl;
+package by.hurynovich.mus_overview.vaadin.view;
 
-import by.hurynovich.mus_overview.dto.impl.UserDTO;
-import by.hurynovich.mus_overview.service.IDTOService;
 import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -15,10 +13,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 public class SignInView extends CustomComponent implements View {
 
     public final static String NAME = "signIn";
-
-    @Autowired
-    @Qualifier("userService")
-    private IDTOService<UserDTO> userService;
 
     private VerticalLayout parentLayout;
 

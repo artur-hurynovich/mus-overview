@@ -1,4 +1,4 @@
-package by.hurynovich.mus_overview.vaadin.security;
+package by.hurynovich.mus_overview.service;
 
 import by.hurynovich.mus_overview.converter.DTOEntityConverter;
 import by.hurynovich.mus_overview.dto.impl.UserDTO;
@@ -13,7 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-@Component("userDetailsService")
+@Component("userService")
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
@@ -27,6 +27,17 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     @Qualifier("passwordEncoder")
     private PasswordEncoder passwordEncoder;
+
+    public boolean emailExists(final String email) {
+        final UserEntity userEntity = userRepository.findByEmail(email);
+        return userEntity != null;
+    }
+
+    public UserDTO save(final UserDTO userDTO) {
+        final String encodedPassword = passwordEncoder.encode(userDTO.getPassword());
+        userDTO.setPassword(encodedPassword);
+        return userConverter.convertToDTO(userRepository.save(userConverter.convertToEntity(userDTO)));
+    }
 
     @Override
     public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
