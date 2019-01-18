@@ -35,15 +35,7 @@ public class VaadinSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
         http.authorizeRequests().
-                antMatchers("/mus_overview/VAADIN/**",
-                        "/mus_overview/vaadinServlet/**",
-                        "/mus_overview/vaadin#!signUp",
-                        "/mus_overview/vaadin#!signUp").
-                hasAnyAuthority(UserRole.getAllRolesStStringArray()).
-                and().
-                formLogin().
-                loginPage("/vaadin#!signIn").
-                successHandler(authenticationSuccessHandler);
+                antMatchers("/mus_overview/VAADIN/**", "/mus_overview/**").permitAll();
         http.csrf().disable();
     }
 

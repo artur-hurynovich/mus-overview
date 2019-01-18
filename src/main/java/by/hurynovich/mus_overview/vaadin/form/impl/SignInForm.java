@@ -3,18 +3,26 @@ package by.hurynovich.mus_overview.vaadin.form.impl;
 import by.hurynovich.mus_overview.dto.impl.UserDTO;
 import by.hurynovich.mus_overview.service.IUserDTOService;
 import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
+import by.hurynovich.mus_overview.vaadin.view.impl.SignUpView;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.data.validator.EmailValidator;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.annotation.ApplicationScope;
 
 import javax.annotation.PostConstruct;
 import java.util.stream.Collectors;
 
+@Component("signInForm")
+@ApplicationScope
 public class SignInForm extends AbstractDTOForm<UserDTO> {
 
     @Autowired
@@ -27,7 +35,11 @@ public class SignInForm extends AbstractDTOForm<UserDTO> {
 
     private PasswordField passwordField;
 
+    private HorizontalLayout buttonsLayout;
+
     private Button signInButton;
+
+    private Button signUpButton;
 
     @PostConstruct
     public void init() {
@@ -38,7 +50,7 @@ public class SignInForm extends AbstractDTOForm<UserDTO> {
     }
 
     private void setupParentLayout() {
-        getParentLayout().addComponents(getEmailField(), getPasswordField(), getSignInButton());
+        getParentLayout().addComponents(getEmailField(), getPasswordField(), getButtonsLayout());
     }
 
     private TextField getEmailField() {
@@ -53,6 +65,15 @@ public class SignInForm extends AbstractDTOForm<UserDTO> {
             passwordField = new PasswordField("Password:");
         }
         return passwordField;
+    }
+
+    protected HorizontalLayout getButtonsLayout() {
+        if (buttonsLayout == null) {
+            buttonsLayout = new HorizontalLayout();
+            final Label orLabel = new Label("or");
+            buttonsLayout.addComponents(getSignInButton(), orLabel, getSignUpButton());
+        }
+        return buttonsLayout;
     }
 
     private Button getSignInButton() {
@@ -77,6 +98,15 @@ public class SignInForm extends AbstractDTOForm<UserDTO> {
             });
         }
         return signInButton;
+    }
+
+    private Button getSignUpButton() {
+        if (signUpButton == null) {
+            signUpButton = new Button("Sign Up");
+            signUpButton.addClickListener(clickEvent ->
+                    UI.getCurrent().getNavigator().navigateTo(SignUpView.NAME));
+        }
+        return signUpButton;
     }
 
     private void setupBinder() {

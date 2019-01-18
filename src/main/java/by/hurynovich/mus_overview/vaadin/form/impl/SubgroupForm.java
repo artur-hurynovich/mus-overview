@@ -10,10 +10,12 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.stream.Collectors;
 
+@Component("subgroupForm")
 public class SubgroupForm extends AbstractDTOForm<SubgroupDTO> {
 
     @Autowired

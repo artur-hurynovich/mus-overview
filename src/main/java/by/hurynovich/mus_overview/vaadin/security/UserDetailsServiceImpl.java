@@ -4,7 +4,6 @@ import by.hurynovich.mus_overview.converter.DTOEntityConverter;
 import by.hurynovich.mus_overview.dto.impl.UserDTO;
 import by.hurynovich.mus_overview.entity.impl.UserEntity;
 import by.hurynovich.mus_overview.repository.UserRepository;
-import com.vaadin.spring.annotation.SpringComponent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.User;
@@ -12,8 +11,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
-@SpringComponent("userDetailsService")
+@Component("userDetailsService")
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired

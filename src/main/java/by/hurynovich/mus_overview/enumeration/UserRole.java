@@ -4,8 +4,8 @@ import java.util.Arrays;
 
 public enum UserRole {
 
-    USER,
-    ADMIN;
+    USER(),
+    ADMIN();
 
     public static String[] getAllRolesStStringArray() {
         return Arrays.stream(UserRole.values()).map(String::valueOf).toArray(String[]::new);

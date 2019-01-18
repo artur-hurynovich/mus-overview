@@ -15,6 +15,7 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
@@ -22,6 +23,7 @@ import java.time.ZoneId;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Component("overviewForm")
 public class OverviewForm extends AbstractDTOForm<OverviewDTO> {
 
     @Autowired

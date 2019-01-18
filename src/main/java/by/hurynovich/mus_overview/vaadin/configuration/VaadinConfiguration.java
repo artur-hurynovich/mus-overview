@@ -84,36 +84,6 @@ public class VaadinConfiguration {
         }
     }
 
-    @Bean("groupForm")
-    @ViewScope
-    public AbstractDTOForm<GroupDTO> getGroupForm(final DependencyDescriptor descriptor) {
-        return new GroupForm();
-    }
-
-    @Bean("subgroupForm")
-    @ViewScope
-    public AbstractDTOForm<SubgroupDTO> getSubgroupForm() {
-        return new SubgroupForm();
-    }
-
-    @Bean("overviewForm")
-    @ViewScope
-    public AbstractDTOForm<OverviewDTO> getOverviewForm() {
-        return new OverviewForm();
-    }
-
-    @Bean("signUpForm")
-    @ViewScope
-    public AbstractDTOForm<UserDTO> getSignUpForm() {
-        return new SignUpForm();
-    }
-
-    @Bean("signInForm")
-    @ViewScope
-    public AbstractDTOForm<UserDTO> getSignInForm() {
-        return new SignInForm();
-    }
-
     @Bean("filter")
     @ViewScope
     public FilterWrapper getFilter() {
