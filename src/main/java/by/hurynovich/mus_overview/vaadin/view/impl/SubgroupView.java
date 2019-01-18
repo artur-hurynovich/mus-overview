@@ -21,7 +21,7 @@ import javax.annotation.PostConstruct;
 import java.util.Set;
 
 @SpringView(name = SubgroupView.NAME)
-@Secured("ADMIN")
+@Secured("USER")
 public class SubgroupView extends SubgroupDTOView {
 
     public final static String NAME = "subgroup";

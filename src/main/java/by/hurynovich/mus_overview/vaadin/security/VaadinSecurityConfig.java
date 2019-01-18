@@ -30,14 +30,13 @@ public class VaadinSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
         http.authorizeRequests().
-                antMatchers("/mus_overview/VAADIN/**", "/mus_overview/**").
-                permitAll();
+                antMatchers("/mus_overview/VAADIN/**", "/mus_overview/**").permitAll();
         http.csrf().disable();
     }
 
     @Bean("passwordEncoder")
     public PasswordEncoder getPasswordEncoder() {
-        return new BCryptPasswordEncoder(7);
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
