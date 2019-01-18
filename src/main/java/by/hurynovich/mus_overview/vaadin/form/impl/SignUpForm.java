@@ -4,6 +4,7 @@ import by.hurynovich.mus_overview.dto.impl.UserDTO;
 import by.hurynovich.mus_overview.service.UserDetailsServiceImpl;
 import by.hurynovich.mus_overview.vaadin.custom_field.UserRoleField;
 import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
+import by.hurynovich.mus_overview.vaadin.view.impl.OverviewView;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.data.validator.EmailValidator;
 import com.vaadin.spring.annotation.ViewScope;
@@ -11,6 +12,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -93,8 +95,7 @@ public class SignUpForm extends AbstractDTOForm<UserDTO> {
                                 Notification.Type.WARNING_MESSAGE);
                     } else {
                         userService.save(userDTO);
-                        Notification.show("User signed up!",
-                                Notification.Type.HUMANIZED_MESSAGE);
+                        UI.getCurrent().getNavigator().navigateTo(OverviewView.NAME);
                     }
                 } else {
                     final String validationError = getBinder().validate().getValidationErrors().stream().

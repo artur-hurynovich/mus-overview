@@ -13,6 +13,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component("userService")
 public class UserDetailsServiceImpl implements UserDetailsService {
 
@@ -37,6 +40,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         final String encodedPassword = passwordEncoder.encode(userDTO.getPassword());
         userDTO.setPassword(encodedPassword);
         return userConverter.convertToDTO(userRepository.save(userConverter.convertToEntity(userDTO)));
+    }
+
+    public List<UserDTO> findAll() {
+        return userRepository.findAll().stream().map(userConverter::convertToDTO).collect(Collectors.toList());
     }
 
     @Override

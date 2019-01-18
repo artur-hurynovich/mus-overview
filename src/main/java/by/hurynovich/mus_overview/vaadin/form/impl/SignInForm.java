@@ -4,6 +4,7 @@ import by.hurynovich.mus_overview.dto.impl.UserDTO;
 import by.hurynovich.mus_overview.service.UserDetailsServiceImpl;
 import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
 import by.hurynovich.mus_overview.vaadin.view.SignUpView;
+import by.hurynovich.mus_overview.vaadin.view.impl.OverviewView;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.data.validator.EmailValidator;
 import com.vaadin.spring.annotation.ViewScope;
@@ -96,6 +97,17 @@ public class SignInForm extends AbstractDTOForm<UserDTO> {
                         final Authentication authentication = new UsernamePasswordAuthenticationToken(
                                 userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities());
                         SecurityContextHolder.getContext().setAuthentication(authentication);
+                        /*final String enteredPassword = passwordField.getValue();
+                        if (passwordEncoder.matches(passwordEncoder.encode(enteredPassword), userDetails.getPassword())) {
+                            final Authentication authentication = new UsernamePasswordAuthenticationToken(
+                                    userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities());
+                            SecurityContextHolder.getContext().setAuthentication(authentication);
+                        } else {
+                            Notification.show("Warning!\nEntered password is incorrect!",
+                                    Notification.Type.WARNING_MESSAGE);
+                            passwordField.clear();
+                        }*/
+                        UI.getCurrent().getNavigator().navigateTo(OverviewView.NAME);
                     } catch (UsernameNotFoundException e) {
                         Notification.show("Warning!\n" + e.getMessage(),
                                 Notification.Type.WARNING_MESSAGE);

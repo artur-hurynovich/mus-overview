@@ -1,5 +1,6 @@
 package by.hurynovich.mus_overview.vaadin.view;
 
+import by.hurynovich.mus_overview.vaadin.view.impl.OverviewView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
@@ -54,7 +55,10 @@ public class ProfileView extends CustomComponent implements View {
     private Button getSignOutButton() {
         if (signOutButton == null) {
             signOutButton = new Button("Sign Out");
-            signOutButton.addClickListener(clickEvent -> SecurityContextHolder.clearContext());
+            signOutButton.addClickListener(clickEvent -> {
+                SecurityContextHolder.clearContext();
+                UI.getCurrent().getNavigator().navigateTo(OverviewView.NAME);
+            });
         }
         return signOutButton;
     }
