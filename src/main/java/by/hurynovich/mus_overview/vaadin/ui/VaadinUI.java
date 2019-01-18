@@ -19,11 +19,15 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.spring.security.VaadinSecurity;
 
 @SpringUI(path = "vaadin")
 @Theme("mytheme")
 @SpringViewDisplay
 public class VaadinUI extends UI implements ViewDisplay {
+
+    @Autowired
+    private VaadinSecurity vaadinSecurity;
 
     @Autowired
     private SpringViewProvider viewProvider;
@@ -37,8 +41,8 @@ public class VaadinUI extends UI implements ViewDisplay {
     @Override
     protected void init(final VaadinRequest vaadinRequest) {
         viewProvider.setAccessDeniedViewClass(AccessDeniedView.class);
-        getMenuLayout().addComponents(getMenuButton("Groups", GroupView.NAME),
-                getMenuButton("Subgroups", SubgroupView.NAME),
+        getMenuLayout().addComponents(getSecuredMenuButton("Groups", GroupView.NAME),
+                getSecuredMenuButton("Subgroups", SubgroupView.NAME),
                 getMenuButton("Overviews", OverviewView.NAME),
                 getMenuButton("Profile", ProfileView.NAME));
         getParentLayout().addComponents(getMenuLayout(), getViewPanel());
@@ -67,6 +71,18 @@ public class VaadinUI extends UI implements ViewDisplay {
     private Button getMenuButton(final String caption, final String viewName) {
         final Button button = new Button(caption);
         button.addClickListener(clickEvent -> getUI().getNavigator().navigateTo(viewName));
+        return button;
+    }
+
+    private Button getSecuredMenuButton(final String caption, final String viewName) {
+        final Button button = new Button(caption);
+        button.addClickListener(clickEvent -> {
+            if (vaadinSecurity.isAuthenticated()) {
+                getUI().getNavigator().navigateTo(viewName);
+            } else {
+                getUI().getNavigator().navigateTo(AccessDeniedView.NAME);
+            }
+        });
         return button;
     }
 

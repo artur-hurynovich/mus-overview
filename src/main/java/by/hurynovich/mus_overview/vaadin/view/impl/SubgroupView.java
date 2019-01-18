@@ -23,7 +23,6 @@ import javax.annotation.PostConstruct;
 import java.util.Set;
 
 @SpringView(name = SubgroupView.NAME)
-@Secured({"USER", "ADMIN"})
 public class SubgroupView extends SubgroupDTOView {
 
     public final static String NAME = "subgroup";
@@ -139,9 +138,7 @@ public class SubgroupView extends SubgroupDTOView {
         getDeleteButton().addClickListener(clickEvent -> {
             if (checkAuth(UserRole.ADMIN)) {
                 final Set<SubgroupDTO> selectedSubgroups = getGrid().getSelectionModel().getSelectedItems();
-                selectedSubgroups.forEach(subgroupDTO -> {
-                    subgroupService.delete(subgroupDTO);
-                });
+                selectedSubgroups.forEach(subgroupDTO -> subgroupService.delete(subgroupDTO));
                 Notification.show("Subgroup(s) deleted!",
                         Notification.Type.HUMANIZED_MESSAGE);
                 getGrid().deselectAll();

@@ -15,23 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import javax.servlet.http.HttpSession;
+import org.vaadin.spring.security.VaadinSecurity;
 
 public abstract class AbstractDTOView<DTOClass extends AbstractDTO> extends CustomComponent implements View {
 
-
-
-
-
     @Autowired
-    private HttpSession httpSession;
-
-
-
-
+    private VaadinSecurity vaadinSecurity;
 
     private VerticalLayout parentLayout;
 
@@ -113,8 +102,7 @@ public abstract class AbstractDTOView<DTOClass extends AbstractDTO> extends Cust
     }
 
     protected boolean checkAuth(final UserRole ... grantedRoles) {
-        final Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
+        final Authentication authentication = vaadinSecurity.getAuthentication();
         if (authentication != null) {
             for (GrantedAuthority authority : authentication.getAuthorities()) {
                 for (UserRole role : grantedRoles) {

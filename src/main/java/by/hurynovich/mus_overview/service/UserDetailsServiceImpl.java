@@ -53,7 +53,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException("User with email \"" + email + "\" not found!");
         } else {
             return User.withUsername(email).
-                    passwordEncoder(passwordEncoder::encode).
+//                    passwordEncoder(passwordEncoder::encode).
                     password(userDTO.getPassword()).
                     authorities(userDTO.getRole().toString()).
                     build();

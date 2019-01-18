@@ -2,6 +2,7 @@ package by.hurynovich.mus_overview.vaadin.view;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
@@ -10,8 +11,10 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import org.springframework.stereotype.Component;
 
-@Component
+@SpringView(name = AccessDeniedView.NAME)
 public class AccessDeniedView extends CustomComponent implements View {
+
+    public final static String NAME = "accessDeniedView";
 
     private final static String MESSAGE = "Access denied! Please, sign in!";
 

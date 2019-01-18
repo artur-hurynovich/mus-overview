@@ -24,6 +24,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.vaadin.spring.security.VaadinSecurity;
 
 import javax.annotation.PostConstruct;
 import java.util.stream.Collectors;
@@ -33,12 +34,11 @@ import java.util.stream.Collectors;
 public class SignInForm extends AbstractDTOForm<UserDTO> {
 
     @Autowired
-    @Qualifier("userService")
-    private UserDetailsServiceImpl userService;
+    private VaadinSecurity vaadinSecurity;
 
     @Autowired
-    @Qualifier("passwordEncoder")
-    private PasswordEncoder passwordEncoder;
+    @Qualifier("userService")
+    private UserDetailsServiceImpl userService;
 
     private UserDTO userDTO;
 
@@ -93,23 +93,10 @@ public class SignInForm extends AbstractDTOForm<UserDTO> {
             signInButton.addClickListener(clickEvent -> {
                 if (getBinder().writeBeanIfValid(userDTO)) {
                     try {
-                        final UserDetails userDetails = userService.loadUserByUsername(userDTO.getEmail());
-                        final Authentication authentication = new UsernamePasswordAuthenticationToken(
-                                userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities());
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
-                        /*final String enteredPassword = passwordField.getValue();
-                        if (passwordEncoder.matches(passwordEncoder.encode(enteredPassword), userDetails.getPassword())) {
-                            final Authentication authentication = new UsernamePasswordAuthenticationToken(
-                                    userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities());
-                            SecurityContextHolder.getContext().setAuthentication(authentication);
-                        } else {
-                            Notification.show("Warning!\nEntered password is incorrect!",
-                                    Notification.Type.WARNING_MESSAGE);
-                            passwordField.clear();
-                        }*/
+                        vaadinSecurity.login(emailField.getValue(), passwordField.getValue());
                         UI.getCurrent().getNavigator().navigateTo(OverviewView.NAME);
-                    } catch (UsernameNotFoundException e) {
-                        Notification.show("Warning!\n" + e.getMessage(),
+                    } catch (Exception e) {
+                        Notification.show("Warning!\nSigning In failed!",
                                 Notification.Type.WARNING_MESSAGE);
                     }
                 } else {

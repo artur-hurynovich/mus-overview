@@ -8,10 +8,15 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.UI;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.vaadin.spring.security.VaadinSecurity;
 
 @SpringView(name = "profileView")
 public class ProfileView extends CustomComponent implements View {
+
+    @Autowired
+    private VaadinSecurity vaadinSecurity;
 
     public final static String NAME = "profileView";
 
@@ -49,6 +54,7 @@ public class ProfileView extends CustomComponent implements View {
             signInButton = new Button("Sign In");
             signInButton.addClickListener(clickEvent -> UI.getCurrent().getNavigator().navigateTo(SignInView.NAME));
         }
+        signInButton.setEnabled(!vaadinSecurity.isAuthenticated());
         return signInButton;
     }
 
@@ -56,10 +62,11 @@ public class ProfileView extends CustomComponent implements View {
         if (signOutButton == null) {
             signOutButton = new Button("Sign Out");
             signOutButton.addClickListener(clickEvent -> {
-                SecurityContextHolder.clearContext();
+                vaadinSecurity.logout();
                 UI.getCurrent().getNavigator().navigateTo(OverviewView.NAME);
             });
         }
+        signOutButton.setEnabled(vaadinSecurity.isAuthenticated());
         return signOutButton;
     }
 
