@@ -1,8 +1,8 @@
 package by.hurynovich.mus_overview.vaadin.ui;
 
+import by.hurynovich.mus_overview.vaadin.view.AccessDeniedView;
 import by.hurynovich.mus_overview.vaadin.view.impl.GroupView;
 import by.hurynovich.mus_overview.vaadin.view.impl.OverviewView;
-import by.hurynovich.mus_overview.vaadin.view.impl.SignInView;
 import by.hurynovich.mus_overview.vaadin.view.impl.SubgroupView;
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.View;
@@ -27,7 +27,6 @@ public class VaadinUI extends UI implements ViewDisplay {
     @Autowired
     private SpringViewProvider viewProvider;
 
-
     private VerticalLayout parentLayout;
 
     private HorizontalLayout menuLayout;
@@ -36,7 +35,7 @@ public class VaadinUI extends UI implements ViewDisplay {
 
     @Override
     protected void init(final VaadinRequest vaadinRequest) {
-        viewProvider.setAccessDeniedViewClass(SignInView.class);
+        viewProvider.setAccessDeniedViewClass(AccessDeniedView.class);
         getMenuLayout().addComponents(getMenuButton("Groups", GroupView.NAME),
                 getMenuButton("Subgroups", SubgroupView.NAME),
                 getMenuButton("Overviews", OverviewView.NAME));

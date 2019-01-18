@@ -1,20 +1,9 @@
 package by.hurynovich.mus_overview.vaadin.configuration;
 
 import by.hurynovich.mus_overview.dto.AbstractDTO;
-import by.hurynovich.mus_overview.dto.impl.GroupDTO;
-import by.hurynovich.mus_overview.dto.impl.OverviewDTO;
-import by.hurynovich.mus_overview.dto.impl.SubgroupDTO;
-import by.hurynovich.mus_overview.dto.impl.UserDTO;
 import by.hurynovich.mus_overview.vaadin.annotation.GridColumn;
 import by.hurynovich.mus_overview.vaadin.annotation.GridRenderer;
-import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
-import by.hurynovich.mus_overview.vaadin.form.impl.GroupForm;
-import by.hurynovich.mus_overview.vaadin.form.impl.OverviewForm;
-import by.hurynovich.mus_overview.vaadin.form.impl.SignInForm;
-import by.hurynovich.mus_overview.vaadin.form.impl.SignUpForm;
-import by.hurynovich.mus_overview.vaadin.form.impl.SubgroupForm;
 import by.hurynovich.mus_overview.vaadin.util.FilterWrapper;
-import com.vaadin.data.Binder;
 import com.vaadin.spring.annotation.ViewScope;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.TextRenderer;
@@ -85,7 +74,6 @@ public class VaadinConfiguration {
     }
 
     @Bean("filter")
-    @ViewScope
     public FilterWrapper getFilter() {
         final FilterWrapper filter = new FilterWrapper();
         filter.setTagName("");

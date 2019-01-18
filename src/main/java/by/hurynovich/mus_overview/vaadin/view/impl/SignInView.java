@@ -7,6 +7,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.VerticalLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -19,13 +20,23 @@ public class SignInView extends CustomComponent implements View {
     @Qualifier("userService")
     private IDTOService<UserDTO> userService;
 
+    private VerticalLayout parentLayout;
+
     @Autowired
     @Qualifier("signInForm")
     private AbstractDTOForm signInForm;
 
     @Override
     public void enter(final ViewChangeListener.ViewChangeEvent event) {
-        setCompositionRoot(signInForm);
+        setCompositionRoot(getParentLayout());
+    }
+
+    private VerticalLayout getParentLayout() {
+        if (parentLayout == null) {
+            parentLayout = new VerticalLayout();
+            parentLayout.addComponent(signInForm);
+        }
+        return parentLayout;
     }
 
 }

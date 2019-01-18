@@ -15,6 +15,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.ApplicationScope;
 
@@ -22,7 +23,6 @@ import javax.annotation.PostConstruct;
 import java.util.stream.Collectors;
 
 @Component("signInForm")
-@ApplicationScope
 public class SignInForm extends AbstractDTOForm<UserDTO> {
 
     @Autowired
