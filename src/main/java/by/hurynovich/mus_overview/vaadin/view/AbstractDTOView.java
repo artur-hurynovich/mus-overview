@@ -101,22 +101,6 @@ public abstract class AbstractDTOView<DTOClass extends AbstractDTO> extends Cust
         return deleteButton;
     }
 
-    protected boolean checkAuth(final UserRole ... grantedRoles) {
-        final Authentication authentication = vaadinSecurity.getAuthentication();
-        if (authentication != null) {
-            for (GrantedAuthority authority : authentication.getAuthorities()) {
-                for (UserRole role : grantedRoles) {
-                    if (authority.getAuthority().equals(role.name())) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        } else {
-            return false;
-        }
-    }
-
     abstract protected Class<DTOClass> getDTOClass();
 
 }

@@ -9,12 +9,11 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import org.springframework.stereotype.Component;
 
 @SpringView(name = AccessDeniedView.NAME)
 public class AccessDeniedView extends CustomComponent implements View {
 
-    public final static String NAME = "accessDeniedView";
+    public final static String NAME = "accessDenied";
 
     private final static String MESSAGE = "Access denied! Please, sign in!";
 

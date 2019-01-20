@@ -4,6 +4,7 @@ import by.hurynovich.mus_overview.dto.impl.GroupDTO;
 import by.hurynovich.mus_overview.enumeration.UserRole;
 import by.hurynovich.mus_overview.service.IGroupDTOService;
 import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
+import by.hurynovich.mus_overview.vaadin.util.auth_checker.IAuthChecker;
 import by.hurynovich.mus_overview.vaadin.view.GroupDTOView;
 import com.vaadin.data.provider.CallbackDataProvider;
 import com.vaadin.spring.annotation.SpringView;
@@ -12,12 +13,14 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.access.annotation.Secured;
 import org.vaadin.spring.security.VaadinSecurity;
 
 import javax.annotation.PostConstruct;
 import java.util.Set;
 
 @SpringView(name = GroupView.NAME)
+@Secured({"SUPER_ADMIN", "ADMIN"})
 public class GroupView extends GroupDTOView {
 
     public final static String NAME = "group";
@@ -32,6 +35,10 @@ public class GroupView extends GroupDTOView {
     @Autowired
     @Qualifier("groupForm")
     private AbstractDTOForm groupForm;
+
+    @Autowired
+    @Qualifier("authChecker")
+    private IAuthChecker authChecker;
 
     private CallbackDataProvider<GroupDTO, String> groupDTOGridDataProvider;
 
@@ -67,7 +74,7 @@ public class GroupView extends GroupDTOView {
 
     private void setupAddButton() {
         getAddButton().addClickListener(clickEvent -> {
-            if (checkAuth(UserRole.ADMIN)) {
+            if (authChecker.checkAuth(UserRole.SUPER_ADMIN, UserRole.ADMIN)) {
                 groupForm.setupForm(new GroupDTO(), groupWindow::close, groupWindow::close);
                 groupWindow.setContent(groupForm);
                 UI.getCurrent().addWindow(groupWindow);
@@ -80,7 +87,7 @@ public class GroupView extends GroupDTOView {
 
     private void setupEditButton() {
         getEditButton().addClickListener(clickEvent -> {
-            if (checkAuth(UserRole.ADMIN)) {
+            if (authChecker.checkAuth(UserRole.SUPER_ADMIN, UserRole.ADMIN)) {
                 final GroupDTO selectedGroupDTO = getGrid().getSelectionModel().getSelectedItems().iterator().next();
                 groupForm.setupForm(selectedGroupDTO, groupWindow::close, groupWindow::close);
                 groupWindow.setContent(groupForm);
@@ -94,7 +101,7 @@ public class GroupView extends GroupDTOView {
 
     private void setupDeleteButton() {
         getDeleteButton().addClickListener(clickEvent -> {
-            if (checkAuth(UserRole.ADMIN)) {
+            if (authChecker.checkAuth(UserRole.SUPER_ADMIN, UserRole.ADMIN)) {
                 final Set<GroupDTO> selectedGroups = getGrid().getSelectionModel().getSelectedItems();
                 selectedGroups.forEach(groupDTO -> groupService.delete(groupDTO));
                 Notification.show("Group(s) deleted!",

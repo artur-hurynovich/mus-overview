@@ -1,5 +1,8 @@
 package by.hurynovich.mus_overview.vaadin.view;
 
+import by.hurynovich.mus_overview.enumeration.UserRole;
+import by.hurynovich.mus_overview.vaadin.util.auth_checker.IAuthChecker;
+import by.hurynovich.mus_overview.vaadin.view.impl.UserView;
 import by.hurynovich.mus_overview.vaadin.view.impl.OverviewView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -9,22 +12,28 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.UI;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.vaadin.spring.security.VaadinSecurity;
 
-@SpringView(name = "profileView")
+@SpringView(name = ProfileView.NAME)
 public class ProfileView extends CustomComponent implements View {
 
     @Autowired
     private VaadinSecurity vaadinSecurity;
 
-    public final static String NAME = "profileView";
+    @Autowired
+    @Qualifier("authChecker")
+    private IAuthChecker authChecker;
+
+    public final static String NAME = "profile";
 
     private HorizontalLayout parentLayout;
 
     private Button signUpButton;
 
     private Button signInButton;
+
+    private Button listUsersButton;
 
     private Button signOutButton;
 
@@ -36,7 +45,8 @@ public class ProfileView extends CustomComponent implements View {
     private HorizontalLayout getParentLayout() {
         if (parentLayout == null) {
             parentLayout = new HorizontalLayout();
-            parentLayout.addComponents(getSignUpButton(), getSignInButton(), getSignOutButton());
+            parentLayout.addComponents(getSignUpButton(), getSignInButton(), getListUsersButton(),
+                    getSignOutButton());
         }
         return parentLayout;
     }
@@ -58,13 +68,24 @@ public class ProfileView extends CustomComponent implements View {
         return signInButton;
     }
 
+    private Button getListUsersButton() {
+        if (listUsersButton == null) {
+            listUsersButton = new Button("List Users");
+            listUsersButton.addClickListener(clickEvent ->
+                    UI.getCurrent().getNavigator().navigateTo(UserView.NAME));
+        }
+        if (authChecker.checkAuth(UserRole.SUPER_ADMIN, UserRole.ADMIN)) {
+            listUsersButton.setVisible(true);
+        } else {
+            listUsersButton.setVisible(false);
+        }
+        return listUsersButton;
+    }
+
     private Button getSignOutButton() {
         if (signOutButton == null) {
             signOutButton = new Button("Sign Out");
-            signOutButton.addClickListener(clickEvent -> {
-                vaadinSecurity.logout();
-                UI.getCurrent().getNavigator().navigateTo(OverviewView.NAME);
-            });
+            signOutButton.addClickListener(clickEvent -> vaadinSecurity.logout());
         }
         signOutButton.setEnabled(vaadinSecurity.isAuthenticated());
         return signOutButton;

@@ -6,6 +6,7 @@ import by.hurynovich.mus_overview.enumeration.UserRole;
 import by.hurynovich.mus_overview.service.IGroupDTOService;
 import by.hurynovich.mus_overview.service.ISubgroupDTOService;
 import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
+import by.hurynovich.mus_overview.vaadin.util.auth_checker.IAuthChecker;
 import by.hurynovich.mus_overview.vaadin.view.SubgroupDTOView;
 import com.vaadin.data.provider.CallbackDataProvider;
 import com.vaadin.data.provider.ConfigurableFilterDataProvider;
@@ -16,11 +17,13 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.access.annotation.Secured;
 
 import javax.annotation.PostConstruct;
 import java.util.Set;
 
 @SpringView(name = SubgroupView.NAME)
+@Secured({"SUPER_ADMIN", "ADMIN"})
 public class SubgroupView extends SubgroupDTOView {
 
     public final static String NAME = "subgroup";
@@ -36,6 +39,10 @@ public class SubgroupView extends SubgroupDTOView {
     @Autowired
     @Qualifier("subgroupForm")
     private AbstractDTOForm subgroupForm;
+
+    @Autowired
+    @Qualifier("authChecker")
+    private IAuthChecker authChecker;
 
     private ComboBox<GroupDTO> groupDTOComboBox;
 
@@ -107,7 +114,7 @@ public class SubgroupView extends SubgroupDTOView {
 
     private void setupAddButton() {
         getAddButton().addClickListener(clickEvent -> {
-            if (checkAuth(UserRole.ADMIN)) {
+            if (authChecker.checkAuth(UserRole.SUPER_ADMIN, UserRole.ADMIN)) {
                 subgroupForm.setupForm(new SubgroupDTO(), subgroupWindow::close, subgroupWindow::close);
                 subgroupWindow.setContent(subgroupForm);
                 UI.getCurrent().addWindow(subgroupWindow);
@@ -120,7 +127,7 @@ public class SubgroupView extends SubgroupDTOView {
 
     private void setupEditButton() {
         getEditButton().addClickListener(clickEvent -> {
-            if (checkAuth(UserRole.ADMIN)) {
+            if (authChecker.checkAuth(UserRole.SUPER_ADMIN, UserRole.ADMIN)) {
                 final SubgroupDTO selectedSubgroupDTO = getGrid().getSelectionModel().getSelectedItems().iterator().next();
                 subgroupForm.setupForm(selectedSubgroupDTO, subgroupWindow::close, subgroupWindow::close);
                 subgroupWindow.setContent(subgroupForm);
@@ -134,7 +141,7 @@ public class SubgroupView extends SubgroupDTOView {
 
     private void setupDeleteButton() {
         getDeleteButton().addClickListener(clickEvent -> {
-            if (checkAuth(UserRole.ADMIN)) {
+            if (authChecker.checkAuth(UserRole.SUPER_ADMIN, UserRole.ADMIN)) {
                 final Set<SubgroupDTO> selectedSubgroups = getGrid().getSelectionModel().getSelectedItems();
                 selectedSubgroups.forEach(subgroupDTO -> subgroupService.delete(subgroupDTO));
                 Notification.show("Subgroup(s) deleted!",

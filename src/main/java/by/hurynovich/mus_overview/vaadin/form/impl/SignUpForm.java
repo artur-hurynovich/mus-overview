@@ -1,9 +1,11 @@
 package by.hurynovich.mus_overview.vaadin.form.impl;
 
 import by.hurynovich.mus_overview.dto.impl.UserDTO;
+import by.hurynovich.mus_overview.enumeration.UserRole;
 import by.hurynovich.mus_overview.service.UserDetailsServiceImpl;
 import by.hurynovich.mus_overview.vaadin.custom_field.UserRoleField;
 import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
+import by.hurynovich.mus_overview.vaadin.view.SignInView;
 import by.hurynovich.mus_overview.vaadin.view.impl.OverviewView;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.data.validator.EmailValidator;
@@ -37,8 +39,6 @@ public class SignUpForm extends AbstractDTOForm<UserDTO> {
 
     private PasswordField passwordField;
 
-    private UserRoleField userRoleField;
-
     private Button signUpButton;
 
     @PostConstruct
@@ -50,7 +50,7 @@ public class SignUpForm extends AbstractDTOForm<UserDTO> {
     }
 
     private void setupParentLayout() {
-        getParentLayout().addComponents(getNameField(), getEmailField(), getPasswordField(), getUserRoleField(),
+        getParentLayout().addComponents(getNameField(), getEmailField(), getPasswordField(),
                 getSignUpButton());
     }
 
@@ -75,14 +75,6 @@ public class SignUpForm extends AbstractDTOForm<UserDTO> {
         return passwordField;
     }
 
-    private UserRoleField getUserRoleField() {
-        if (userRoleField == null) {
-            userRoleField = new UserRoleField();
-            userRoleField.setCaption("Role:");
-        }
-        return userRoleField;
-    }
-
     private Button getSignUpButton() {
         if (signUpButton == null) {
             signUpButton = new Button("Sign Up");
@@ -94,8 +86,13 @@ public class SignUpForm extends AbstractDTOForm<UserDTO> {
                                         "\' already exists!",
                                 Notification.Type.WARNING_MESSAGE);
                     } else {
+                        if (userService.count() == 0) {
+                            userDTO.setRole(UserRole.SUPER_ADMIN);
+                        } else {
+                            userDTO.setRole(UserRole.USER);
+                        }
                         userService.save(userDTO);
-                        UI.getCurrent().getNavigator().navigateTo(OverviewView.NAME);
+                        UI.getCurrent().getNavigator().navigateTo(SignInView.NAME);
                     }
                 } else {
                     final String validationError = getBinder().validate().getValidationErrors().stream().
@@ -119,9 +116,6 @@ public class SignUpForm extends AbstractDTOForm<UserDTO> {
         getBinder().forField(getPasswordField()).withValidator(password -> password != null && password.length() > 7,
                 "Please, enter a password with minimal length of 8 characters!").
                 bind(UserDTO::getPassword, UserDTO::setPassword);
-        getBinder().forField(getUserRoleField()).
-                withValidator(Objects::nonNull, "Please, select user role!").
-                bind(UserDTO::getRole, UserDTO::setRole);
     }
 
     @Override

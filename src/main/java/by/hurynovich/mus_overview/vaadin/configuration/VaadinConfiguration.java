@@ -3,7 +3,6 @@ package by.hurynovich.mus_overview.vaadin.configuration;
 import by.hurynovich.mus_overview.dto.AbstractDTO;
 import by.hurynovich.mus_overview.vaadin.annotation.GridColumn;
 import by.hurynovich.mus_overview.vaadin.annotation.GridRenderer;
-import by.hurynovich.mus_overview.vaadin.util.FilterWrapper;
 import com.vaadin.spring.annotation.ViewScope;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.TextRenderer;

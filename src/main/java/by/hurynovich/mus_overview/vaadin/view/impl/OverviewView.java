@@ -10,7 +10,8 @@ import by.hurynovich.mus_overview.service.IOverviewDTOService;
 import by.hurynovich.mus_overview.service.ISubgroupDTOService;
 import by.hurynovich.mus_overview.service.ITagDTOService;
 import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
-import by.hurynovich.mus_overview.vaadin.util.FilterWrapper;
+import by.hurynovich.mus_overview.vaadin.util.auth_checker.IAuthChecker;
+import by.hurynovich.mus_overview.vaadin.util.filter_wrapper.SubgroupIdAndTagNameFilter;
 import by.hurynovich.mus_overview.vaadin.view.OverviewDTOView;
 import com.vaadin.data.provider.CallbackDataProvider;
 import com.vaadin.data.provider.ConfigurableFilterDataProvider;
@@ -57,6 +58,10 @@ public class OverviewView extends OverviewDTOView {
     @Qualifier("overviewForm")
     private AbstractDTOForm overviewForm;
 
+    @Autowired
+    @Qualifier("authChecker")
+    private IAuthChecker authChecker;
+
     private HorizontalLayout comboBoxesLayout;
 
     private ComboBox<GroupDTO> groupDTOComboBox;
@@ -69,13 +74,13 @@ public class OverviewView extends OverviewDTOView {
 
     private ConfigurableFilterDataProvider<SubgroupDTO, Void, Long> subgroupDTOComboBoxDataProvider;
 
-    private ConfigurableFilterDataProvider<OverviewDTO, Void, FilterWrapper> overviewDTOGridDataProvider;
+    private ConfigurableFilterDataProvider<OverviewDTO, Void, SubgroupIdAndTagNameFilter> overviewDTOGridDataProvider;
 
-    private ConfigurableFilterDataProvider<OverviewDTO, Void, FilterWrapper> overviewDTOBySubgroupIdGridDataProvider;
+    private ConfigurableFilterDataProvider<OverviewDTO, Void, SubgroupIdAndTagNameFilter> overviewDTOBySubgroupIdGridDataProvider;
 
     @Autowired
     @Qualifier("filter")
-    private FilterWrapper filter;
+    private SubgroupIdAndTagNameFilter filter;
 
     private final Window overviewWindow;
 
@@ -165,7 +170,7 @@ public class OverviewView extends OverviewDTOView {
 
     private void setupAddButton() {
         getAddButton().addClickListener(clickEvent -> {
-            if (checkAuth(UserRole.ADMIN)) {
+            if (authChecker.checkAuth(UserRole.SUPER_ADMIN, UserRole.ADMIN)) {
                 final OverviewDTO overviewDTO = new OverviewDTO();
                 final List<TagDTO> tagDTOList = new ArrayList<>();
                 overviewDTO.setTags(tagDTOList);
@@ -181,7 +186,7 @@ public class OverviewView extends OverviewDTOView {
 
     private void setupEditButton() {
         getEditButton().addClickListener(clickEvent -> {
-            if (checkAuth(UserRole.ADMIN)) {
+            if (authChecker.checkAuth(UserRole.SUPER_ADMIN, UserRole.ADMIN)) {
                 final OverviewDTO selectedOverviewDTO = getGrid().getSelectionModel().getSelectedItems().iterator().next();
                 overviewForm.setupForm(selectedOverviewDTO, overviewWindow::close, overviewWindow::close);
                 overviewWindow.setContent(overviewForm);
@@ -195,7 +200,7 @@ public class OverviewView extends OverviewDTOView {
 
     private void setupDeleteButton() {
         getDeleteButton().addClickListener(clickEvent -> {
-            if (checkAuth(UserRole.ADMIN)) {
+            if (authChecker.checkAuth(UserRole.SUPER_ADMIN, UserRole.ADMIN)) {
                 final Set<OverviewDTO> selectedOverviews = getGrid().getSelectionModel().getSelectedItems();
                 selectedOverviews.forEach(overviewDTO -> overviewDTOService.delete(overviewDTO));
                 Notification.show("Overview(s) deleted!",
@@ -225,7 +230,7 @@ public class OverviewView extends OverviewDTOView {
         filterField.setCaption("Filter...");
         filterField.addValueChangeListener(valueChangeEvent -> {
             filter.setTagName(valueChangeEvent.getValue());
-            ((ConfigurableFilterDataProvider<OverviewDTO, Void, FilterWrapper>) getGrid()
+            ((ConfigurableFilterDataProvider<OverviewDTO, Void, SubgroupIdAndTagNameFilter>) getGrid()
                     .getDataProvider()).setFilter(filter);
         });
         return filterField;
@@ -251,11 +256,11 @@ public class OverviewView extends OverviewDTOView {
         return subgroupDTOComboBoxDataProvider;
     }
 
-    private ConfigurableFilterDataProvider<OverviewDTO, Void, FilterWrapper> getOverviewDTOGridDataProvider() {
+    private ConfigurableFilterDataProvider<OverviewDTO, Void, SubgroupIdAndTagNameFilter> getOverviewDTOGridDataProvider() {
         if (overviewDTOGridDataProvider == null) {
-            overviewDTOGridDataProvider = new CallbackDataProvider<OverviewDTO, FilterWrapper>(
+            overviewDTOGridDataProvider = new CallbackDataProvider<OverviewDTO, SubgroupIdAndTagNameFilter>(
                     query -> {
-                        final FilterWrapper filter = query.getFilter().orElse(null);
+                        final SubgroupIdAndTagNameFilter filter = query.getFilter().orElse(null);
                         if (filter.getTagName() == null || filter.getTagName().isEmpty()) {
                             return overviewDTOService.findAll().stream();
                         } else {
@@ -263,7 +268,7 @@ public class OverviewView extends OverviewDTOView {
                         }
                     },
                     query -> {
-                        final FilterWrapper filter = query.getFilter().orElse(null);
+                        final SubgroupIdAndTagNameFilter filter = query.getFilter().orElse(null);
                         if (filter.getTagName() == null || filter.getTagName().isEmpty()) {
                             return (int) overviewDTOService.count();
                         } else {
@@ -275,12 +280,12 @@ public class OverviewView extends OverviewDTOView {
         return overviewDTOGridDataProvider;
     }
 
-    private ConfigurableFilterDataProvider<OverviewDTO, Void, FilterWrapper>
+    private ConfigurableFilterDataProvider<OverviewDTO, Void, SubgroupIdAndTagNameFilter>
     getOverviewDTOBySubgroupIdGridDataProvider() {
         if (overviewDTOBySubgroupIdGridDataProvider == null) {
-            overviewDTOBySubgroupIdGridDataProvider = new CallbackDataProvider<OverviewDTO, FilterWrapper>(
+            overviewDTOBySubgroupIdGridDataProvider = new CallbackDataProvider<OverviewDTO, SubgroupIdAndTagNameFilter>(
                     query -> {
-                        final FilterWrapper filter = query.getFilter().orElse(null);
+                        final SubgroupIdAndTagNameFilter filter = query.getFilter().orElse(null);
                         if (filter.getTagName() == null || filter.getTagName().isEmpty()) {
                             return overviewDTOService.
                                     findAllBySubgroupId(filter.getSubgroupId()).stream();
@@ -291,7 +296,7 @@ public class OverviewView extends OverviewDTOView {
 
                     },
                     query -> {
-                        final FilterWrapper filter = query.getFilter().orElse(null);
+                        final SubgroupIdAndTagNameFilter filter = query.getFilter().orElse(null);
                         if (filter.getTagName() == null || filter.getTagName().isEmpty()) {
                             return (int) overviewDTOService.countBySubgroupId(filter.getSubgroupId());
                         } else {
