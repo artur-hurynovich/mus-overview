@@ -13,14 +13,12 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.security.access.annotation.Secured;
 import org.vaadin.spring.security.VaadinSecurity;
 
 import javax.annotation.PostConstruct;
 import java.util.Set;
 
 @SpringView(name = GroupView.NAME)
-@Secured({"SUPER_ADMIN", "ADMIN"})
 public class GroupView extends GroupDTOView {
 
     public final static String NAME = "group";
