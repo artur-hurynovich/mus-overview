@@ -5,6 +5,7 @@ import by.hurynovich.mus_overview.vaadin.annotation.GridColumn;
 import by.hurynovich.mus_overview.vaadin.annotation.GridRenderer;
 import com.vaadin.spring.annotation.ViewScope;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.components.grid.MultiSelectionModel;
 import com.vaadin.ui.renderers.TextRenderer;
 import org.springframework.beans.factory.config.DependencyDescriptor;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +26,8 @@ public class VaadinConfiguration {
         final Grid<DTOClass> grid = new Grid<>();
         grid.setSizeFull();
         grid.setSelectionMode(Grid.SelectionMode.MULTI);
+        ((MultiSelectionModel<DTOClass>) grid.getSelectionModel()).
+                setSelectAllCheckBoxVisibility(MultiSelectionModel.SelectAllCheckBoxVisibility.VISIBLE);
         final Class<?> type = descriptor.getResolvableType().getGeneric(0).resolve();
         setupColumns(grid, type);
         return grid;
