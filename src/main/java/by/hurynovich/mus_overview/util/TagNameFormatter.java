@@ -13,7 +13,7 @@ public class TagNameFormatter {
         tagDTO.setName(formattedTagName);
     }
 
-    public String format(final String tagName) {
+    private String format(final String tagName) {
         return tagName.toLowerCase().replaceAll(replaceRegex, "");
     }
 }
