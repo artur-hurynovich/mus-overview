@@ -4,16 +4,19 @@ import by.hurynovich.mus_overview.dto.impl.GroupDTO;
 import by.hurynovich.mus_overview.dto.impl.SubgroupDTO;
 import by.hurynovich.mus_overview.service.impl.GroupService;
 import by.hurynovich.mus_overview.service.impl.SubgroupService;
+import com.vaadin.data.provider.CallbackDataProvider;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.vaadin.spring.annotation.PrototypeScope;
 
 import java.util.List;
 
 @org.springframework.stereotype.Component("overviewSubgroupField")
+@PrototypeScope
 public class OverviewSubgroupField extends CustomField<Long> {
 
     @Autowired
@@ -29,6 +32,8 @@ public class OverviewSubgroupField extends CustomField<Long> {
     private ComboBox<GroupDTO> groupField;
 
     private ComboBox<SubgroupDTO> subgroupField;
+
+    private CallbackDataProvider<GroupDTO, String> groupDataProvider;
 
     @Override
     protected Component initContent() {
@@ -70,8 +75,7 @@ public class OverviewSubgroupField extends CustomField<Long> {
     private ComboBox<GroupDTO> getGroupField() {
         if (groupField == null) {
             groupField = new ComboBox<>("Group:");
-            final List<GroupDTO> groups = groupService.findAll();
-            groupField.setItems(groups);
+            groupField.setDataProvider(getGroupDataProvider());
             groupField.addValueChangeListener(valueChangeEvent -> {
                 final GroupDTO groupDTO = valueChangeEvent.getValue();
                 if (groupDTO != null) {
@@ -97,4 +101,15 @@ public class OverviewSubgroupField extends CustomField<Long> {
         }
         return subgroupField;
     }
+
+    private CallbackDataProvider<GroupDTO, String> getGroupDataProvider() {
+        if (groupDataProvider == null) {
+            groupDataProvider = new CallbackDataProvider<>(
+                    query -> groupService.findAll().stream(),
+                    query -> (int) groupService.count()
+            );
+        }
+        return groupDataProvider;
+    }
+
 }

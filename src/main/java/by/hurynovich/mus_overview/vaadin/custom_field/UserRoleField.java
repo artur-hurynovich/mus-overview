@@ -7,8 +7,10 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.RadioButtonGroup;
 import com.vaadin.ui.VerticalLayout;
+import org.vaadin.spring.annotation.PrototypeScope;
 
 @org.springframework.stereotype.Component("userRoleField")
+@PrototypeScope
 public class UserRoleField extends CustomField<UserRole> {
 
     private VerticalLayout parentLayout;

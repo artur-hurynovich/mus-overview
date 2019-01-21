@@ -4,10 +4,12 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.VerticalLayout;
+import org.vaadin.spring.annotation.PrototypeScope;
 
 import java.time.LocalDate;
 
 @org.springframework.stereotype.Component("overviewDateField")
+@PrototypeScope
 public class OverviewDateField extends CustomField<LocalDate> {
 
     private VerticalLayout parentLayout;

@@ -13,11 +13,13 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.vaadin.spring.annotation.PrototypeScope;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @org.springframework.stereotype.Component("overviewTagField")
+@PrototypeScope
 public class OverviewTagField extends CustomField<List<TagDTO>> {
 
     @Autowired

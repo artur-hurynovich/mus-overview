@@ -8,8 +8,10 @@ import com.vaadin.ui.CustomField;
 import com.vaadin.ui.VerticalLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.vaadin.spring.annotation.PrototypeScope;
 
 @org.springframework.stereotype.Component("subgroupGroupField")
+@PrototypeScope
 public class SubgroupGroupField extends CustomField<Long> {
 
     @Autowired
