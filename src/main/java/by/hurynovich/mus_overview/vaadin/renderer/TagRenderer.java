@@ -4,7 +4,6 @@ import by.hurynovich.mus_overview.dto.impl.TagDTO;
 import com.vaadin.ui.renderers.TextRenderer;
 import elemental.json.Json;
 import elemental.json.JsonValue;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -1,7 +1,6 @@
 package by.hurynovich.mus_overview.vaadin.view;
 
 import by.hurynovich.mus_overview.dto.AbstractDTO;
-import by.hurynovich.mus_overview.enumeration.UserRole;
 import com.vaadin.data.provider.CallbackDataProvider;
 import com.vaadin.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.navigator.View;
@@ -13,8 +12,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.vaadin.spring.security.VaadinSecurity;
 
 public abstract class AbstractDTOView<DTOClass extends AbstractDTO> extends CustomComponent implements View {

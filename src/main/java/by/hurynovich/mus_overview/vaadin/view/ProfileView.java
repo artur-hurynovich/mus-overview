@@ -3,7 +3,6 @@ package by.hurynovich.mus_overview.vaadin.view;
 import by.hurynovich.mus_overview.enumeration.UserRole;
 import by.hurynovich.mus_overview.vaadin.util.auth_checker.IAuthChecker;
 import by.hurynovich.mus_overview.vaadin.view.impl.UserView;
-import by.hurynovich.mus_overview.vaadin.view.impl.OverviewView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;

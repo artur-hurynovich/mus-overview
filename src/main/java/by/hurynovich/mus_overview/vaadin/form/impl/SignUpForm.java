@@ -3,10 +3,8 @@ package by.hurynovich.mus_overview.vaadin.form.impl;
 import by.hurynovich.mus_overview.dto.impl.UserDTO;
 import by.hurynovich.mus_overview.enumeration.UserRole;
 import by.hurynovich.mus_overview.service.UserDetailsServiceImpl;
-import by.hurynovich.mus_overview.vaadin.custom_field.UserRoleField;
 import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
 import by.hurynovich.mus_overview.vaadin.view.SignInView;
-import by.hurynovich.mus_overview.vaadin.view.impl.OverviewView;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.data.validator.EmailValidator;
 import com.vaadin.spring.annotation.ViewScope;
@@ -20,7 +18,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component("signUpForm")

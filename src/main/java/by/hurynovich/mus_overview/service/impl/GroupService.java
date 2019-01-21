@@ -1,8 +1,8 @@
 package by.hurynovich.mus_overview.service.impl;
 
 import by.hurynovich.mus_overview.converter.impl.GroupConverter;
-import by.hurynovich.mus_overview.entity.impl.GroupEntity;
 import by.hurynovich.mus_overview.dto.impl.GroupDTO;
+import by.hurynovich.mus_overview.entity.impl.GroupEntity;
 import by.hurynovich.mus_overview.repository.GroupRepository;
 import by.hurynovich.mus_overview.service.IGroupDTOService;
 import org.springframework.beans.BeanUtils;

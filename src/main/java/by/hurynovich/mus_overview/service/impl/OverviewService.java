@@ -2,9 +2,9 @@ package by.hurynovich.mus_overview.service.impl;
 
 import by.hurynovich.mus_overview.converter.impl.OverviewConverter;
 import by.hurynovich.mus_overview.converter.impl.TagConverter;
+import by.hurynovich.mus_overview.dto.impl.OverviewDTO;
 import by.hurynovich.mus_overview.dto.impl.TagDTO;
 import by.hurynovich.mus_overview.entity.impl.OverviewEntity;
-import by.hurynovich.mus_overview.dto.impl.OverviewDTO;
 import by.hurynovich.mus_overview.entity.impl.TagEntity;
 import by.hurynovich.mus_overview.repository.OverviewRepository;
 import by.hurynovich.mus_overview.repository.TagRepository;

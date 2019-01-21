@@ -6,15 +6,12 @@ import by.hurynovich.mus_overview.service.impl.GroupService;
 import by.hurynovich.mus_overview.service.impl.SubgroupService;
 import com.vaadin.data.provider.CallbackDataProvider;
 import com.vaadin.data.provider.ConfigurableFilterDataProvider;
-import com.vaadin.server.SerializableFunction;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-
-import java.util.List;
 
 @org.springframework.stereotype.Component("overviewSubgroupField")
 public class OverviewSubgroupField extends CustomField<Long> {
