@@ -57,8 +57,8 @@ public class UserView extends UserDTOView {
         setupEditButton();
         setupDeleteButton();
         setupFilter();
-        getButtonsLayout().removeComponent(getAddButton());
         getParentLayout().addComponents(getGrid(), getButtonsLayout());
+        getAddButton().setVisible(false);
     }
 
     private ConfigurableFilterDataProvider<UserDTO, Void, String> getUserDTOGridDataProvider() {
