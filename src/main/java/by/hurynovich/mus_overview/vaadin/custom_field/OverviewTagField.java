@@ -13,13 +13,11 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.vaadin.spring.annotation.PrototypeScope;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @org.springframework.stereotype.Component("overviewTagField")
-@PrototypeScope
 public class OverviewTagField extends CustomField<List<TagDTO>> {
 
     @Autowired
@@ -51,13 +49,25 @@ public class OverviewTagField extends CustomField<List<TagDTO>> {
 
     @Override
     protected Component initContent() {
-        availableTagsList = tagService.findAll();
         return getParentLayout();
     }
 
     @Override
     protected void doSetValue(final List<TagDTO> tags) {
         value = tags;
+        if (getValue() == null || getValue().size() == 0) {
+            availableTagsList = tagService.findAll();
+            getAvailableTagsComboBox().setItems(availableTagsList);
+            getChildLayouts().forEach(getParentLayout()::removeComponent);
+        } else {
+            availableTagsList = tagService.findAll();
+            availableTagsList.removeAll(getValue());
+            getAvailableTagsComboBox().setItems(availableTagsList);
+            getChildLayouts().forEach(getParentLayout()::removeComponent);
+            getChildLayouts().clear();
+            getValue().forEach(tagDTO -> getChildLayouts().add(getChildLayout(tagDTO)));
+            getChildLayouts().forEach(getParentLayout()::addComponent);
+        }
     }
 
     @Override
@@ -77,8 +87,8 @@ public class OverviewTagField extends CustomField<List<TagDTO>> {
     private List<HorizontalLayout> getChildLayouts() {
         if (childLayouts == null) {
             childLayouts = new ArrayList<>();
-            if (value != null) {
-                getValue().forEach(tagDTO -> childLayouts.add(getChildLayout(tagDTO)));
+            if (getValue() != null) {
+                getValue().forEach(tagDTO -> getChildLayouts().add(getChildLayout(tagDTO)));
             }
         }
         return childLayouts;
@@ -128,7 +138,9 @@ public class OverviewTagField extends CustomField<List<TagDTO>> {
             availableTagsComboBox.addValueChangeListener(valueChangeEvent -> {
                 final TagDTO selectedTag = valueChangeEvent.getValue();
                 if (selectedTag != null) {
+                    getChildLayouts().forEach(getParentLayout()::removeComponent);
                     getChildLayouts().add(getChildLayout(selectedTag));
+                    getChildLayouts().forEach(getParentLayout()::addComponent);
                     getValue().add(selectedTag);
                     availableTagsList.remove(selectedTag);
                     availableTagsComboBox.setItems(availableTagsList);

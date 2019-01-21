@@ -5,18 +5,18 @@ import by.hurynovich.mus_overview.dto.impl.SubgroupDTO;
 import by.hurynovich.mus_overview.service.impl.GroupService;
 import by.hurynovich.mus_overview.service.impl.SubgroupService;
 import com.vaadin.data.provider.CallbackDataProvider;
+import com.vaadin.data.provider.ConfigurableFilterDataProvider;
+import com.vaadin.server.SerializableFunction;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.vaadin.spring.annotation.PrototypeScope;
 
 import java.util.List;
 
 @org.springframework.stereotype.Component("overviewSubgroupField")
-@PrototypeScope
 public class OverviewSubgroupField extends CustomField<Long> {
 
     @Autowired
@@ -35,33 +35,34 @@ public class OverviewSubgroupField extends CustomField<Long> {
 
     private CallbackDataProvider<GroupDTO, String> groupDataProvider;
 
+    private ConfigurableFilterDataProvider<SubgroupDTO, Void, Long> subgroupDataProvider;
+
+    private Long value;
+
     @Override
     protected Component initContent() {
         return getParentLayout();
     }
 
     @Override
-    protected void doSetValue(final Long aLong) {
-        if (aLong != null) {
-            final SubgroupDTO subgroupDTO = subgroupService.findOne(aLong);
-            if (subgroupDTO != null) {
-                final long groupId = subgroupDTO.getGroupId();
-                final GroupDTO groupDTO = groupService.findOne(groupId);
-                getGroupField().setSelectedItem(groupDTO);
-                getSubgroupField().setSelectedItem(subgroupDTO);
-                getSubgroupField().setEnabled(true);
-            }
+    protected void doSetValue(final Long subgroupId) {
+        value = subgroupId;
+        if (getValue() == null || getValue() == 0) {
+            getGroupField().setSelectedItem(null);
+            getSubgroupField().setEnabled(false);
+        } else {
+            final SubgroupDTO subgroupDTO = subgroupService.findOne(subgroupId);
+            final GroupDTO groupDTO = groupService.findOne(subgroupDTO.getGroupId());
+            getSubgroupDataProvider().setFilter(groupDTO.getId());
+            getSubgroupDataProvider().refreshAll();
+            getGroupField().setSelectedItem(groupDTO);
+            getSubgroupField().setSelectedItem(subgroupDTO);
         }
     }
 
     @Override
     public Long getValue() {
-        final SubgroupDTO subgroupDTO = getSubgroupField().getSelectedItem().orElse(null);
-        if (subgroupDTO == null) {
-            return null;
-        } else {
-            return subgroupDTO.getId();
-        }
+        return value;
     }
 
     private HorizontalLayout getParentLayout() {
@@ -76,19 +77,19 @@ public class OverviewSubgroupField extends CustomField<Long> {
         if (groupField == null) {
             groupField = new ComboBox<>("Group:");
             groupField.setDataProvider(getGroupDataProvider());
+            groupField.getDataProvider().refreshAll();
+            groupField.setItemCaptionGenerator(GroupDTO::getName);
             groupField.addValueChangeListener(valueChangeEvent -> {
-                final GroupDTO groupDTO = valueChangeEvent.getValue();
-                if (groupDTO != null) {
-                    final long groupId = groupDTO.getId();
-                    final List<SubgroupDTO> subgroups = subgroupService.findAllByGroupId(groupId);
-                    getSubgroupField().setItems(subgroups);
-                    getSubgroupField().setEnabled(true);
-                    getSubgroupField().setSelectedItem(null);
-                } else {
+                if (valueChangeEvent.getValue() == null) {
                     getSubgroupField().setEnabled(false);
+                } else {
+                    getSubgroupField().clear();
+                    getSubgroupDataProvider().setFilter(valueChangeEvent.getValue().getId());
+                    getSubgroupField().setDataProvider(getSubgroupDataProvider(), s -> null);
+                    getSubgroupDataProvider().refreshAll();
+                    getSubgroupField().setEnabled(true);
                 }
             });
-            groupField.setItemCaptionGenerator(GroupDTO::getName);
         }
         return groupField;
     }
@@ -97,7 +98,16 @@ public class OverviewSubgroupField extends CustomField<Long> {
         if (subgroupField == null) {
             subgroupField = new ComboBox<>("Subgroup:");
             subgroupField.setEnabled(false);
+            subgroupField.setDataProvider(getSubgroupDataProvider(), s -> null);
+            subgroupField.getDataProvider().refreshAll();
             subgroupField.setItemCaptionGenerator(SubgroupDTO::getName);
+            subgroupField.addValueChangeListener(valueChangeEvent -> {
+                if (valueChangeEvent.getValue() == null) {
+                    value = null;
+                } else {
+                    value = valueChangeEvent.getValue().getId();
+                }
+            });
         }
         return subgroupField;
     }
@@ -110,6 +120,16 @@ public class OverviewSubgroupField extends CustomField<Long> {
             );
         }
         return groupDataProvider;
+    }
+
+    private ConfigurableFilterDataProvider<SubgroupDTO, Void, Long> getSubgroupDataProvider() {
+        if (subgroupDataProvider == null) {
+            subgroupDataProvider = new CallbackDataProvider<SubgroupDTO, Long>(
+                    query -> subgroupService.findAllByGroupId(query.getFilter().orElse(-1L)).stream(),
+                    query -> (int) subgroupService.countByGroupId(query.getFilter().orElse(-1L))
+            ).withConfigurableFilter();
+        }
+        return subgroupDataProvider;
     }
 
 }

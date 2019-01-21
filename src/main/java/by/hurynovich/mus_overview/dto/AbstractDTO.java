@@ -1,10 +1,8 @@
 package by.hurynovich.mus_overview.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class AbstractDTO {
 
     private long id;

@@ -176,7 +176,11 @@ public class OverviewView extends OverviewDTOView {
                 overviewDTO.setTags(tagDTOList);
                 overviewForm.setupForm(overviewDTO, overviewWindow::close, overviewWindow::close);
                 overviewWindow.setContent(overviewForm);
-                UI.getCurrent().addWindow(overviewWindow);
+                if (UI.getCurrent().getWindows().contains(overviewWindow)) {
+                    overviewWindow.setVisible(true);
+                } else {
+                    UI.getCurrent().addWindow(overviewWindow);
+                }
             } else {
                 Notification.show("Warning!", "You have no permission for performing this operation!",
                         Notification.Type.WARNING_MESSAGE);
@@ -190,7 +194,11 @@ public class OverviewView extends OverviewDTOView {
                 final OverviewDTO selectedOverviewDTO = getGrid().getSelectionModel().getSelectedItems().iterator().next();
                 overviewForm.setupForm(selectedOverviewDTO, overviewWindow::close, overviewWindow::close);
                 overviewWindow.setContent(overviewForm);
-                UI.getCurrent().addWindow(overviewWindow);
+                if (UI.getCurrent().getWindows().contains(overviewWindow)) {
+                    overviewWindow.setVisible(true);
+                } else {
+                    UI.getCurrent().addWindow(overviewWindow);
+                }
             } else {
                 Notification.show("Warning!", "You have no permission for performing this operation!",
                         Notification.Type.WARNING_MESSAGE);

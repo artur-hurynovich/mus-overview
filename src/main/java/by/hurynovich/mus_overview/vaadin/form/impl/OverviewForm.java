@@ -121,7 +121,7 @@ public class OverviewForm extends AbstractDTOForm<OverviewDTO> {
                         date.isBefore(LocalDate.now(ZoneId.systemDefault()).plusDays(1)),
                 "Please, enter the overview date (it shouldn't be later than today)!").
                 bind(OverviewDTO::getDate, OverviewDTO::setDate);
-        getBinder().forField(getSubgroupField()).withValidator(Objects::nonNull,
+        getBinder().forField(getSubgroupField()).withValidator(subgroupId -> subgroupId != null && subgroupId != 0,
                 "Please, select the corresponding subgroup!").
                 bind(OverviewDTO::getSubgroupId, OverviewDTO::setSubgroupId);
         getBinder().forField(getTagField()).withValidator(tags -> tags != null && tags.size() > 0,

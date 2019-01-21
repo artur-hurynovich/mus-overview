@@ -1,14 +1,14 @@
 package by.hurynovich.mus_overview.dto.impl;
 
 import by.hurynovich.mus_overview.dto.AbstractNamedDTO;
-import lombok.Getter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.List;
 
-@Getter
-@Setter
+@Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class TagDTO extends AbstractNamedDTO {
 
