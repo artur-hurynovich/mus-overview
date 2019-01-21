@@ -47,6 +47,7 @@ public class ProfileView extends CustomComponent implements View {
             parentLayout = new HorizontalLayout();
             parentLayout.addComponents(getSignUpButton(), getSignInButton(), getListUsersButton(),
                     getSignOutButton());
+            parentLayout.setMargin(true);
         }
         return parentLayout;
     }

@@ -223,12 +223,8 @@ public class OverviewView extends OverviewDTOView {
     }
 
     private void setupFilter() {
-        HeaderRow filterRow;
-        if (getGrid().getHeaderRow(0) == null) {
-            filterRow = getGrid().addHeaderRowAt(0);
-        } else {
-            filterRow = getGrid().addHeaderRowAt(1);
-        }
+        final int headerRowCount = getGrid().getHeaderRowCount();
+        final HeaderRow filterRow = getGrid().addHeaderRowAt(headerRowCount);
         filterRow.getCell("tags").setComponent(getFilterTextField());
     }
 
