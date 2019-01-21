@@ -30,11 +30,13 @@ public class OverviewTagField extends CustomField<List<TagDTO>> {
 
     private VerticalLayout addTagLayout;
 
+    private RadioButtonGroup<String> radioButtonGroup;
+
     private ComboBox<TagDTO> availableTagsComboBox;
 
-    private List<TagDTO> availableTagsList;
-
     private HorizontalLayout newTagLayout;
+
+    private List<TagDTO> availableTagsList;
 
     private final static String RADIO_EXISTING;
 
@@ -55,19 +57,37 @@ public class OverviewTagField extends CustomField<List<TagDTO>> {
     @Override
     protected void doSetValue(final List<TagDTO> tags) {
         value = tags;
+        getAvailableTagsList().clear();
+        getAvailableTagsList().addAll(tagService.findAll());
         if (getValue() == null || getValue().size() == 0) {
-            availableTagsList = tagService.findAll();
-            getAvailableTagsComboBox().setItems(availableTagsList);
+            getAvailableTagsComboBox().setItems(getAvailableTagsList());
             getChildLayouts().forEach(getParentLayout()::removeComponent);
+            getChildLayouts().clear();
         } else {
-            availableTagsList = tagService.findAll();
-            availableTagsList.removeAll(getValue());
-            getAvailableTagsComboBox().setItems(availableTagsList);
+            getAvailableTagsList().removeAll(getValue());
+            getAvailableTagsComboBox().setItems(getAvailableTagsList());
             getChildLayouts().forEach(getParentLayout()::removeComponent);
             getChildLayouts().clear();
             getValue().forEach(tagDTO -> getChildLayouts().add(getChildLayout(tagDTO)));
             getChildLayouts().forEach(getParentLayout()::addComponent);
         }
+    }
+
+    private HorizontalLayout getChildLayout(final TagDTO tagDTO) {
+        final HorizontalLayout childLayout = new HorizontalLayout();
+        final Label label = new Label(tagDTO.getName());
+        final Button deleteButton = new Button("X");
+        deleteButton.addClickListener(clickEvent -> {
+            getParentLayout().removeComponent(childLayout);
+            getChildLayouts().remove(childLayout);
+            getValue().remove(tagDTO);
+            if (tagService.findByName(tagDTO.getName()) != null) {
+                getAvailableTagsList().add(tagDTO);
+                getAvailableTagsComboBox().setItems(getAvailableTagsList());
+            }
+        });
+        childLayout.addComponents(label, deleteButton);
+        return childLayout;
     }
 
     @Override
@@ -79,7 +99,7 @@ public class OverviewTagField extends CustomField<List<TagDTO>> {
         if (parentLayout == null) {
             parentLayout = new VerticalLayout();
             getChildLayouts().forEach(parentLayout::addComponent);
-            parentLayout.addComponent(getAddTagLayout());
+            parentLayout.addComponents(getAddTagLayout());
         }
         return parentLayout;
     }
@@ -87,63 +107,46 @@ public class OverviewTagField extends CustomField<List<TagDTO>> {
     private List<HorizontalLayout> getChildLayouts() {
         if (childLayouts == null) {
             childLayouts = new ArrayList<>();
-            if (getValue() != null) {
-                getValue().forEach(tagDTO -> getChildLayouts().add(getChildLayout(tagDTO)));
-            }
         }
         return childLayouts;
-    }
-
-    private HorizontalLayout getChildLayout(final TagDTO tagDTO) {
-        final HorizontalLayout childLayout = new HorizontalLayout();
-        final Label tagNameLabel = new Label();
-        tagNameLabel.setValue(tagDTO.getName());
-        final Button removeButton = new Button("Remove");
-        removeButton.addClickListener(clickEvent -> {
-            final String tagName = tagNameLabel.getValue();
-            removeTagFromValue(tagService.findByName(tagName));
-            getChildLayouts().remove(childLayout);
-            parentLayout.removeComponent(childLayout);
-        });
-        childLayout.addComponents(tagNameLabel, removeButton);
-        return childLayout;
     }
 
     private VerticalLayout getAddTagLayout() {
         if (addTagLayout == null) {
             addTagLayout = new VerticalLayout();
-            final RadioButtonGroup<String> radioButtonGroup = new RadioButtonGroup<>("Add a Tag:");
+            addTagLayout.addComponents(getRadioButtonGroup(), getAvailableTagsComboBox(), getNewTagLayout());
+        }
+        return addTagLayout;
+    }
+
+    private RadioButtonGroup<String> getRadioButtonGroup() {
+        if (radioButtonGroup == null) {
+            radioButtonGroup = new RadioButtonGroup<>();
             radioButtonGroup.setItems(RADIO_EXISTING, RADIO_NEW);
             radioButtonGroup.setSelectedItem(RADIO_EXISTING);
             radioButtonGroup.addSelectionListener(singleSelectionEvent -> {
-                if (singleSelectionEvent.getValue().equals(RADIO_EXISTING)) {
-                    getAvailableTagsComboBox().setVisible(true);
-                    getNewTagLayout().setVisible(false);
-                } else {
-                    getAvailableTagsComboBox().setVisible(false);
-                    getNewTagLayout().setVisible(true);
-                }
+                ((TextField) getNewTagLayout().getComponent(0)).clear();
+                getAvailableTagsComboBox().setVisible(singleSelectionEvent.getValue().equals(RADIO_EXISTING));
+                getNewTagLayout().setVisible(singleSelectionEvent.getValue().equals(RADIO_NEW));
             });
-            addTagLayout.addComponents(radioButtonGroup, getAvailableTagsComboBox(), getNewTagLayout());
         }
-        return addTagLayout;
+        return radioButtonGroup;
     }
 
     private ComboBox<TagDTO> getAvailableTagsComboBox() {
         if (availableTagsComboBox == null) {
             availableTagsComboBox = new ComboBox<>();
-            availableTagsList.removeAll(getValue());
-            availableTagsComboBox.setItems(availableTagsList);
+            availableTagsComboBox.setItems(getAvailableTagsList());
             availableTagsComboBox.setItemCaptionGenerator(TagDTO::getName);
             availableTagsComboBox.addValueChangeListener(valueChangeEvent -> {
-                final TagDTO selectedTag = valueChangeEvent.getValue();
-                if (selectedTag != null) {
-                    getChildLayouts().forEach(getParentLayout()::removeComponent);
-                    getChildLayouts().add(getChildLayout(selectedTag));
-                    getChildLayouts().forEach(getParentLayout()::addComponent);
-                    getValue().add(selectedTag);
-                    availableTagsList.remove(selectedTag);
-                    availableTagsComboBox.setItems(availableTagsList);
+                final TagDTO tagDTO = valueChangeEvent.getValue();
+                if (tagDTO != null) {
+                    getAvailableTagsList().remove(tagDTO);
+                    getAvailableTagsComboBox().setItems(getAvailableTagsList());
+                    getValue().add(tagDTO);
+                    final HorizontalLayout childLayout = getChildLayout(tagDTO);
+                    getChildLayouts().add(childLayout);
+                    getParentLayout().addComponent(childLayout);
                     availableTagsComboBox.setSelectedItem(null);
                 }
             });
@@ -151,39 +154,39 @@ public class OverviewTagField extends CustomField<List<TagDTO>> {
         return availableTagsComboBox;
     }
 
+    private List<TagDTO> getAvailableTagsList() {
+        if (availableTagsList == null) {
+            availableTagsList = tagService.findAll();
+        }
+        return availableTagsList;
+    }
+
     private HorizontalLayout getNewTagLayout() {
         if (newTagLayout == null) {
             newTagLayout = new HorizontalLayout();
             final TextField textField = new TextField();
-            final Button addTagButton = new Button("Add Tag");
-            addTagButton.addClickListener(clickEvent -> {
-                final TagDTO newTag = new TagDTO();
-                newTag.setName(textField.getValue());
-                addTagToValue(newTag);
-                textField.clear();
+            final Button addButton = new Button("Add");
+            addButton.setEnabled(false);
+            textField.addValueChangeListener(valueChangeEvent -> {
+                if (valueChangeEvent.getValue().isEmpty()) {
+                    addButton.setEnabled(false);
+                } else {
+                    addButton.setEnabled(true);
+                }
             });
-            newTagLayout.addComponents(textField, addTagButton);
+            addButton.addClickListener(clickEvent -> {
+                final TagDTO tagDTO = new TagDTO();
+                tagDTO.setName(textField.getValue());
+                textField.clear();
+                final HorizontalLayout childLayout = getChildLayout(tagDTO);
+                getChildLayouts().add(childLayout);
+                getParentLayout().addComponent(childLayout);
+                getValue().add(tagDTO);
+            });
+            newTagLayout.addComponents(textField, addButton);
             newTagLayout.setVisible(false);
         }
         return newTagLayout;
-    }
-
-    private void addTagToValue(final TagDTO tagDTO) {
-        getValue().add(tagDTO);
-        availableTagsList.remove(tagDTO);
-        availableTagsComboBox.setItems(availableTagsList);
-        final HorizontalLayout childLayout = getChildLayout(tagDTO);
-        parentLayout.removeComponent(getAddTagLayout());
-        parentLayout.addComponent(childLayout);
-        parentLayout.addComponent(getAddTagLayout());
-    }
-
-    private void removeTagFromValue(final TagDTO tagDTO) {
-        getValue().remove(tagDTO);
-        if (tagDTO != null) {
-            availableTagsList.add(tagDTO);
-            availableTagsComboBox.setItems(availableTagsList);
-        }
     }
 
 }
