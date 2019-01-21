@@ -40,7 +40,6 @@ public class SubgroupForm extends AbstractDTOForm<SubgroupDTO> {
 
     @PostConstruct
     public void init() {
-        groupField.setCaption("Groups:");
         setupButtonsLayout();
         setupBinder();
         setupParentLayout();

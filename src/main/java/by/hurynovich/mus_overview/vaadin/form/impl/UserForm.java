@@ -83,7 +83,7 @@ public class UserForm extends AbstractDTOForm<UserDTO> {
     private UserRoleField getRoleField() {
         if (roleField == null) {
             roleField = new UserRoleField();
-            roleField.setCaption("Role");
+            roleField.setCaption("Role:");
             roleField.focus();
         }
         return roleField;

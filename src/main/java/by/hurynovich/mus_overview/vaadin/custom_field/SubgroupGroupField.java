@@ -51,6 +51,7 @@ public class SubgroupGroupField extends CustomField<Long> {
         if (parentLayout == null) {
             parentLayout = new VerticalLayout();
             parentLayout.addComponent(getGroupField());
+            parentLayout.setMargin(false);
         }
         return parentLayout;
     }

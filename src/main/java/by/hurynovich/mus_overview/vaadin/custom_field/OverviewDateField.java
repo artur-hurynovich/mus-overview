@@ -18,6 +18,7 @@ public class OverviewDateField extends CustomField<LocalDate> {
 
     @Override
     protected Component initContent() {
+        setCaption("Date:");
         return getParentLayout();
     }
 
@@ -40,6 +41,7 @@ public class OverviewDateField extends CustomField<LocalDate> {
         if (parentLayout == null) {
             parentLayout = new VerticalLayout();
             parentLayout.addComponent(getDateField());
+            parentLayout.setMargin(false);
         }
         return parentLayout;
     }

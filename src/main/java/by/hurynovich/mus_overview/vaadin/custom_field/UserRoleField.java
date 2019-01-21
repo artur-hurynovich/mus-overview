@@ -38,6 +38,7 @@ public class UserRoleField extends CustomField<UserRole> {
         if (parentLayout == null) {
             parentLayout = new VerticalLayout();
             parentLayout.addComponent(getUserRoleRadioButtonGroup());
+            parentLayout.setMargin(false);
         }
         return parentLayout;
     }

@@ -142,7 +142,7 @@ public class OverviewForm extends AbstractDTOForm<OverviewDTO> {
 
     private TextArea getTextField() {
         if (textField == null) {
-            textField = new TextArea("Text");
+            textField = new TextArea("Text:");
         }
         return textField;
     }
@@ -150,7 +150,6 @@ public class OverviewForm extends AbstractDTOForm<OverviewDTO> {
     private OverviewDateField getDateField() {
         if (dateField == null) {
             dateField = new OverviewDateField();
-            dateField.setCaption("Date:");
         }
         return dateField;
     }
@@ -165,7 +164,6 @@ public class OverviewForm extends AbstractDTOForm<OverviewDTO> {
     private OverviewTagField getTagField() {
         if (tagField == null) {
             tagField = new OverviewTagField();
-            tagField.setCaption("Tags:");
         }
         return tagField;
     }

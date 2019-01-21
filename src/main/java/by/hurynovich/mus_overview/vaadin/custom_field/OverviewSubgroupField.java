@@ -69,6 +69,7 @@ public class OverviewSubgroupField extends CustomField<Long> {
         if (parentLayout == null) {
             parentLayout = new HorizontalLayout();
             parentLayout.addComponents(getGroupField(), getSubgroupField());
+            parentLayout.setMargin(false);
         }
         return parentLayout;
     }

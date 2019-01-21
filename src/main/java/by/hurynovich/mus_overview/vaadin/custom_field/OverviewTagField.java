@@ -51,6 +51,7 @@ public class OverviewTagField extends CustomField<List<TagDTO>> {
 
     @Override
     protected Component initContent() {
+        setCaption("Tags:");
         return getParentLayout();
     }
 
@@ -100,6 +101,7 @@ public class OverviewTagField extends CustomField<List<TagDTO>> {
             parentLayout = new VerticalLayout();
             getChildLayouts().forEach(parentLayout::addComponent);
             parentLayout.addComponents(getAddTagLayout());
+            parentLayout.setMargin(false);
         }
         return parentLayout;
     }
