@@ -16,13 +16,11 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.components.grid.HeaderRow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.security.access.annotation.Secured;
 
 import javax.annotation.PostConstruct;
 import java.util.Set;
 
 @SpringView(name = UserView.NAME)
-@Secured({"SUPER_ADMIN", "ADMIN"})
 public class UserView extends UserDTOView {
 
     public final static String NAME = "user";
