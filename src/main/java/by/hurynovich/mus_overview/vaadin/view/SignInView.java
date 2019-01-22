@@ -11,14 +11,14 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 @SpringView(name = SignInView.NAME)
 public class SignInView extends CustomComponent implements View {
-
     public final static String NAME = "signIn";
-
+    private final AbstractDTOForm signInForm;
     private VerticalLayout parentLayout;
 
     @Autowired
-    @Qualifier("signInForm")
-    private AbstractDTOForm signInForm;
+    public SignInView(final @Qualifier("signInForm") AbstractDTOForm signInForm) {
+        this.signInForm = signInForm;
+    }
 
     @Override
     public void enter(final ViewChangeListener.ViewChangeEvent event) {
@@ -32,5 +32,4 @@ public class SignInView extends CustomComponent implements View {
         }
         return parentLayout;
     }
-
 }

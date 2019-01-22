@@ -2,8 +2,8 @@ package by.hurynovich.mus_overview.vaadin.custom_field;
 
 import by.hurynovich.mus_overview.dto.impl.GroupDTO;
 import by.hurynovich.mus_overview.dto.impl.SubgroupDTO;
-import by.hurynovich.mus_overview.service.impl.GroupService;
-import by.hurynovich.mus_overview.service.impl.SubgroupService;
+import by.hurynovich.mus_overview.service.impl.GroupDTOServiceImpl;
+import by.hurynovich.mus_overview.service.impl.SubgroupDTOServiceImpl;
 import com.vaadin.data.provider.CallbackDataProvider;
 import com.vaadin.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.ui.ComboBox;
@@ -15,26 +15,21 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 @org.springframework.stereotype.Component("overviewSubgroupField")
 public class OverviewSubgroupField extends CustomField<Long> {
-
-    @Autowired
-    @Qualifier("groupService")
-    private GroupService groupService;
-
-    @Autowired
-    @Qualifier("subgroupService")
-    private SubgroupService subgroupService;
-
+    private final GroupDTOServiceImpl groupService;
+    private final SubgroupDTOServiceImpl subgroupService;
     private HorizontalLayout parentLayout;
-
     private ComboBox<GroupDTO> groupField;
-
     private ComboBox<SubgroupDTO> subgroupField;
-
     private CallbackDataProvider<GroupDTO, String> groupDataProvider;
-
     private ConfigurableFilterDataProvider<SubgroupDTO, Void, Long> subgroupDataProvider;
-
     private Long value;
+
+    @Autowired
+    public OverviewSubgroupField(final @Qualifier("groupService") GroupDTOServiceImpl groupService,
+                                 final @Qualifier("subgroupService") SubgroupDTOServiceImpl subgroupService) {
+        this.groupService = groupService;
+        this.subgroupService = subgroupService;
+    }
 
     @Override
     protected Component initContent() {
@@ -129,5 +124,4 @@ public class OverviewSubgroupField extends CustomField<Long> {
         }
         return subgroupDataProvider;
     }
-
 }

@@ -9,11 +9,8 @@ import java.time.LocalDate;
 
 @org.springframework.stereotype.Component("overviewDateField")
 public class OverviewDateField extends CustomField<LocalDate> {
-
     private VerticalLayout parentLayout;
-
     private DateField dateField;
-
     private LocalDate value;
 
     @Override
@@ -54,5 +51,4 @@ public class OverviewDateField extends CustomField<LocalDate> {
         }
         return dateField;
     }
-
 }

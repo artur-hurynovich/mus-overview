@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class UserDTO extends AbstractNamedDTO {
-
     @GridColumn(caption = "E-mail", position = 20)
     private String email;
 
@@ -19,5 +18,4 @@ public class UserDTO extends AbstractNamedDTO {
 
     @GridColumn(caption = "Role", position = 30)
     private UserRole role;
-
 }

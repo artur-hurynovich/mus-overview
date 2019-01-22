@@ -11,7 +11,5 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class TagDTO extends AbstractNamedDTO {
-
     private List<OverviewDTO> overviews;
-
 }

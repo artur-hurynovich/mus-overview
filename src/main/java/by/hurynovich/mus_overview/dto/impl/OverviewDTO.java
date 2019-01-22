@@ -14,7 +14,6 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class OverviewDTO extends AbstractNamedDTO {
-
     @GridColumn(caption = "Text", position = 20)
     private String text;
 
@@ -26,5 +25,4 @@ public class OverviewDTO extends AbstractNamedDTO {
     @GridColumn(caption = "Tags", position = 40)
     @GridRenderer(rendererClass = "by.hurynovich.mus_overview.vaadin.renderer.TagRenderer")
     private List<TagDTO> tags;
-
 }

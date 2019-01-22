@@ -6,7 +6,7 @@ import by.hurynovich.mus_overview.entity.impl.SubgroupEntity;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-@Service
+@Service("subgroupConverter")
 public class SubgroupConverter implements DTOEntityConverter<SubgroupDTO, SubgroupEntity> {
     @Override
     public SubgroupDTO convertToDTO(final SubgroupEntity subgroupEntity) {

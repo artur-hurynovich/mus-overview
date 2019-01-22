@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class AbstractDTO {
-
     private long id;
 
     @Override
@@ -15,5 +14,4 @@ public class AbstractDTO {
         final AbstractDTO temp = (AbstractDTO) o;
         return id == temp.id;
     }
-
 }

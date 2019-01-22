@@ -1,7 +1,7 @@
 package by.hurynovich.mus_overview.controller;
 
 import by.hurynovich.mus_overview.dto.impl.UserDTO;
-import by.hurynovich.mus_overview.service.UserDetailsServiceImpl;
+import by.hurynovich.mus_overview.service.impl.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +14,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/rest/user")
 public class UserController {
-
     private final UserDetailsServiceImpl userService;
 
     @Autowired
@@ -35,5 +34,4 @@ public class UserController {
     public List<UserDTO> getAll() {
         return userService.findAll();
     }
-
 }

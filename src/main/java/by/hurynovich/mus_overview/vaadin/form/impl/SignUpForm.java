@@ -2,7 +2,7 @@ package by.hurynovich.mus_overview.vaadin.form.impl;
 
 import by.hurynovich.mus_overview.dto.impl.UserDTO;
 import by.hurynovich.mus_overview.enumeration.UserRole;
-import by.hurynovich.mus_overview.service.UserDetailsServiceImpl;
+import by.hurynovich.mus_overview.service.impl.UserDetailsServiceImpl;
 import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
 import by.hurynovich.mus_overview.vaadin.view.SignInView;
 import com.vaadin.data.ValidationResult;
@@ -23,20 +23,17 @@ import java.util.stream.Collectors;
 @Component("signUpForm")
 @ViewScope
 public class SignUpForm extends AbstractDTOForm<UserDTO> {
+    private final UserDetailsServiceImpl userService;
+    private UserDTO userDTO;
+    private TextField nameField;
+    private TextField emailField;
+    private PasswordField passwordField;
+    private Button signUpButton;
 
     @Autowired
-    @Qualifier("userService")
-    private UserDetailsServiceImpl userService;
-
-    private UserDTO userDTO;
-
-    private TextField nameField;
-
-    private TextField emailField;
-
-    private PasswordField passwordField;
-
-    private Button signUpButton;
+    public SignUpForm(final @Qualifier("userService") UserDetailsServiceImpl userService) {
+        this.userService = userService;
+    }
 
     @PostConstruct
     public void init() {

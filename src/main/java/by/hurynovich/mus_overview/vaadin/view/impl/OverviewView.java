@@ -5,12 +5,12 @@ import by.hurynovich.mus_overview.dto.impl.OverviewDTO;
 import by.hurynovich.mus_overview.dto.impl.SubgroupDTO;
 import by.hurynovich.mus_overview.dto.impl.TagDTO;
 import by.hurynovich.mus_overview.enumeration.UserRole;
-import by.hurynovich.mus_overview.service.IGroupDTOService;
-import by.hurynovich.mus_overview.service.IOverviewDTOService;
-import by.hurynovich.mus_overview.service.ISubgroupDTOService;
-import by.hurynovich.mus_overview.service.ITagDTOService;
+import by.hurynovich.mus_overview.service.GroupDTOService;
+import by.hurynovich.mus_overview.service.OverviewDTOService;
+import by.hurynovich.mus_overview.service.SubgroupDTOService;
+import by.hurynovich.mus_overview.service.TagDTOService;
 import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
-import by.hurynovich.mus_overview.vaadin.util.auth_checker.IAuthChecker;
+import by.hurynovich.mus_overview.vaadin.util.auth_checker.AuthChecker;
 import by.hurynovich.mus_overview.vaadin.util.filter_wrapper.SubgroupIdAndTagNameFilter;
 import by.hurynovich.mus_overview.vaadin.view.OverviewDTOView;
 import com.vaadin.data.provider.CallbackDataProvider;
@@ -40,19 +40,19 @@ public class OverviewView extends OverviewDTOView {
 
     @Autowired
     @Qualifier("groupService")
-    private IGroupDTOService groupDTOService;
+    private GroupDTOService groupDTOService;
 
     @Autowired
     @Qualifier("subgroupService")
-    private ISubgroupDTOService subgroupDTOService;
+    private SubgroupDTOService subgroupDTOService;
 
     @Autowired
     @Qualifier("overviewService")
-    private IOverviewDTOService overviewDTOService;
+    private OverviewDTOService overviewDTOService;
 
     @Autowired
     @Qualifier("tagService")
-    private ITagDTOService tagDTOService;
+    private TagDTOService tagDTOService;
 
     @Autowired
     @Qualifier("overviewForm")
@@ -60,7 +60,7 @@ public class OverviewView extends OverviewDTOView {
 
     @Autowired
     @Qualifier("authChecker")
-    private IAuthChecker authChecker;
+    private AuthChecker authChecker;
 
     private HorizontalLayout comboBoxesLayout;
 

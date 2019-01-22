@@ -1,7 +1,7 @@
 package by.hurynovich.mus_overview.controller;
 
 import by.hurynovich.mus_overview.dto.impl.OverviewDTO;
-import by.hurynovich.mus_overview.service.IOverviewDTOService;
+import by.hurynovich.mus_overview.service.OverviewDTOService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,11 +15,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/rest/overview")
 public class OverviewController {
-
-    private final IOverviewDTOService overviewService;
+    private final OverviewDTOService overviewService;
 
     @Autowired
-    public OverviewController(final IOverviewDTOService overviewService) {
+    public OverviewController(final OverviewDTOService overviewService) {
         this.overviewService = overviewService;
     }
 
@@ -57,5 +56,4 @@ public class OverviewController {
     public void deleteOverview(final @RequestBody OverviewDTO overviewDTO) {
         overviewService.delete(overviewDTO);
     }
-
 }

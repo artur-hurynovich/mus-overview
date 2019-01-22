@@ -12,27 +12,16 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.vaadin.spring.security.VaadinSecurity;
 
 public abstract class AbstractDTOView<DTOClass extends AbstractDTO> extends CustomComponent implements View {
-
-    @Autowired
-    private VaadinSecurity vaadinSecurity;
-
-    private VerticalLayout parentLayout;
-
     @Autowired
     @Qualifier("grid")
     private Grid<DTOClass> grid;
-
+    private VerticalLayout parentLayout;
     private ConfigurableFilterDataProvider<DTOClass, Void, ?> startDataProvider;
-
     private HorizontalLayout buttonsLayout;
-
     private Button addButton;
-
     private Button editButton;
-
     private Button deleteButton;
 
     public AbstractDTOView() {

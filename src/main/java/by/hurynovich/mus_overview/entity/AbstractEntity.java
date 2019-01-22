@@ -10,9 +10,7 @@ import javax.persistence.MappedSuperclass;
 @Data
 @MappedSuperclass
 public class AbstractEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
 }

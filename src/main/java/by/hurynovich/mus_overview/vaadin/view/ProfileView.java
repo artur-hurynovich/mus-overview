@@ -1,7 +1,7 @@
 package by.hurynovich.mus_overview.vaadin.view;
 
 import by.hurynovich.mus_overview.enumeration.UserRole;
-import by.hurynovich.mus_overview.vaadin.util.auth_checker.IAuthChecker;
+import by.hurynovich.mus_overview.vaadin.util.auth_checker.AuthChecker;
 import by.hurynovich.mus_overview.vaadin.view.impl.UserView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -16,25 +16,21 @@ import org.vaadin.spring.security.VaadinSecurity;
 
 @SpringView(name = ProfileView.NAME)
 public class ProfileView extends CustomComponent implements View {
-
-    @Autowired
-    private VaadinSecurity vaadinSecurity;
-
-    @Autowired
-    @Qualifier("authChecker")
-    private IAuthChecker authChecker;
-
+    private final VaadinSecurity vaadinSecurity;
+    private final AuthChecker authChecker;
     public final static String NAME = "profile";
-
     private HorizontalLayout parentLayout;
-
     private Button signUpButton;
-
     private Button signInButton;
-
     private Button listUsersButton;
-
     private Button signOutButton;
+
+    @Autowired
+    public ProfileView(final VaadinSecurity vaadinSecurity,
+                       final @Qualifier("authChecker") AuthChecker authChecker) {
+        this.vaadinSecurity = vaadinSecurity;
+        this.authChecker = authChecker;
+    }
 
     @Override
     public void enter(final ViewChangeListener.ViewChangeEvent event) {
@@ -90,5 +86,4 @@ public class ProfileView extends CustomComponent implements View {
         signOutButton.setEnabled(vaadinSecurity.isAuthenticated());
         return signOutButton;
     }
-
 }

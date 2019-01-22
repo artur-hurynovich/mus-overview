@@ -19,11 +19,9 @@ import java.util.List;
 @Entity
 @Table(name = "tags")
 public class TagEntity extends AbstractNamedEntity {
-
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "overviews_tags",
             joinColumns = @JoinColumn(name = "tag_id"),
             inverseJoinColumns = @JoinColumn(name = "overview_id"))
     private List<OverviewEntity> overviews;
-
 }

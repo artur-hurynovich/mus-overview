@@ -6,9 +6,6 @@ import org.springframework.stereotype.Component;
 @Data
 @Component("filter")
 public class SubgroupIdAndTagNameFilter {
-
     private long subgroupId;
-
     private String tagName;
-
 }

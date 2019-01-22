@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class TagRenderer extends TextRenderer {
-
     @SuppressWarnings("unchecked")
     @Override
     public JsonValue encode(final Object value) {
@@ -23,5 +22,4 @@ public class TagRenderer extends TextRenderer {
     private String encodeTags(final List<TagDTO> tagDTOList) {
         return tagDTOList.stream().map(TagDTO::getName).collect(Collectors.joining(", "));
     }
-
 }

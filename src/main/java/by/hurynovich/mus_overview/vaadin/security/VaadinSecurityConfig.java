@@ -14,19 +14,18 @@ import org.vaadin.spring.security.config.AuthenticationManagerConfigurer;
 @Configuration
 @EnableVaadinManagedSecurity
 public class VaadinSecurityConfig implements AuthenticationManagerConfigurer {
+    private final UserDetailsService userDetailsService;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    @Qualifier("userService")
-    private UserDetailsService userDetailsService;
+    public VaadinSecurityConfig(final @Qualifier("userService") UserDetailsService userDetailsService,
+                                final @Qualifier("passwordEncoder") PasswordEncoder passwordEncoder) {
+        this.userDetailsService = userDetailsService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     public void configure(final AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(getPasswordEncoder());
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
     }
-
-    @Bean("passwordEncoder")
-    public PasswordEncoder getPasswordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
 }

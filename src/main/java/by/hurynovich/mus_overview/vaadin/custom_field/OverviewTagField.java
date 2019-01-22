@@ -1,7 +1,7 @@
 package by.hurynovich.mus_overview.vaadin.custom_field;
 
 import by.hurynovich.mus_overview.dto.impl.TagDTO;
-import by.hurynovich.mus_overview.service.impl.TagService;
+import by.hurynovich.mus_overview.service.impl.TagDTOServiceImpl;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
@@ -19,35 +19,26 @@ import java.util.List;
 
 @org.springframework.stereotype.Component("overviewTagField")
 public class OverviewTagField extends CustomField<List<TagDTO>> {
-
-    @Autowired
-    @Qualifier("tagService")
-    private TagService tagService;
-
+    private final TagDTOServiceImpl tagService;
     private VerticalLayout parentLayout;
-
     private List<HorizontalLayout> childLayouts;
-
     private VerticalLayout addTagLayout;
-
     private RadioButtonGroup<String> radioButtonGroup;
-
     private ComboBox<TagDTO> availableTagsComboBox;
-
     private HorizontalLayout newTagLayout;
-
     private List<TagDTO> availableTagsList;
-
+    private List<TagDTO> value;
     private final static String RADIO_EXISTING;
-
     private final static String RADIO_NEW;
-
     static {
         RADIO_EXISTING = "Add an existing tag";
         RADIO_NEW = "Add a new tag";
     }
 
-    private List<TagDTO> value;
+    @Autowired
+    public OverviewTagField(final @Qualifier("tagService") TagDTOServiceImpl tagService) {
+        this.tagService = tagService;
+    }
 
     @Override
     protected Component initContent() {

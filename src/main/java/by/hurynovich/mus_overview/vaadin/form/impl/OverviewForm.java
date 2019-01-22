@@ -1,10 +1,7 @@
 package by.hurynovich.mus_overview.vaadin.form.impl;
 
 import by.hurynovich.mus_overview.dto.impl.OverviewDTO;
-import by.hurynovich.mus_overview.service.IGroupDTOService;
-import by.hurynovich.mus_overview.service.IOverviewDTOService;
-import by.hurynovich.mus_overview.service.ISubgroupDTOService;
-import by.hurynovich.mus_overview.service.ITagDTOService;
+import by.hurynovich.mus_overview.service.OverviewDTOService;
 import by.hurynovich.mus_overview.vaadin.custom_field.OverviewDateField;
 import by.hurynovich.mus_overview.vaadin.custom_field.OverviewSubgroupField;
 import by.hurynovich.mus_overview.vaadin.custom_field.OverviewTagField;
@@ -24,44 +21,26 @@ import java.util.stream.Collectors;
 
 @Component("overviewForm")
 public class OverviewForm extends AbstractDTOForm<OverviewDTO> {
-
-    @Autowired
-    @Qualifier("groupService")
-    private IGroupDTOService groupService;
-
-    @Autowired
-    @Qualifier("subgroupService")
-    private ISubgroupDTOService subgroupService;
-
-    @Autowired
-    @Qualifier("overviewService")
-    private IOverviewDTOService overviewService;
-
-    @Autowired
-    @Qualifier("tagService")
-    private ITagDTOService tagService;
-
+    private final OverviewDTOService overviewService;
+    private final OverviewDateField dateField;
+    private final OverviewSubgroupField subgroupField;
+    private final OverviewTagField tagField;
     private OverviewDTO overviewDTO;
-
     private TextField nameField;
-
     private TextArea textField;
-
-    @Autowired
-    @Qualifier("overviewDateField")
-    private OverviewDateField dateField;
-
-    @Autowired
-    @Qualifier("overviewSubgroupField")
-    private OverviewSubgroupField subgroupField;
-
-    @Autowired
-    @Qualifier("overviewTagField")
-    private OverviewTagField tagField;
-
     private Runnable onSave;
-
     private Runnable onDiscard;
+
+    @Autowired
+    public OverviewForm(final @Qualifier("overviewService") OverviewDTOService overviewService,
+                        final @Qualifier("overviewDateField") OverviewDateField dateField,
+                        final @Qualifier("overviewSubgroupField") OverviewSubgroupField subgroupField,
+                        final @Qualifier("overviewTagField") OverviewTagField tagField) {
+        this.overviewService = overviewService;
+        this.dateField = dateField;
+        this.subgroupField = subgroupField;
+        this.tagField = tagField;
+    }
 
     @PostConstruct
     public void init() {
@@ -147,24 +126,14 @@ public class OverviewForm extends AbstractDTOForm<OverviewDTO> {
     }
 
     private OverviewDateField getDateField() {
-        if (dateField == null) {
-            dateField = new OverviewDateField();
-        }
         return dateField;
     }
 
     private OverviewSubgroupField getSubgroupField() {
-        if (subgroupField == null) {
-            subgroupField = new OverviewSubgroupField();
-        }
         return subgroupField;
     }
 
     private OverviewTagField getTagField() {
-        if (tagField == null) {
-            tagField = new OverviewTagField();
-        }
         return tagField;
     }
-
 }

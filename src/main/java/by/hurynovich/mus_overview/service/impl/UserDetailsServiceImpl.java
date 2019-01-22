@@ -1,4 +1,4 @@
-package by.hurynovich.mus_overview.service;
+package by.hurynovich.mus_overview.service.impl;
 
 import by.hurynovich.mus_overview.converter.DTOEntityConverter;
 import by.hurynovich.mus_overview.dto.impl.UserDTO;
@@ -12,25 +12,25 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component("userService")
+@Service("userService")
 public class UserDetailsServiceImpl implements UserDetailsService {
+    private final UserRepository userRepository;
+    private final DTOEntityConverter<UserDTO, UserEntity> userConverter;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    @Qualifier("userRepository")
-    private UserRepository userRepository;
-
-    @Autowired
-    @Qualifier("userConverter")
-    private DTOEntityConverter<UserDTO, UserEntity> userConverter;
-
-    @Autowired
-    @Qualifier("passwordEncoder")
-    private PasswordEncoder passwordEncoder;
+    public UserDetailsServiceImpl(final @Qualifier("userRepository") UserRepository userRepository,
+                                  final @Qualifier("userConverter") DTOEntityConverter<UserDTO, UserEntity> userConverter,
+                                  final @Qualifier("passwordEncoder") PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.userConverter = userConverter;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public boolean emailExists(final String email) {
         final UserEntity userEntity = userRepository.findByEmail(email);
@@ -86,5 +86,4 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                     build();
         }
     }
-
 }

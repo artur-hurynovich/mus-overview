@@ -4,9 +4,10 @@ import by.hurynovich.mus_overview.converter.impl.GroupConverter;
 import by.hurynovich.mus_overview.dto.impl.GroupDTO;
 import by.hurynovich.mus_overview.entity.impl.GroupEntity;
 import by.hurynovich.mus_overview.repository.GroupRepository;
-import by.hurynovich.mus_overview.service.IGroupDTOService;
+import by.hurynovich.mus_overview.service.GroupDTOService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -14,14 +15,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service("groupService")
-public class GroupService implements IGroupDTOService {
-
-    private GroupRepository groupRepository;
-
-    private GroupConverter groupConverter;
+public class GroupDTOServiceImpl implements GroupDTOService {
+    private final GroupRepository groupRepository;
+    private final GroupConverter groupConverter;
 
     @Autowired
-    public GroupService(final GroupRepository groupRepository, final GroupConverter groupConverter) {
+    public GroupDTOServiceImpl(final @Qualifier("groupRepository") GroupRepository groupRepository,
+                               final @Qualifier("groupConverter") GroupConverter groupConverter) {
         this.groupRepository = groupRepository;
         this.groupConverter = groupConverter;
     }
@@ -60,5 +60,4 @@ public class GroupService implements IGroupDTOService {
     public long count() {
         return groupRepository.count();
     }
-
 }

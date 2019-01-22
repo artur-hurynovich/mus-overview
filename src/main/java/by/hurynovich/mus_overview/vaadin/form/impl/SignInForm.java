@@ -1,7 +1,6 @@
 package by.hurynovich.mus_overview.vaadin.form.impl;
 
 import by.hurynovich.mus_overview.dto.impl.UserDTO;
-import by.hurynovich.mus_overview.service.UserDetailsServiceImpl;
 import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
 import by.hurynovich.mus_overview.vaadin.view.SignUpView;
 import by.hurynovich.mus_overview.vaadin.view.impl.OverviewView;
@@ -16,7 +15,6 @@ import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.vaadin.spring.security.VaadinSecurity;
 
@@ -26,25 +24,18 @@ import java.util.stream.Collectors;
 @Component("signInForm")
 @ViewScope
 public class SignInForm extends AbstractDTOForm<UserDTO> {
-
-    @Autowired
-    private VaadinSecurity vaadinSecurity;
-
-    @Autowired
-    @Qualifier("userService")
-    private UserDetailsServiceImpl userService;
-
+    private final VaadinSecurity vaadinSecurity;
     private UserDTO userDTO;
-
     private TextField emailField;
-
     private PasswordField passwordField;
-
     private HorizontalLayout buttonsLayout;
-
     private Button signInButton;
-
     private Button signUpButton;
+
+    @Autowired
+    public SignInForm(final VaadinSecurity vaadinSecurity) {
+        this.vaadinSecurity = vaadinSecurity;
+    }
 
     @PostConstruct
     public void init() {

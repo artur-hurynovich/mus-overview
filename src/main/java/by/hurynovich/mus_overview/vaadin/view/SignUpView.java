@@ -10,16 +10,16 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 @SpringView(name = SignUpView.NAME)
 public class SignUpView extends CustomComponent implements View {
-
     public final static String NAME = "signUp";
+    private final AbstractDTOForm signUpForm;
 
     @Autowired
-    @Qualifier("signUpForm")
-    private AbstractDTOForm signUpForm;
+    public SignUpView(final @Qualifier("signUpForm") AbstractDTOForm signUpForm) {
+        this.signUpForm = signUpForm;
+    }
 
     @Override
     public void enter(final ViewChangeListener.ViewChangeEvent event) {
         setCompositionRoot(signUpForm);
     }
-
 }

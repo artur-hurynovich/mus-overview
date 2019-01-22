@@ -12,11 +12,8 @@ import org.vaadin.spring.annotation.PrototypeScope;
 @org.springframework.stereotype.Component("userRoleField")
 @PrototypeScope
 public class UserRoleField extends CustomField<UserRole> {
-
     private VerticalLayout parentLayout;
-
     private RadioButtonGroup<UserRole> userRoleRadioButtonGroup;
-
     private ListDataProvider<UserRole> dataProvider;
 
     @Override
@@ -58,5 +55,4 @@ public class UserRoleField extends CustomField<UserRole> {
         }
         return dataProvider;
     }
-
 }

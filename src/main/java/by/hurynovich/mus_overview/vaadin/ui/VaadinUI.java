@@ -25,18 +25,17 @@ import org.vaadin.spring.security.VaadinSecurity;
 @Theme("mytheme")
 @SpringViewDisplay
 public class VaadinUI extends UI implements ViewDisplay {
-
-    @Autowired
     private VaadinSecurity vaadinSecurity;
+    private SpringViewProvider viewProvider;
+    private VerticalLayout parentLayout;
+    private HorizontalLayout menuLayout;
+    private Panel viewPanel;
 
     @Autowired
-    private SpringViewProvider viewProvider;
-
-    private VerticalLayout parentLayout;
-
-    private HorizontalLayout menuLayout;
-
-    private Panel viewPanel;
+    public VaadinUI(final VaadinSecurity vaadinSecurity, final SpringViewProvider viewProvider) {
+        this.vaadinSecurity = vaadinSecurity;
+        this.viewProvider = viewProvider;
+    }
 
     @Override
     protected void init(final VaadinRequest vaadinRequest) {
@@ -92,5 +91,4 @@ public class VaadinUI extends UI implements ViewDisplay {
         }
         return viewPanel;
     }
-
 }

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
+@Repository("subgroupRepository")
 public interface SubgroupRepository extends JpaRepository<SubgroupEntity, Long> {
     SubgroupEntity findById(final long id);
     List<SubgroupEntity> findAllByGroupId(long groupId);

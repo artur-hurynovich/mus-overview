@@ -1,7 +1,7 @@
 package by.hurynovich.mus_overview.vaadin.form.impl;
 
 import by.hurynovich.mus_overview.dto.impl.GroupDTO;
-import by.hurynovich.mus_overview.service.IGroupDTOService;
+import by.hurynovich.mus_overview.service.GroupDTOService;
 import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.ui.Notification;
@@ -15,18 +15,16 @@ import java.util.stream.Collectors;
 
 @Component("groupForm")
 public class GroupForm extends AbstractDTOForm<GroupDTO> {
+    private final GroupDTOService groupService;
+    private GroupDTO groupDTO;
+    private TextField nameField;
+    private Runnable onSave;
+    private Runnable onDiscard;
 
     @Autowired
-    @Qualifier("groupService")
-    private IGroupDTOService groupService;
-
-    private GroupDTO groupDTO;
-
-    private TextField nameField;
-
-    private Runnable onSave;
-
-    private Runnable onDiscard;
+    public GroupForm(final @Qualifier("groupService") GroupDTOService groupService) {
+        this.groupService = groupService;
+    }
 
     @PostConstruct
     public void init() {
@@ -92,5 +90,4 @@ public class GroupForm extends AbstractDTOForm<GroupDTO> {
         }
         return nameField;
     }
-
 }

@@ -2,9 +2,9 @@ package by.hurynovich.mus_overview.vaadin.view.impl;
 
 import by.hurynovich.mus_overview.dto.impl.GroupDTO;
 import by.hurynovich.mus_overview.enumeration.UserRole;
-import by.hurynovich.mus_overview.service.IGroupDTOService;
+import by.hurynovich.mus_overview.service.GroupDTOService;
 import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
-import by.hurynovich.mus_overview.vaadin.util.auth_checker.IAuthChecker;
+import by.hurynovich.mus_overview.vaadin.util.auth_checker.AuthChecker;
 import by.hurynovich.mus_overview.vaadin.view.GroupDTOView;
 import com.vaadin.data.provider.CallbackDataProvider;
 import com.vaadin.spring.annotation.SpringView;
@@ -13,36 +13,26 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.vaadin.spring.security.VaadinSecurity;
 
 import javax.annotation.PostConstruct;
 import java.util.Set;
 
 @SpringView(name = GroupView.NAME)
 public class GroupView extends GroupDTOView {
-
     public final static String NAME = "group";
-
-    @Autowired
-    private VaadinSecurity vaadinSecurity;
-
-    @Autowired
-    @Qualifier("groupService")
-    private IGroupDTOService groupService;
-
-    @Autowired
-    @Qualifier("groupForm")
-    private AbstractDTOForm groupForm;
-
-    @Autowired
-    @Qualifier("authChecker")
-    private IAuthChecker authChecker;
-
+    private final GroupDTOService groupService;
+    private final AbstractDTOForm groupForm;
+    private final AuthChecker authChecker;
     private CallbackDataProvider<GroupDTO, String> groupDTOGridDataProvider;
-
     private final Window groupWindow;
 
-    public GroupView() {
+    @Autowired
+    public GroupView(final @Qualifier("groupService") GroupDTOService groupService,
+                     final @Qualifier("groupForm") AbstractDTOForm groupForm,
+                     final @Qualifier("authChecker") AuthChecker authChecker) {
+        this.groupService = groupService;
+        this.groupForm = groupForm;
+        this.authChecker = authChecker;
         setStartDataProvider(getGroupDTOGridDataProvider());
         groupWindow = new Window("Edit Group");
         groupWindow.addCloseListener(closeEvent -> {
@@ -101,7 +91,7 @@ public class GroupView extends GroupDTOView {
         getDeleteButton().addClickListener(clickEvent -> {
             if (authChecker.checkAuth(UserRole.SUPER_ADMIN, UserRole.ADMIN)) {
                 final Set<GroupDTO> selectedGroups = getGrid().getSelectionModel().getSelectedItems();
-                selectedGroups.forEach(groupDTO -> groupService.delete(groupDTO));
+                selectedGroups.forEach(groupService::delete);
                 Notification.show("Group(s) deleted!",
                         Notification.Type.ASSISTIVE_NOTIFICATION);
                 getGrid().deselectAll();
@@ -112,5 +102,4 @@ public class GroupView extends GroupDTOView {
             }
         });
     }
-
 }

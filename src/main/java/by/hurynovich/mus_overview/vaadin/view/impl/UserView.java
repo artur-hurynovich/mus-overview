@@ -2,9 +2,9 @@ package by.hurynovich.mus_overview.vaadin.view.impl;
 
 import by.hurynovich.mus_overview.dto.impl.UserDTO;
 import by.hurynovich.mus_overview.enumeration.UserRole;
-import by.hurynovich.mus_overview.service.UserDetailsServiceImpl;
+import by.hurynovich.mus_overview.service.impl.UserDetailsServiceImpl;
 import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
-import by.hurynovich.mus_overview.vaadin.util.auth_checker.IAuthChecker;
+import by.hurynovich.mus_overview.vaadin.util.auth_checker.AuthChecker;
 import by.hurynovich.mus_overview.vaadin.view.UserDTOView;
 import com.vaadin.data.provider.CallbackDataProvider;
 import com.vaadin.data.provider.ConfigurableFilterDataProvider;
@@ -35,7 +35,7 @@ public class UserView extends UserDTOView {
 
     @Autowired
     @Qualifier("authChecker")
-    private IAuthChecker authChecker;
+    private AuthChecker authChecker;
 
     private ConfigurableFilterDataProvider<UserDTO, Void, String> userDTOGridDataProvider;
 

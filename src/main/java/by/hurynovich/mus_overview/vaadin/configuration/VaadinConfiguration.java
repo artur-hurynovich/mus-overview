@@ -10,6 +10,8 @@ import com.vaadin.ui.renderers.TextRenderer;
 import org.springframework.beans.factory.config.DependencyDescriptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
@@ -19,6 +21,10 @@ import java.util.List;
 
 @Configuration
 public class VaadinConfiguration {
+    @Bean("passwordEncoder")
+    public PasswordEncoder getPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Bean("grid")
     @ViewScope
@@ -74,5 +80,4 @@ public class VaadinConfiguration {
             }
         }
     }
-
 }

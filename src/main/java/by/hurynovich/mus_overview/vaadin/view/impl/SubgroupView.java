@@ -3,10 +3,10 @@ package by.hurynovich.mus_overview.vaadin.view.impl;
 import by.hurynovich.mus_overview.dto.impl.GroupDTO;
 import by.hurynovich.mus_overview.dto.impl.SubgroupDTO;
 import by.hurynovich.mus_overview.enumeration.UserRole;
-import by.hurynovich.mus_overview.service.IGroupDTOService;
-import by.hurynovich.mus_overview.service.ISubgroupDTOService;
+import by.hurynovich.mus_overview.service.GroupDTOService;
+import by.hurynovich.mus_overview.service.SubgroupDTOService;
 import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
-import by.hurynovich.mus_overview.vaadin.util.auth_checker.IAuthChecker;
+import by.hurynovich.mus_overview.vaadin.util.auth_checker.AuthChecker;
 import by.hurynovich.mus_overview.vaadin.view.SubgroupDTOView;
 import com.vaadin.data.provider.CallbackDataProvider;
 import com.vaadin.data.provider.ConfigurableFilterDataProvider;
@@ -28,11 +28,11 @@ public class SubgroupView extends SubgroupDTOView {
 
     @Autowired
     @Qualifier("groupService")
-    private IGroupDTOService groupService;
+    private GroupDTOService groupService;
 
     @Autowired
     @Qualifier("subgroupService")
-    private ISubgroupDTOService subgroupService;
+    private SubgroupDTOService subgroupService;
 
     @Autowired
     @Qualifier("subgroupForm")
@@ -40,7 +40,7 @@ public class SubgroupView extends SubgroupDTOView {
 
     @Autowired
     @Qualifier("authChecker")
-    private IAuthChecker authChecker;
+    private AuthChecker authChecker;
 
     private ComboBox<GroupDTO> groupDTOComboBox;
 

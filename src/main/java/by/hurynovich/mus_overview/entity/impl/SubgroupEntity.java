@@ -15,8 +15,6 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "subgroups")
 public class SubgroupEntity extends AbstractNamedEntity {
-
     @NotNull
     private long groupId;
-
 }

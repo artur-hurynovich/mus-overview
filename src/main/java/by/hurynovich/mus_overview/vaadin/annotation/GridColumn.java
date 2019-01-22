@@ -8,9 +8,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface GridColumn {
-
     String caption();
-
     int position() default 0;
-
 }

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+@Service("tagConverter")
 public class TagConverter implements DTOEntityConverter<TagDTO, TagEntity> {
     @Override
     public TagDTO convertToDTO(final TagEntity tagEntity) {

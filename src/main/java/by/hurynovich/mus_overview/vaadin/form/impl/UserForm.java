@@ -1,7 +1,7 @@
 package by.hurynovich.mus_overview.vaadin.form.impl;
 
 import by.hurynovich.mus_overview.dto.impl.UserDTO;
-import by.hurynovich.mus_overview.service.UserDetailsServiceImpl;
+import by.hurynovich.mus_overview.service.impl.UserDetailsServiceImpl;
 import by.hurynovich.mus_overview.vaadin.custom_field.UserRoleField;
 import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
 import com.vaadin.data.ValidationResult;
@@ -16,18 +16,16 @@ import java.util.stream.Collectors;
 
 @Component("userForm")
 public class UserForm extends AbstractDTOForm<UserDTO> {
+    private final UserDetailsServiceImpl userService;
+    private UserDTO userDTO;
+    private UserRoleField roleField;
+    private Runnable onSave;
+    private Runnable onDiscard;
 
     @Autowired
-    @Qualifier("userService")
-    private UserDetailsServiceImpl userService;
-
-    private UserDTO userDTO;
-
-    private UserRoleField roleField;
-
-    private Runnable onSave;
-
-    private Runnable onDiscard;
+    public UserForm(final @Qualifier("userService") UserDetailsServiceImpl userService) {
+        this.userService = userService;
+    }
 
     @PostConstruct
     public void init() {
@@ -88,5 +86,4 @@ public class UserForm extends AbstractDTOForm<UserDTO> {
         }
         return roleField;
     }
-
 }

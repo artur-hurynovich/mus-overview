@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
+@Repository("overviewRepository")
 public interface OverviewRepository extends JpaRepository<OverviewEntity, Long> {
     List<OverviewEntity> findAllBySubgroupId(final long subgroupId);
     List<OverviewEntity> findAllByTagsNameContaining(final String tagName);

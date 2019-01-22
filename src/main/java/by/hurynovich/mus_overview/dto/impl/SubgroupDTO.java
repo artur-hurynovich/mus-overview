@@ -9,7 +9,5 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class SubgroupDTO extends AbstractNamedDTO {
-
     private long groupId;
-
 }

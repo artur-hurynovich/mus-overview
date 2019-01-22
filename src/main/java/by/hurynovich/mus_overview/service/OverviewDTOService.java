@@ -4,8 +4,7 @@ import by.hurynovich.mus_overview.dto.impl.OverviewDTO;
 
 import java.util.List;
 
-public interface IOverviewDTOService extends IDTOService<OverviewDTO> {
-
+public interface OverviewDTOService extends DTOService<OverviewDTO> {
     List<OverviewDTO> findAllBySubgroupId(final long subgroupId);
 
     List<OverviewDTO> findAllByTagName(final String tagName);
@@ -17,5 +16,4 @@ public interface IOverviewDTOService extends IDTOService<OverviewDTO> {
     long countByTagName(final String tagName);
 
     long countBySubgroupIdAndTagName(final long subgroupId, final String tagName);
-
 }

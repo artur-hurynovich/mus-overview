@@ -1,7 +1,7 @@
 package by.hurynovich.mus_overview.vaadin.custom_field;
 
 import by.hurynovich.mus_overview.dto.impl.GroupDTO;
-import by.hurynovich.mus_overview.service.IGroupDTOService;
+import by.hurynovich.mus_overview.service.GroupDTOService;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
@@ -13,14 +13,14 @@ import org.vaadin.spring.annotation.PrototypeScope;
 @org.springframework.stereotype.Component("subgroupGroupField")
 @PrototypeScope
 public class SubgroupGroupField extends CustomField<Long> {
+    private final GroupDTOService groupService;
+    private VerticalLayout parentLayout;
+    private ComboBox<GroupDTO> groupField;
 
     @Autowired
-    @Qualifier("groupService")
-    private IGroupDTOService groupService;
-
-    private VerticalLayout parentLayout;
-
-    private ComboBox<GroupDTO> groupField;
+    public SubgroupGroupField(final @Qualifier("groupService") GroupDTOService groupService) {
+        this.groupService = groupService;
+    }
 
     @Override
     protected Component initContent() {

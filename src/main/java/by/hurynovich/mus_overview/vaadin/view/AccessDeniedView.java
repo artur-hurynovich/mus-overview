@@ -12,15 +12,10 @@ import com.vaadin.ui.VerticalLayout;
 
 @SpringView(name = AccessDeniedView.NAME)
 public class AccessDeniedView extends CustomComponent implements View {
-
     public final static String NAME = "accessDenied";
-
     private final static String MESSAGE = "Access denied! Please, sign in!";
-
     private VerticalLayout parenLayout;
-
     private Label messageLabel;
-
     private Button signInButton;
 
     @Override
@@ -52,5 +47,4 @@ public class AccessDeniedView extends CustomComponent implements View {
         }
         return signInButton;
     }
-
 }

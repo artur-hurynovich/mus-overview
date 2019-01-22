@@ -6,7 +6,7 @@ import by.hurynovich.mus_overview.entity.impl.UserEntity;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-@Service
+@Service("userConverter")
 public class UserConverter implements DTOEntityConverter<UserDTO, UserEntity> {
     @Override
     public UserDTO convertToDTO(final UserEntity userEntity) {

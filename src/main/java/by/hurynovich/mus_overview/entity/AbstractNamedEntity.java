@@ -10,8 +10,6 @@ import javax.validation.constraints.NotNull;
 @EqualsAndHashCode(callSuper = true)
 @MappedSuperclass
 public class AbstractNamedEntity extends AbstractEntity {
-
     @NotNull
     private String name;
-
 }

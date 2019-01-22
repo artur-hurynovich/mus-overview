@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
+@Repository("userRepository")
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
     UserEntity findByEmail(final String email);
     List<UserEntity> findByEmailContaining(final String email);

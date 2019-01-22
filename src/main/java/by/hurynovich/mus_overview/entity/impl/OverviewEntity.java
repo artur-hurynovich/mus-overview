@@ -22,7 +22,6 @@ import java.util.List;
 @Entity
 @Table(name = "overviews")
 public class OverviewEntity extends AbstractNamedEntity {
-
     @NotNull
     private String text;
 
@@ -38,5 +37,4 @@ public class OverviewEntity extends AbstractNamedEntity {
             joinColumns = @JoinColumn(name = "overview_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private List<TagEntity> tags;
-
 }

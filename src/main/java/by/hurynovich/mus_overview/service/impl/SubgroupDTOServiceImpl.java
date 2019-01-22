@@ -4,9 +4,10 @@ import by.hurynovich.mus_overview.converter.impl.SubgroupConverter;
 import by.hurynovich.mus_overview.dto.impl.SubgroupDTO;
 import by.hurynovich.mus_overview.entity.impl.SubgroupEntity;
 import by.hurynovich.mus_overview.repository.SubgroupRepository;
-import by.hurynovich.mus_overview.service.ISubgroupDTOService;
+import by.hurynovich.mus_overview.service.SubgroupDTOService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -14,14 +15,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service("subgroupService")
-public class SubgroupService implements ISubgroupDTOService {
-
+public class SubgroupDTOServiceImpl implements SubgroupDTOService {
     private final SubgroupRepository subgroupRepository;
-
     private final SubgroupConverter subgroupConverter;
 
     @Autowired
-    public SubgroupService(final SubgroupRepository subgroupRepository, final SubgroupConverter subgroupConverter) {
+    public SubgroupDTOServiceImpl(final @Qualifier("subgroupRepository") SubgroupRepository subgroupRepository,
+                                  final @Qualifier("subgroupConverter") SubgroupConverter subgroupConverter) {
         this.subgroupRepository = subgroupRepository;
         this.subgroupConverter = subgroupConverter;
     }
@@ -79,5 +79,4 @@ public class SubgroupService implements ISubgroupDTOService {
             return subgroupRepository.countByGroupId(groupId);
         }
     }
-
 }

@@ -4,23 +4,23 @@ import by.hurynovich.mus_overview.converter.impl.TagConverter;
 import by.hurynovich.mus_overview.dto.impl.TagDTO;
 import by.hurynovich.mus_overview.entity.impl.TagEntity;
 import by.hurynovich.mus_overview.repository.TagRepository;
-import by.hurynovich.mus_overview.service.ITagDTOService;
+import by.hurynovich.mus_overview.service.TagDTOService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service("tagService")
-public class TagService implements ITagDTOService {
-
+public class TagDTOServiceImpl implements TagDTOService {
     private final TagRepository tagRepository;
-
     private final TagConverter tagConverter;
 
     @Autowired
-    public TagService(final TagRepository tagRepository, final TagConverter tagConverter) {
+    public TagDTOServiceImpl(final @Qualifier("tagRepository") TagRepository tagRepository,
+                             final @Qualifier("tagConverter") TagConverter tagConverter) {
         this.tagRepository = tagRepository;
         this.tagConverter = tagConverter;
     }
@@ -62,5 +62,4 @@ public class TagService implements ITagDTOService {
     public long count() {
         return tagRepository.count();
     }
-
 }

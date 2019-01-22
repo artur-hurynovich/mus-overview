@@ -7,8 +7,6 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class AbstractNamedDTO extends AbstractDTO {
-
     @GridColumn(caption = "Name", position = 10)
     private String name;
-
 }

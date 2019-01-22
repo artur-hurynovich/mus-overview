@@ -18,7 +18,6 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "users")
 public class UserEntity extends AbstractNamedEntity {
-
     @NotNull
     private String email;
 
@@ -28,5 +27,4 @@ public class UserEntity extends AbstractNamedEntity {
     @NotNull
     @Enumerated(EnumType.STRING)
     private UserRole role;
-
 }

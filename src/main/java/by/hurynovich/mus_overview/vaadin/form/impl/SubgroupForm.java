@@ -1,8 +1,7 @@
 package by.hurynovich.mus_overview.vaadin.form.impl;
 
 import by.hurynovich.mus_overview.dto.impl.SubgroupDTO;
-import by.hurynovich.mus_overview.service.IGroupDTOService;
-import by.hurynovich.mus_overview.service.ISubgroupDTOService;
+import by.hurynovich.mus_overview.service.SubgroupDTOService;
 import by.hurynovich.mus_overview.vaadin.custom_field.SubgroupGroupField;
 import by.hurynovich.mus_overview.vaadin.form.AbstractDTOForm;
 import com.vaadin.data.ValidationResult;
@@ -17,26 +16,19 @@ import java.util.stream.Collectors;
 
 @Component("subgroupForm")
 public class SubgroupForm extends AbstractDTOForm<SubgroupDTO> {
-
-    @Autowired
-    @Qualifier("groupService")
-    private IGroupDTOService groupService;
-
-    @Autowired
-    @Qualifier("subgroupService")
-    private ISubgroupDTOService subgroupService;
-
-    @Autowired
-    @Qualifier("subgroupGroupField")
-    private SubgroupGroupField groupField;
-
+    private final SubgroupDTOService subgroupService;
+    private final SubgroupGroupField groupField;
     private TextField nameField;
-
     private SubgroupDTO subgroupDTO;
-
     private Runnable onSave;
-
     private Runnable onDiscard;
+
+    @Autowired
+    public SubgroupForm(final @Qualifier("subgroupService") SubgroupDTOService subgroupService,
+                        final @Qualifier("subgroupGroupField") SubgroupGroupField groupField) {
+        this.subgroupService = subgroupService;
+        this.groupField = groupField;
+    }
 
     @PostConstruct
     public void init() {

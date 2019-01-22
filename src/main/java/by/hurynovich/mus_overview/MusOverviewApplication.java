@@ -6,10 +6,8 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 public class MusOverviewApplication {
-
     public static void main(final String[] args) {
         SpringApplication.run(MusOverviewApplication.class, args);
     }
-
 }
 

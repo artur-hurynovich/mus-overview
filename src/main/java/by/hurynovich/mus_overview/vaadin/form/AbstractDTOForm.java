@@ -9,15 +9,10 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 
 public abstract class AbstractDTOForm<DTOClass extends AbstractDTO> extends Panel {
-
     private VerticalLayout parentLayout;
-
     private HorizontalLayout buttonsLayout;
-
     private Button saveButton;
-
     private Button cancelButton;
-
     private Binder<DTOClass> binder;
 
     public AbstractDTOForm() {
@@ -52,5 +47,4 @@ public abstract class AbstractDTOForm<DTOClass extends AbstractDTO> extends Pane
     }
 
     public abstract void setupForm(final DTOClass dtoClass, final Runnable onSave, final Runnable inDiscard);
-
 }

@@ -8,7 +8,7 @@ import by.hurynovich.mus_overview.entity.impl.OverviewEntity;
 import by.hurynovich.mus_overview.entity.impl.TagEntity;
 import by.hurynovich.mus_overview.repository.OverviewRepository;
 import by.hurynovich.mus_overview.repository.TagRepository;
-import by.hurynovich.mus_overview.service.IOverviewDTOService;
+import by.hurynovich.mus_overview.service.OverviewDTOService;
 import by.hurynovich.mus_overview.util.TagNameFormatter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,27 +21,24 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service("overviewService")
-public class OverviewService implements IOverviewDTOService {
-
-    @Autowired
-    @Qualifier("tagNameFormatter")
-    private TagNameFormatter tagNameFormatter;
-
+public class OverviewDTOServiceImpl implements OverviewDTOService {
     private final OverviewRepository overviewRepository;
-
     private final OverviewConverter overviewConverter;
-
     private final TagRepository tagRepository;
-
     private final TagConverter tagConverter;
+    private final TagNameFormatter tagNameFormatter;
 
     @Autowired
-    public OverviewService(final OverviewRepository overviewRepository, final OverviewConverter overviewConverter,
-                           final TagRepository tagRepository, final TagConverter tagConverter) {
+    public OverviewDTOServiceImpl(final @Qualifier("overviewRepository") OverviewRepository overviewRepository,
+                                  final @Qualifier("overviewConverter") OverviewConverter overviewConverter,
+                                  final @Qualifier("tagRepository") TagRepository tagRepository,
+                                  final @Qualifier("tagConverter") TagConverter tagConverter,
+                                  final @Qualifier("tagNameFormatter") TagNameFormatter tagNameFormatter) {
         this.overviewRepository = overviewRepository;
         this.overviewConverter = overviewConverter;
         this.tagRepository = tagRepository;
         this.tagConverter = tagConverter;
+        this.tagNameFormatter = tagNameFormatter;
     }
 
     @Override
@@ -101,7 +98,7 @@ public class OverviewService implements IOverviewDTOService {
         final OverviewEntity overviewEntity = overviewRepository.findById(overviewDTO.getId());
         BeanUtils.copyProperties(overviewDTO, overviewEntity, "id", "tags");
         final List<TagDTO> tags = overviewDTO.getTags();
-        final List<TagEntity> toSaveTagsEntities = new ArrayList<>();
+        final List<TagEntity> toSaveTagEntities = new ArrayList<>();
         if (tags != null) {
             tags.forEach(tagNameFormatter::format);
             for (final TagDTO tagDto : tags) {
@@ -109,14 +106,14 @@ public class OverviewService implements IOverviewDTOService {
                 final TagEntity existingTag = tagRepository.findByName(tagName);
                 if (existingTag == null) {
                     final TagEntity tagEntity = tagConverter.convertToEntity(tagDto);
-                    toSaveTagsEntities.add(tagEntity);
+                    toSaveTagEntities.add(tagEntity);
                 } else {
-                    toSaveTagsEntities.add(existingTag);
+                    toSaveTagEntities.add(existingTag);
                 }
             }
-            overviewEntity.setTags(toSaveTagsEntities);
+            overviewEntity.setTags(toSaveTagEntities);
         }
-        tagRepository.saveAll(toSaveTagsEntities);
+        tagRepository.saveAll(toSaveTagEntities);
         final OverviewEntity savedOverviewEntity = overviewRepository.save(overviewEntity);
         return overviewConverter.convertToDTO(savedOverviewEntity);
     }
@@ -145,5 +142,4 @@ public class OverviewService implements IOverviewDTOService {
     public long countBySubgroupIdAndTagName(final long subgroupId, final String tagName) {
         return overviewRepository.countBySubgroupIdAndTagsNameContaining(subgroupId, tagName);
     }
-
 }

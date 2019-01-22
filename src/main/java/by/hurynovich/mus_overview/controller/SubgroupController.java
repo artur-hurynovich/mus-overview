@@ -1,7 +1,7 @@
 package by.hurynovich.mus_overview.controller;
 
 import by.hurynovich.mus_overview.dto.impl.SubgroupDTO;
-import by.hurynovich.mus_overview.service.ISubgroupDTOService;
+import by.hurynovich.mus_overview.service.SubgroupDTOService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,11 +15,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/rest/subgroup")
 public class SubgroupController {
-
-    private final ISubgroupDTOService subgroupService;
+    private final SubgroupDTOService subgroupService;
 
     @Autowired
-    public SubgroupController(final ISubgroupDTOService subgroupService) {
+    public SubgroupController(final SubgroupDTOService subgroupService) {
         this.subgroupService = subgroupService;
     }
 
@@ -44,5 +43,4 @@ public class SubgroupController {
     public void deleteSubgroup(final @RequestBody SubgroupDTO subgroupDTO) {
         subgroupService.delete(subgroupDTO);
     }
-
 }
